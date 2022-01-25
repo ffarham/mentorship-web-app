@@ -1,8 +1,7 @@
 # cs261_GroupProject
----
 
 ## Prerequisites
----
+
 Install [Node.js](https://nodejs.org/en/download/). Check Node.js is installed by running `node -v` in terminal.  
   
 Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
