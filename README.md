@@ -9,7 +9,7 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 - Password: postgres  
 - Default port: 5432  
  
- Run `psql` in terminal to check if it has been installed successfully.
+ Run `psql -U postgres` in terminal to check if it has been installed successfully.
 
 
 ## Start-up
