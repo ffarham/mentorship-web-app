@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# server
 # dependencies
 client/node_modules
 client/.pnp
@@ -35,3 +36,7 @@ client/.vercel
 
 # typescript
 client/*.tsbuildinfo
+
+# server
+# dependencies
+server/node_modules
