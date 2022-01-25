@@ -14,5 +14,8 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 
 ## Start-up
 - Run `npm install --global yarn` to install Yarn. Check Yarn is installed by running `yarn -v`.
-- Run `yarn install` in both client and server directories.
+- Run `yarn install` in both client and server directories to install dependencies.
+
+## Development
+The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting.
 
