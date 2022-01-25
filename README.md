@@ -17,7 +17,11 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 - Run `yarn install` in both client and server directories to install dependencies.
 
 ## Development
-The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting.
+The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting.  
+The stack being used is:  
+- REACT + TypeScript
+- Node.js + Next.js + Express.js
+- PostgreSQL
 
 ## Troubleshooting
 - If yarn complains about any dependencies in `packages.json` not being installed (e.g. express), run `yarn install` to install them.
