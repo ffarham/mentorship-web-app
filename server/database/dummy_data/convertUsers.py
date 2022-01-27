@@ -6,7 +6,7 @@ data = list(csv.reader(datafile, delimiter=','))
 
 writefile = open('dummy_users.sql', 'w')
 
-for person in data:
+for person in data[1:]:
     if person == []:
         continue
     
