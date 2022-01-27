@@ -1,5 +1,6 @@
 DROP DATABASE IF EXISTS discipulo;
 CREATE DATABASE discipulo;
+\connect discipulo;
 
 --Authentication System:
 
