@@ -15,8 +15,7 @@ CREATE TABLE users (
     --lname VARCHAR(100) NOT NULL,
     --maybe change name field to above
 
-    password BYTEA NOT NULL, --This will be hashed using bcrypt with salt
-    salt BYTEA NOT NULL, --128-bit number
+    password CHAR(60) NOT NULL, --This will be hashed using bcrypt (bcrypt includes a salt in this value)
 
     businessArea VARCHAR(100)
 );
