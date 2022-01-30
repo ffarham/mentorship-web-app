@@ -96,9 +96,8 @@ CREATE TABLE groupMeetingAttendees(
 
 --Workshops?:
 
-
-
 --Plans of action:
+
 DROP TABLE IF EXISTS planOfAction CASCADE;
 CREATE TABLE planOfAction(
     planID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
