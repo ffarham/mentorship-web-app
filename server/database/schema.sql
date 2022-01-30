@@ -11,9 +11,6 @@ CREATE TABLE users (
     emailVerified BOOLEAN NOT NULL, --false if email not yet verified, true otherwise
 
     name VARCHAR(100) NOT NULL,
-    --fname VARCHAR(100) NOT NULL,
-    --lname VARCHAR(100) NOT NULL,
-    --maybe change name field to above
 
     password CHAR(60) NOT NULL, --This will be hashed using bcrypt (bcrypt includes a salt in this value)
 
@@ -81,12 +78,12 @@ CREATE TABLE groupMeeting(
 
 DROP TABLE IF EXISTS groupMeetingMentors CASCADE;
 CREATE TABLE groupMeetingMentors(
-    groupMeetingID INTEGER NOT NULL REFERENCES groupMeeting(groupMeetingID)
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID)
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendees CASCADE;
 CREATE TABLE groupMeetingAttendees(
-    groupMeetingID INTEGER NOT NULL REFERENCES groupMeeting(groupMeetingID),
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
     menteeID UUID NOT NULL REFERENCES mentee(menteeID),
 
     accepted BOOLEAN,
