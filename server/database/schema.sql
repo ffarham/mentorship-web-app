@@ -4,7 +4,6 @@ CREATE DATABASE discipulo;
 
 --Authentication System:
 
---TODO: Get rid of password stuff and make it work with auth0
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     userID UUID PRIMARY KEY DEFAULT gen_random_uuid(), --Random 64 bit number used for primary keys
@@ -20,18 +19,6 @@ CREATE TABLE users (
     salt BYTEA NOT NULL, --128-bit number
 
     businessArea VARCHAR(100)
-);
-
-DROP TABLE IF EXISTS authToken CASCADE;
-CREATE TABLE authToken (
-    token BYTEA PRIMARY KEY, --Random 64 bit number 
-    userID UUID REFERENCES users(userID) NOT NULL,
-    kind VARCHAR(6) NOT NULL, --Either 'mentee' or 'mentor' (this field could change very soon)
-
-    timeCreated TIMESTAMP NOT NULL,
-    duration INTERVAL NOT NULL, --Token is not valid if timeCreated + duration > NOW()
-
-    CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor') --May become unneccesary
 );
 
 --Mentees/Mentors:
@@ -68,11 +55,6 @@ CREATE TABLE interest (
 
 --Meetings:
 
-DROP TABLE IF EXISTS meetingRequests CASCADE;
-CREATE TABLE meetingRequests(
-    
-);
-
 DROP TABLE IF EXISTS meeting CASCADE;
 CREATE TABLE meeting (
     meetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -83,6 +65,8 @@ CREATE TABLE meeting (
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
     meetingEnd TIMESTAMP,
+
+    confirmed BOOLEAN,
 
     attended BOOLEAN,
 
@@ -115,7 +99,30 @@ CREATE TABLE groupMeetingAttendees(
 
 
 --Plans of action:
+DROP TABLE IF EXISTS planOfAction CASCADE;
+CREATE TABLE planOfAction(
+    planID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+
+    planName VARCHAR(100),
+    planDescription VARCHAR(1000),
+
+    completed BOOLEAN
+);
+
+DROP TABLE IF EXISTS milestones CASCADE;
+CREATE TABLE milestones(
+    milestoneID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    planID UUID NOT NULL REFERENCES planOfAction(planID),
+
+    milestoneName VARCHAR(100),
+    milestoneDescription VARCHAR(1000),
+
+    completed BOOLEAN
+); 
 
 
 --Notifications:
@@ -123,6 +130,6 @@ CREATE TABLE groupMeetingAttendees(
 DROP TABLE IF EXISTS notifications CASCADE;
 CREATE TABLE notifications (
     notificationID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userID BYTEA REFERENCES users(userID),
+    userID UUID REFERENCES users(userID),
     msg VARCHAR(1000) NOT NULL
 );
