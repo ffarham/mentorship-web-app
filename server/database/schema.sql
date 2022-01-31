@@ -16,7 +16,9 @@ CREATE TABLE users (
 
     businessArea VARCHAR(100),
 
-    profilePicReference VARCHAR(200)
+    profilePicReference VARCHAR(200),
+
+    emailsAllowed BOOLEAN NOT NULL
 );
 
 --Mentees/Mentors:
@@ -60,11 +62,14 @@ CREATE TABLE meeting (
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
     meetingEnd TIMESTAMP,
+    
+    place VARCHAR(100),
 
     confirmed BOOLEAN,
 
     attended BOOLEAN,
 
+    requestMessage VARCHAR(1000),
     feedback VARCHAR(1000)
 );
 
