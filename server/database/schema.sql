@@ -14,7 +14,9 @@ CREATE TABLE users (
 
     password CHAR(60) NOT NULL, --This will be hashed using bcrypt (bcrypt includes a salt in this value)
 
-    businessArea VARCHAR(100)
+    businessArea VARCHAR(100),
+
+    profilePicReference VARCHAR(200)
 );
 
 --Mentees/Mentors:
@@ -26,10 +28,7 @@ CREATE TABLE mentee (
 
 DROP TABLE IF EXISTS mentor CASCADE;
 CREATE TABLE mentor (
-    mentorID UUID PRIMARY KEY REFERENCES users(userID),
-
-    rating REAL,
-    numRatings INTEGER NOT NULL
+    mentorID UUID PRIMARY KEY REFERENCES users(userID)
 );
 
 DROP TABLE IF EXISTS mentoring CASCADE;
@@ -44,7 +43,7 @@ DROP TABLE IF EXISTS interest CASCADE;
 CREATE TABLE interest (
     userID UUID NOT NULL REFERENCES users(userID),
     interest VARCHAR(100) NOT NULL,
-    kind VARCHAR(6), --Either 'mentee' or 'mentor'
+    kind CHAR(6), --Either 'mentee' or 'mentor'
 
     CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor')
 );
@@ -78,7 +77,12 @@ CREATE TABLE groupMeeting(
 
 DROP TABLE IF EXISTS groupMeetingMentors CASCADE;
 CREATE TABLE groupMeetingMentors(
-    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID)
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
+
+    timeCreated TIMESTAMP NOT NULL,
+
+    groupMeetingStart TIMESTAMP,
+    groupMeetingEnd TIMESTAMP
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendees CASCADE;
@@ -90,7 +94,25 @@ CREATE TABLE groupMeetingAttendees(
     attended BOOLEAN
 );
 
---Workshops?:
+--Workshops:
+
+DROP TABLE IF EXISTS workshop CASCADE;
+CREATE TABLE workshop(
+    workshopID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    leaderID UUID NOT NULL REFERENCES mentor(mentorID),
+
+    timeCreated TIMESTAMP NOT NULL,
+
+    workshopStart TIMESTAMP,
+    workshopEnd TIMESTAMP
+);
+
+DROP TABLE IF EXISTS workshopTopics CASCADE;
+CREATE TABLE workshopTopics(
+    workshopID UUID NOT NULL REFERENCES workshop(workshopID),
+    topic VARCHAR(100) NOT NULL --Should exist in interests table somewhere
+);
 
 --Plans of action:
 
@@ -119,6 +141,37 @@ CREATE TABLE milestones(
     completed BOOLEAN
 ); 
 
+--Feedback:
+
+DROP TABLE IF EXISTS menteeToMentorFeedback;
+CREATE TABLE menteeToMentorFeedback(
+    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+
+    feedback VARCHAR(1000)
+);
+
+DROP TABLE IF EXISTS prosAndCons;
+CREATE TABLe prosAndCons(
+    feedbackID UUID NOT NULL REFERENCES menteeToMentorFeedback(feedbackID),
+
+    kind CHAR(3), --Either 'pro' or 'con'
+
+    content VARCHAR(100),
+
+    CONSTRAINT legalKind CHECK (kind = 'pro' OR kind = 'con')
+);
+
+DROP TABLE IF EXISTS workshopFeedback;
+CREATE TABLE workshopFeedback(
+    workshopFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    workshopID UUID NOT NULL REFERENCES workshop(workshopID),
+
+    feedback VARCHAR(1000)
+);
 
 --Notifications:
 
