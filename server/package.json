@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
+    "express-openid-connect": "^2.5.2",
     "pg": "^8.7.1"
   }
 }
