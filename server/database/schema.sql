@@ -131,7 +131,8 @@ CREATE TABLE planOfAction(
     planName VARCHAR(100),
     planDescription VARCHAR(1000),
 
-    completed BOOLEAN
+    completed BOOLEAN,
+    completionMessage VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS milestones CASCADE;
@@ -140,13 +141,27 @@ CREATE TABLE milestones(
 
     planID UUID NOT NULL REFERENCES planOfAction(planID),
 
+    order INTEGER NOT NULL,
+
     milestoneName VARCHAR(100),
     milestoneDescription VARCHAR(1000),
 
-    completed BOOLEAN
+    completed BOOLEAN,
+    completionMessage VARCHAR(1000)
 ); 
 
 --Feedback:
+
+DROP TABLE IF EXISTS mentorToMenteeFeedback;
+CREATE TABLE mentorToMenteeFeedback(
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+
+    meetingID UUID REFERENCES meeting(meetingID),
+    groupMeetingID UUID REFERENCES groupMeeting(groupMeetingID),
+
+    feedback VARCHAR(1000)
+);
 
 DROP TABLE IF EXISTS menteeToMentorFeedback;
 CREATE TABLE menteeToMentorFeedback(
@@ -184,5 +199,7 @@ DROP TABLE IF EXISTS notifications CASCADE;
 CREATE TABLE notifications (
     notificationID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     userID UUID REFERENCES users(userID),
-    msg VARCHAR(1000) NOT NULL
+    msg VARCHAR(1000) NOT NULL,
+
+    meetingID UUID REFERENCES meeting(meetingID)
 );
