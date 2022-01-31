@@ -1,5 +1,6 @@
 import csv
 import random
+import bcrypt
 
 datafile = open('dummy_users.csv', 'r')
 data = list(csv.reader(datafile, delimiter=','))
