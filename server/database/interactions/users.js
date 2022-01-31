@@ -1,8 +1,10 @@
+//Imports:
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
 const saltRounds = 10; //10 should be enough
 const pool = require('../db');
+
 
 //Query to add user to users table and returns randomly-generated userID
 const registerUserQuery = 'INSERT INTO users VALUES (DEFAULT, $1, FALSE, $2, $3, $4, $5) RETURNING userID';
@@ -85,9 +87,9 @@ async function checkEmailAndPassword(email, password) {
 const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1';
 
 /**
- * Returns all user information of user with a given email.
+ * Returns all user information of user with a given email as an object.
  * 
- * @param {string} email 
+ * @param {string} email User's email
  * 
  * @throws {UserNotFoundError} Fails if it can't find a user with given email
  */
@@ -104,3 +106,10 @@ async function getUserInfoFromEmail(email) {
 exports.registerUser = registerUser;
 exports.checkEmailAndPassword = checkEmailAndPassword;
 exports.getUserInfoFromEmail = getUserInfoFromEmail;
+
+//Informal Testing:
+async function main() {
+    getUserInfoFromEmail('bobjim@gmail.com');
+}
+
+main();
