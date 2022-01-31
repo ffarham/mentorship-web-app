@@ -8,6 +8,6 @@ router.get("/mentee/:menteeid/gm-request/:gmrid", (req, res) => {
 });
 
 // Accept/Decline invitation to a group meeting or workshop
-router.post("/mentee/:menteeid/gm-request:gmrid", (req, res) => {
-
+router.post("/mentee/:menteeid/gm-request/:gmrid", (req, res) => {
+    
 });
