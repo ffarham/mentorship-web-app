@@ -102,6 +102,9 @@ async function getUserInfoFromEmail(email) {
     return result.rows[0];
 }
 
+//Query to register an interest for a user
+const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3)';
+
 //Module exports:
 exports.registerUser = registerUser;
 exports.checkEmailAndPassword = checkEmailAndPassword;
