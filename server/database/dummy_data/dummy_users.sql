@@ -1,0 +1,11 @@
+INSERT INTO users VALUES ('jimbob@gmail.com', FALSE, 'Jimothy Bobson', sha512('password'::BYTEA || '\xe0c95582773a5e7a'::BYTEA), '\xe0c95582773a5e7a');
+INSERT INTO users VALUES ('bobjim@gmail.com', FALSE, 'Bobothy Jimson', sha512('a_significantly_better_password'::BYTEA || '\x6088cf474999bdf3'::BYTEA), '\x6088cf474999bdf3');
+INSERT INTO users VALUES ('biglez@gmail.com', FALSE, 'Big Lez', sha512('saseeeee'::BYTEA || '\xba97f18f9dca40ea'::BYTEA), '\xba97f18f9dca40ea');
+INSERT INTO users VALUES ('xX_eric_cartman_Xx@gmail.com', FALSE, 'Eric Cartman', sha512('0hmyg0dth3yk!113dk3nny'::BYTEA || '\xb81b744d23130049'::BYTEA), '\xb81b744d23130049');
+INSERT INTO users VALUES ('farquaad@gmail.com', FALSE, 'Lord Farquaad', sha512('getouttamyswamp'::BYTEA || '\xb66bb316a370c6ba'::BYTEA), '\xb66bb316a370c6ba');
+INSERT INTO users VALUES ('amogus@gmail.com', FALSE, 'Amogus Susson', sha512('5U55Y_84K45_4_LYF3'::BYTEA || '\x3cbc3f53c2b7f1ec'::BYTEA), '\x3cbc3f53c2b7f1ec');
+INSERT INTO users VALUES ('ur_da@gmail.com', FALSE, 'Your Father', sha512('iSellAvon'::BYTEA || '\x911e5f91e7184d83'::BYTEA), '\x911e5f91e7184d83');
+INSERT INTO users VALUES ('scott_tenorman@gmail.com', FALSE, 'Scott Tenorman', sha512('I_AteMy_Parents'::BYTEA || '\xcf4bc1d37ed2caf7'::BYTEA), '\xcf4bc1d37ed2caf7');
+INSERT INTO users VALUES ('totally_not_a_meth_dealer@gmail.com', FALSE, 'Walter White', sha512('r00f!p1zz4'::BYTEA || '\x345671a13241fe80'::BYTEA), '\x345671a13241fe80');
+INSERT INTO users VALUES ('xXsupreme_edgelordXx@gmail.com', FALSE, 'The King of Edge', sha512('not_funny_if_older_than_seven'::BYTEA || '\x3320b7208f3d9bd6'::BYTEA), '\x3320b7208f3d9bd6');
+INSERT INTO users VALUES ('sasee@gmail.com', FALSE, 'Sassy the Sasquatch', sha512('utalkintome?'::BYTEA || '\xaeded3627c927b9e'::BYTEA), '\xaeded3627c927b9e');
