@@ -21,6 +21,14 @@ CREATE TABLE users (
     emailsAllowed BOOLEAN NOT NULL
 );
 
+DROP TABLE IF EXISTS authToken CASCADE;
+CREATE TABLE authToken(
+    token UUID PRIMARY KEY, --64-byte random string in hex 
+    userID UUID NOT NULL REFERENCES users(userID),
+    timeCreated TIMESTAMP NOT NULL,
+    timeToLive INTERVAL NOT NULL
+);
+
 --Mentees/Mentors:
 
 DROP TABLE IF EXISTS mentee CASCADE;
@@ -77,21 +85,19 @@ CREATE TABLE meeting (
 
 DROP TABLE IF EXISTS groupMeeting CASCADE;
 CREATE TABLE groupMeeting(
-    groupMeetingID UUID PRIMARY KEY DEFAULT gen_random_uuid()
-);
+    groupMeetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-DROP TABLE IF EXISTS groupMeetingMentors CASCADE;
-CREATE TABLE groupMeetingMentors(
-    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
 
     timeCreated TIMESTAMP NOT NULL,
-
-    groupMeetingStart TIMESTAMP,
-    groupMeetingEnd TIMESTAMP
+    meetingStart TIMESTAMP,
+    meetingEnd TIMESTAMP,
+    
+    place VARCHAR(100)
 );
 
-DROP TABLE IF EXISTS groupMeetingAttendees CASCADE;
-CREATE TABLE groupMeetingAttendees(
+DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
+CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
     menteeID UUID NOT NULL REFERENCES mentee(menteeID),
 
@@ -141,7 +147,7 @@ CREATE TABLE milestones(
 
     planID UUID NOT NULL REFERENCES planOfAction(planID),
 
-    order INTEGER NOT NULL,
+    ordering INTEGER NOT NULL,
 
     milestoneName VARCHAR(100),
     milestoneDescription VARCHAR(1000),
@@ -152,8 +158,10 @@ CREATE TABLE milestones(
 
 --Feedback:
 
-DROP TABLE IF EXISTS mentorToMenteeFeedback;
+DROP TABLE IF EXISTS mentorToMenteeFeedback CASCADE;
 CREATE TABLE mentorToMenteeFeedback(
+    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
     menteeID UUID NOT NULL REFERENCES mentee(menteeID),
 
@@ -163,7 +171,7 @@ CREATE TABLE mentorToMenteeFeedback(
     feedback VARCHAR(1000)
 );
 
-DROP TABLE IF EXISTS menteeToMentorFeedback;
+DROP TABLE IF EXISTS menteeToMentorFeedback CASCADE;
 CREATE TABLE menteeToMentorFeedback(
     feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -173,7 +181,7 @@ CREATE TABLE menteeToMentorFeedback(
     feedback VARCHAR(1000)
 );
 
-DROP TABLE IF EXISTS prosAndCons;
+DROP TABLE IF EXISTS prosAndCons CASCADE;
 CREATE TABLe prosAndCons(
     feedbackID UUID NOT NULL REFERENCES menteeToMentorFeedback(feedbackID),
 
@@ -184,7 +192,7 @@ CREATE TABLe prosAndCons(
     CONSTRAINT legalKind CHECK (kind = 'pro' OR kind = 'con')
 );
 
-DROP TABLE IF EXISTS workshopFeedback;
+DROP TABLE IF EXISTS workshopFeedback CASCADE;
 CREATE TABLE workshopFeedback(
     workshopFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
