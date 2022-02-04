@@ -15,10 +15,13 @@ import {
     Col
   } from "reactstrap";
 
-  import MainFooter from "../components/Navs/MainFooter.js";
+import MainNavbar from "../components/Navs/MainNavbar.js";
 
-class RegisterPage extends React.Component {
-    render (){
+import Navbars from "./IndexSections/Navbars.js";
+import MainFooter from "../components/Navs/MainFooter.js";
+
+class Login extends React.Component {
+    render(){
         return(
             <>
                 <main ref="main">
@@ -27,36 +30,23 @@ class RegisterPage extends React.Component {
                             <Col lg="5">
                             <Card className="bg-secondary shadow border-0">
                                 <CardHeader className="bg-white pb-5">
-                                    <div className="btn-wrapper text-center">
-                                        <h1>Logo</h1>
-                                    </div>
+                                <div className="btn-wrapper text-center">
+                                   <h1>Logo</h1>
+                                </div>
                                 </CardHeader>
                                 <CardBody className="px-lg-5 py-lg-5">
-                                <div className="text-muted text-center mb-3">
-                                    <small>Register </small>
-                                </div>
                                 <Form role="form">
                                     <FormGroup className="mb-3">
-                                        <InputGroup className="input-group-alternative">
-                                            <InputGroupAddon addonType="prepend">
-                                                <InputGroupText>
-                                                    <i className="ni ni-circle-08" />
-                                                </InputGroupText>
-                                            </InputGroupAddon>
-                                            <Input placeholder="Name" type="text" />
-                                        </InputGroup>
+                                    <InputGroup className="input-group-alternative">
+                                        <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>
+                                            <i className="ni ni-email-83" />
+                                        </InputGroupText>
+                                        </InputGroupAddon>
+                                        <Input placeholder="Email" type="email" />
+                                    </InputGroup>
                                     </FormGroup>
-                                    <FormGroup className="mb-3">
-                                        <InputGroup className="input-group-alternative">
-                                            <InputGroupAddon addonType="prepend">
-                                            <InputGroupText>
-                                                <i className="ni ni-email-83" />
-                                            </InputGroupText>
-                                            </InputGroupAddon>
-                                            <Input placeholder="Email" type="email" />
-                                        </InputGroup>
-                                    </FormGroup>
-                                    <FormGroup className="mb-3">
+                                    <FormGroup>
                                     <InputGroup className="input-group-alternative">
                                         <InputGroupAddon addonType="prepend">
                                         <InputGroupText>
@@ -69,20 +59,6 @@ class RegisterPage extends React.Component {
                                         autoComplete="off"
                                         />
                                     </InputGroup>
-                                    </FormGroup>
-                                    <FormGroup className="mb-3">
-                                        <InputGroup className="input-group-alternative">
-                                            <InputGroupAddon addonType="prepend">
-                                            <InputGroupText>
-                                                <i className="ni ni-lock-circle-open" />
-                                            </InputGroupText>
-                                            </InputGroupAddon>
-                                            <Input
-                                            placeholder="Confirm Password"
-                                            type="password"
-                                            autoComplete="off"
-                                            />
-                                        </InputGroup>
                                     </FormGroup>
                                     <div className="custom-control custom-control-alternative custom-checkbox">
                                     <input
@@ -103,7 +79,7 @@ class RegisterPage extends React.Component {
                                         color="primary"
                                         type="button"
                                     >
-                                        Register
+                                        Sign in
                                     </Button>
                                     </div>
                                 </Form>
@@ -120,18 +96,13 @@ class RegisterPage extends React.Component {
                                 </a>
                                 </Col>
                                 <Col className="text-right" xs="6">
-                                    <Row>
-                                        <div className="text-light mr-2">
-                                            <small>Already have an account?</small>
-                                        </div>
-                                        <a
-                                            className="text-light"
-                                            href="#pablo"
-                                            onClick={e => e.preventDefault()}
-                                            >
-                                            <small>Register</small>
-                                        </a>
-                                    </Row>
+                                <a
+                                    className="text-light"
+                                    href="#pablo"
+                                    onClick={e => e.preventDefault()}
+                                >
+                                    <small>Create new account</small>
+                                </a>
                                 </Col>
                             </Row>
                             </Col>
@@ -147,4 +118,4 @@ class RegisterPage extends React.Component {
     }
 }
 
-export default RegisterPage;
+export default Login;

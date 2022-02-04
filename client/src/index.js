@@ -31,7 +31,7 @@ import Profile from "views/examples/Profile.js";
 import Register from "views/examples/Register.js";
 
 // Pages
-import LoginPage from "views/Login.js";
+import LoginPage from "views/LoginPage.js";
 import LandingPage from "views/LandingPage.js";
 import RegisterPage from "views/RegisterPage.js";
 import HomePage from "views/HomePage.js";

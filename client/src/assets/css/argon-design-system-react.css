@@ -12291,9 +12291,21 @@ a.btn-icon-only {
   min-width: 450px;
   border-radius: 0.3rem; }
 
+  .relative{
+    position: relative;
+  }
+
 .footer {
-  background: #f4f5f7;
-  padding: 1.5rem 0; }
+  /* background: #f4f5f7; */
+  background: #000000;
+  /* position: relative; */
+  position:absolute;
+  left:0;
+  bottom:0;
+  right:0;
+  padding: 1.5rem 0; 
+}
+
   .footer .col-footer .heading {
     color: #8898aa;
     letter-spacing: 0;

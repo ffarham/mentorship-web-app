@@ -21,7 +21,9 @@ class HomePage extends React.Component {
                         </Col>
                     </Row>
                 </Container>
-                <MainFooter />
+                <div className="fixed-bottom">
+                    <MainFooter />
+                </div>
             </>
         );
     }
