@@ -4,7 +4,7 @@
 
 Install [Node.js](https://nodejs.org/en/download/). Check Node.js is installed by running `node -v` in terminal.  
   
-Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
+(Only back-end) Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
 - Username: postgres  
 - Password: postgres  
 - Default port: 5432  
@@ -14,13 +14,14 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 
 ## Start-up
 - Run `npm install --global yarn` to install Yarn. Check Yarn is installed by running `yarn -v`.
-- Run `yarn install` in both client and server directories to install dependencies.
+- (Front-End) Run `yarn install` in client directory to install dependencies.
+- (Back-end) Run `yarn install` in server directory to install dependencies.
 
 ## Development
 The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting. 
 
 The stack being used is:  
-- [REACT](https://reactjs.org/docs/hello-world.html) + [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) + [Next.js](https://nextjs.org/docs/getting-started)
+- [REACT](https://reactjs.org/docs/hello-world.html) 
 - Node.js + Express.js
 - PostgreSQL
 
