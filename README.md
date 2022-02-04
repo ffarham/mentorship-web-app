@@ -22,7 +22,7 @@ The project follows the git model described [here](https://nvie.com/posts/a-succ
 
 ### Front-End
 - Run `yarn start` in client directory to launch the website on localhost:3000. 
-- Check client/index.js for implemented pages.
+- Check client/src/index.js for implemented pages.
 
 ### Back-End
 Run `yarn start` in server directory to get the server running.
