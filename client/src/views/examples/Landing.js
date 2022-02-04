@@ -37,8 +37,8 @@ import {
 } from "reactstrap";
 
 // core components
-import DemoNavbar from "components/Navbars/DemoNavbar.js";
-import CardsFooter from "components/Footers/CardsFooter.js";
+import DemoNavbar from "components/ArgonComponents/Navbars/DemoNavbar.js";
+import CardsFooter from "components/ArgonComponents/Footers/CardsFooter.js";
 
 // index page sections
 import Download from "../IndexSections/Download.js";

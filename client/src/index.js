@@ -23,11 +23,19 @@ import "assets/vendor/nucleo/css/nucleo.css";
 import "assets/vendor/font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
-import Index from "views/Index.js";
+// Argon pages
+import Index from "views/Argon.js";
 import Landing from "views/examples/Landing.js";
 import Login from "views/examples/Login.js";
 import Profile from "views/examples/Profile.js";
 import Register from "views/examples/Register.js";
+
+// Pages
+import LoginPage from "views/Login.js";
+import LandingPage from "views/LandingPage.js";
+import RegisterPage from "views/RegisterPage.js";
+import HomePage from "views/HomePage.js";
+import MeetingsPage from "views/MeetingsPage.js";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -38,6 +46,15 @@ ReactDOM.render(
       <Route path="/login-page" exact render={props => <Login {...props} />} />
       <Route path="/profile-page" exact render={props => <Profile {...props} />} />
       <Route path="/register-page" exact render={props => <Register {...props} />} />
+
+      {/* Routes */}
+      <Route path="/" exact render={props => <LandingPage {...props} />} />
+      <Route path="/login" exact render={props => <LoginPage {...props} />} />
+      <Route path="/register" exact render={props => <RegisterPage {...props} />} />
+      <Route path="/home" exact render={props => <HomePage {...props} />} />
+      <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
+
+      {/* Redirect unknown URL to the landing page */}
       <Redirect to="/" />
     </Switch>
   </BrowserRouter>,
