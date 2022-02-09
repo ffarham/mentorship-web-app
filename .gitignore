@@ -5,4 +5,4 @@ client/node_modules
 
 # server
 # dependencies
-server/node_modules
+server/server/node_modules
