@@ -18,7 +18,12 @@ docker rm -f $(docker ps -a -q)
 docker volume rm $(docker volume ls -q) 
 docker-compose up -d```
 
-Start the docker instance with a differently name compose file:
+Remove server_server image:
+
+Docker remove dangling images:
+docker rmi $(docker images -f “dangling=true” -q)
+
+Start the docker instance with a differently named compose file:
 docker-compose -f docker-compose.yml up --build
 
 
