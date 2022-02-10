@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Install [Node.js](https://nodejs.org/en/download/). Check Node.js is installed by running `node -v` in terminal.  
+Install [Node.js v14](https://nodejs.org/download/release/v14.17.5/). Ensure you check the checkbox which lets the system install neccessary build tools. Check Node.js is installed by running `node -v` in terminal.  
   
 (Only back-end) Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
 - Username: postgres  
@@ -33,7 +33,7 @@ The stack being used is:
 - PostgreSQL
 
 ## Troubleshooting
-- If yarn complains about any dependencies in `packages.json` not being installed (e.g. express), run `yarn install` to install them.
+- If `yarn install` complains about Python. Remove Python3 PATH in the system environment variables. Install Pyhton2 v2.7 and add the "C:\...\Python27" and "C:\...\Python27\Scripts" to the system environment variable PATH.
 - If yarn complains about nodemon not being installed, try running `yarn global add nodemon`.
 - If Powershell doesn't want to run yarn because it doesn't like scripts, open powershell as an administrator and run `Set-ExecutionPolicy Unrestricted`. 
 
