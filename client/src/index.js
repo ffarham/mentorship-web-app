@@ -24,7 +24,7 @@ import "assets/vendor/font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
 // Argon pages
-import Index from "views/Argon.js";
+import Index from "views/examples/Argon.js";
 import Landing from "views/examples/Landing.js";
 import Login from "views/examples/Login.js";
 import Profile from "views/examples/Profile.js";
@@ -36,6 +36,9 @@ import LandingPage from "views/LandingPage.js";
 import RegisterPage from "views/RegisterPage.js";
 import HomePage from "views/HomePage.js";
 import MeetingsPage from "views/MeetingsPage.js";
+import MentorsMenteesPage from "views/MentorsMenteesPage.js"; 
+import PlanOfActionsPage from "views/PlanOfActionsPage.js";
+import SettingsPage from "views/SettingsPage.js";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -53,6 +56,10 @@ ReactDOM.render(
       <Route path="/register" exact render={props => <RegisterPage {...props} />} />
       <Route path="/home" exact render={props => <HomePage {...props} />} />
       <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
+      <Route path="/mentors-mentees" exact render={props => <MentorsMenteesPage {...props} />} />
+      <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
+      <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
+
 
       {/* Redirect unknown URL to the landing page */}
       <Redirect to="/" />
