@@ -20,9 +20,10 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting. 
 
 The stack being used is:  
-- [REACT](https://reactjs.org/docs/hello-world.html) + [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) + [Next.js](https://nextjs.org/docs/getting-started)
+- [REACT](https://reactjs.org/docs/hello-world.html) 
 - Node.js + Express.js
 - PostgreSQL
+with Docker.
 
 ## Troubleshooting
 - If yarn complains about any dependencies in `packages.json` not being installed (e.g. express), run `yarn install` to install them.
