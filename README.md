@@ -23,6 +23,7 @@ https://docs.docker.com/desktop/windows/install/
 - Run `yarn install` in both client and server directories to install dependencies.
 
 ## Server
+In the /server directory:
 Build:
 Run `docker-compose build` in the /server directory
 
@@ -30,6 +31,7 @@ Start:
 `docker-compose up` or `docker-compose up -d ` to run in the background. Add `--build` to build at the same time.
 Stop:
 `docker-compose down`
+If you ctrl+c then the images and volumes won't be removed.
 Clean restart:
 `docker rm -f $(docker ps -a -q)` (removes stopped containers)
 `docker volume rm $(docker volume ls -q)` (removes volumems)
