@@ -93,7 +93,7 @@ function App() {
                                 <Route path="/login" exact render={props => <LoginPage {...props} />} />
                                 <Route path="/register" exact render={props => <RegisterPage {...props} />} />
 
-                                <Redirect to="/" />
+                                {/*<Redirect to="/" />*/}
                             </>
                         }
 
@@ -106,7 +106,7 @@ function App() {
                                 <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
                                 <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
 
-                                <Redirect to="/home" />
+                                {/*<Redirect to="/home" />*/}
                             </>
                         }
 
