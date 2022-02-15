@@ -25,8 +25,15 @@ DROP TABLE IF EXISTS authToken CASCADE;
 CREATE TABLE authToken(
     token UUID PRIMARY KEY, --64-byte random string in hex 
     userID UUID NOT NULL REFERENCES users(userID),
+    
     timeCreated TIMESTAMP NOT NULL,
-    timeToLive INTERVAL NOT NULL
+    timeToLive INTERVAL NOT NULL,
+
+    kind CHAR(3) NOT NULL --Either 'acc' for access or 'ref' for refresh.
+
+    depracated BOOLEAN,
+
+    CONSTRAINT legalKind CHECK (kind = 'acc' OR kind = 'ref')
 );
 
 --Mentees/Mentors:
@@ -69,7 +76,7 @@ CREATE TABLE meeting (
 
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
-    meetingEnd TIMESTAMP,
+    meetingDuration INTERVAL,
     
     place VARCHAR(100),
 
