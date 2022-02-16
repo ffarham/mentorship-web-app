@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const saltRounds = 10; //10 should be enough
 const pool = require('../db');
+const { userInfo } = require('os');
 
 
 //Query to add user to users table and returns randomly-generated userID
@@ -84,23 +85,37 @@ async function checkEmailAndPassword(email, password) {
     return bcrypt.compare(password, hash);
 }
 
+/**
+ * Removes fields from user table in database that shouldn't be sent over networks
+ * 
+ * @param {object} databaseRecord The user's info as returned from the database 
+ * 
+ * @returns {object} The user's info with unneccesary fields missing as appropriate
+ */
+function convertUserInfo(databaseRecord) {
+    return {userID: databaseRecord.userid, name: databaseRecord.name, email: databaseRecord.email, department: databaseRecord.businessarea};
+}
+
 //Query to find a user's information given their email
-const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1';
+const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1 AND (type = $2 OR type = \'both\')';
 
 /**
  * Returns all user information of user with a given email as an object.
  * 
  * @param {string} email User's email
+ * @param {string} loggedInAs What type the user is logged in as
  * 
  * @throws {UserNotFoundError} Fails if it can't find a user with given email
  */
-async function getUserInfoFromEmail(email) {
+async function getUserInfoFromEmail(email, loggedInAs) {
     const result = await pool.query(findUserFromEmailQuery, [email]);
 
     if (result.rowCount === 0)
-        throw {name: 'UserNotFoundError', message: `Could not find user ${email}!`};
+        throw {name: 'UserNotFoundError', message: `Could not find user ${email} as a ${loggedInAs}.`};
 
-    return result.rows[0];
+    var userInfo = convertUserInfo(result.rows[0]);
+    userInfo.userType = loggedInAs;
+    return userInfo;
 }
 
 //Query to register an interest for a user
@@ -135,7 +150,7 @@ async function registerInterest(userID, interest, type) {
 }
 
 //Query to register a new auth token
-const registerAuthTokenQuery = 'INSERT INTO authToken VALUES ($1, $2, NOW(), $3, $4, FALSE)';
+const registerAuthTokenQuery = 'INSERT INTO authToken VALUES ($1, $2, NOW(), $3, $4, FALSE, $5)';
 
 /**
  * Registers a new auth token for a given user
@@ -143,19 +158,21 @@ const registerAuthTokenQuery = 'INSERT INTO authToken VALUES ($1, $2, NOW(), $3,
  * @param {string} userID User's ID
  * @param {string} timeToLive How long before the token expires
  * @param {string} type Either 'acc' for access or 'ref' for refresh
+ * @param {string} loggedInAs Either 'mentee' or 'mentor'
  * 
  * @returns The new auth token
  */
-async function registerToken(userID, timeToLive, type) {
+async function registerToken(userID, timeToLive, type, loggedInAs) {
     //Generate a securely random token
     const token = crypto.randomUUID();
+    console.log(loggedInAs);
 
     //Register the token in the database
     try { 
-        await pool.query(registerAuthTokenQuery, [token, userID, timeToLive, type]);
+        await pool.query(registerAuthTokenQuery, [token, userID, timeToLive, type, loggedInAs]);
     } catch (err) {
         //Handle any errors
-        if ((err.code === '23505') && (err.constraint === 'authtoken_userid_fkey')) {
+        if ((err.code === '23503') && (err.constraint === 'authtoken_userid_fkey')) {
             throw {name: 'UserNotFoundError', message: `Could not find user ${userID}`};
         } else {
             throw err;
@@ -167,7 +184,7 @@ async function registerToken(userID, timeToLive, type) {
 }
 
 //Query to return the user associated with a given access token if that token is valid
-const getUserFromTokenQuery = 'SELECT users.* FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE authToken.token = $1 AND authToken.type = \'acc\' AND (authToken.timeCreated + authToken.timeToLive) < NOW()';
+const getUserFromTokenQuery = 'SELECT users.*, authToken.loggedInAs FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE (authToken.token = $1) AND (authToken.kind = \'acc\') AND (authToken.timeCreated + authToken.timeToLive) > NOW()';
 
 /**
  * Gets a user's information given a valid access token.
@@ -184,11 +201,13 @@ async function getUserFromAccessToken(token) {
     if (result.rowCount === 0)
         throw {name: 'AccessTokenNotFoundError', message: 'Could not find valid access token'};
 
-    return result.rows[0];
+    var userInfo = convertUserInfo(result.rows[0]);
+    userInfo.userType = result.rows[0].loggedinas;
+    return userInfo;
 }
 
 //Query to return the user associated with a given access token if that token is valid
-const getUserFromRefreshTokenQuery = 'SELECT users.* FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE authToken.token = $1 and authToken.type = \'ref\' AND (authToken.timeCreated + authToken.timeToLive) < NOW()';
+const getUserFromRefreshTokenQuery = 'SELECT users.userID, authToken.loggedInAs FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE (authToken.token = $1) AND (authToken.type = \'ref\') AND (authToken.timeCreated + authToken.timeToLive) > NOW()';
 
 //Query to delete a refresh token
 const deleteAllTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
@@ -198,7 +217,7 @@ const deleteAllTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
  * 
  * @param {string} token UUID corresponding to a valid refresh token
  * 
- * @returns User information
+ * @returns {object} userID and userType of associated token
  * 
  * @throws {AccessTokenNotFoundError} Fails if a valid refresh token can't be found.
  */
@@ -214,9 +233,9 @@ async function getUserFromRefreshToken(token) {
 
     //Delete any tokens associated with this user
     const userID = result.rows[0].userID;
-    await pool.query(deleteRefreshTokenQuery, [userID]);
+    await pool.query(deleteAllTokensQuery, [userID]);
 
-    return result.rows[0];
+    return {userID: userID, userType: result.rows[0].loggedInAs};
 }
 
 
@@ -227,6 +246,7 @@ exports.getUserInfoFromEmail = getUserInfoFromEmail;
 exports.registerInterest = registerInterest;
 exports.registerToken = registerToken;
 exports.getUserFromAccessToken = getUserFromAccessToken;
+exports.getUserFromRefreshToken = getUserFromRefreshToken;
 
 //Informal Testing:
 async function main() {

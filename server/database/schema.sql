@@ -29,11 +29,14 @@ CREATE TABLE authToken(
     timeCreated TIMESTAMP NOT NULL,
     timeToLive INTERVAL NOT NULL,
 
-    kind CHAR(3) NOT NULL --Either 'acc' for access or 'ref' for refresh.
+    kind CHAR(3) NOT NULL, --Either 'acc' for access or 'ref' for refresh.
 
     depracated BOOLEAN,
 
-    CONSTRAINT legalKind CHECK (kind = 'acc' OR kind = 'ref')
+    loggedInAs CHAR(6) NOT NULL, --Either 'mentee' or 'mentor'
+
+    CONSTRAINT legalKind CHECK (kind = 'acc' OR kind = 'ref'),
+    CONSTRAINT legalLoggedInAs CHECK (loggedInAs = 'mentee' OR loggedInAs = 'mentor')
 );
 
 --Mentees/Mentors:

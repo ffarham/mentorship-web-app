@@ -8,35 +8,63 @@ const TOKEN_SECRET = '4a6c48ca3d2730d1c77c2ff9fc89ebbd15b1943a13736f552921421820
 const refreshTTL = '4800h';
 
 //Time to live for access tokens
-const accessTTL = '6h';
+const accessTTL = '5m';
 
-async function generateAccessToken(userID) {
+/**
+ * Generate a new access token for a given user
+ * 
+ * @param {string} userID userID of user to generate an access token for
+ * @param {string} loggedInAs Either mentee or mentor 
+ * 
+ * @returns {object} The access token in JWT format
+ */
+async function generateAccessToken(userID, loggedInAs) {
     try {
-        const token = await userInteractions.registerToken(userID, accessTTL, 'acc');
-        return jwt.sign(token, TOKEN_SECRET, accessTTL);
+        //Record new token in the database
+        const token = await userInteractions.registerToken(userID, accessTTL, 'acc', loggedInAs);
+
+        //Generate a new token that expires at the correct time
+        return jwt.sign({data: token}, TOKEN_SECRET, {expiresIn: accessTTL});
     } catch (err) { throw err; }
 }
 
-async function generateRefreshToken(userID) {
+/**
+ * Generate a new refresh token for a given user
+ * 
+ * @param {string} userID userID of user to generate a refresh token for
+ * @returns {object} The refresh token in JWT format 
+ */
+async function generateRefreshToken(userID, loggedInAs) {
     try {
-        const token = await userInteractions.registerToken(userID, refreshTTL, 'ref');
-        return jwt.sign(token, TOKEN_SECRET, refreshTTL);
+        //Record new token in the database
+        const token = await userInteractions.registerToken(userID, refreshTTL, 'ref', loggedInAs);
+        
+        //Generate a new token that expires at the correct time
+        return jwt.sign({data: token}, TOKEN_SECRET, {expiresIn: refreshTTL});
     } catch (err) { throw err; }
 }
 
+/**
+ * 
+ * 
+ * @param {*} token 
+ * @returns 
+ */
 async function decodeAccessToken(token) {
     //Decode the token
     var decoded;
     try {
-        decoded = jwt.verify(token, TOKEN_SECRET);
+        decoded = jwt.verify(token, TOKEN_SECRET).data;
+        console.log(decoded);
     } catch(err) {
+        //Throw an error if the token is invalid
         throw {name: 'InvalidTokenError', message: 'Attemped to decode an invalid token.'};
     }
     
     //Get user info
     var userInfo;
     try {
-        userInfo = await userInteractions.getUserFromToken(decoded);
+        userInfo = await userInteractions.getUserFromAccessToken(decoded);
     } catch(err) { throw err; }
 
     return userInfo;
@@ -46,31 +74,31 @@ async function decodeRefreshToken(token) {
     //Decode the token
     var decoded;
     try {
-        decoded = jwt.verify(token, TOKEN_SECRET);
+        decoded = jwt.verify(token, TOKEN_SECRET).data;
     } catch(err) {
         throw {name: 'InvalidTokenError', message: 'Attemped to decode an invalid token.'};
     }
 
-    var userInfo;
+    var user;
     var newAccToken;
-    var newRefToken
+    var newRefToken;
 
     //Get user info
     try {
-        userInfo = await userInteractions.getUserFromToken(decoded);
+        user = await userInteractions.getUserFromRefreshToken(decoded);
     } catch(err) { throw err; }
 
     //Generate a new access token
     try {
-        newAccToken = await generateAccessToken(userInfo.userID);
+        newAccToken = await generateAccessToken(user.userID, user.loggedInAs);
     } catch(err) { throw err; }
 
     //Generate a new refresh token
     try {
-        newRefToken = await generateRefreshToken(userInfo.userID);
+        newRefToken = await generateRefreshToken(user.userID, user.loggedInAs);
     } catch(err) { throw err; }
 
-    return {user: userInfo, accessToken: newAccToken, refreshToken: newRefToken}
+    return {accessToken: newAccToken, refreshToken: newRefToken};
 }
 
 //Module exports
