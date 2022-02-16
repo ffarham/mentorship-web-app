@@ -33,12 +33,35 @@ function App() {
 
     // initialise user state
     const [userState, setUserState] = useState({
-        loggedIn: false,
+        loggedIn: true,
         userID: 0,
         name: "",
         email: "",
         department: ""
     });
+
+    const [meetings, setMeetings] = useState([
+        {
+        id: 1,
+        text: 'Meeting with Mentor',
+        date: '15th March at 2:30',
+        },
+        {
+        id: 2,
+        text: 'Hello',
+        date: '17th December at 1:45',
+        },
+        {
+            id: 3,
+            text: 'Testing',
+            date: '12th June at 9:30',
+            },
+    ])
+
+    //checks if a array is emtpy
+    function isEmtpy(meetings) {
+        return Object.keys(meetings).length === 0;
+    }
 
     // when app is initialized
     // check if a user is already logged in and initialise context appropriatly
@@ -93,20 +116,20 @@ function App() {
                                 <Route path="/login" exact render={props => <LoginPage {...props} />} />
                                 <Route path="/register" exact render={props => <RegisterPage {...props} />} />
 
-                                <Redirect to="/" />
+                                {/*<Redirect to="/" />*/}
                             </>
                         }
 
                         {/* only give access to the routes below if user is logged in */}
                         {userState.loggedIn && 
                             <>
-                                <Route path="/home" exact render={props => <HomePage {...props} />} />
-                                <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
+                                <Route path="/home" exact render={props => <HomePage  meetings={meetings}  />} />
+                                <Route path="/meetings" exact render={props => <MeetingsPage/>} />
                                 <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
                                 <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
                                 <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
 
-                                <Redirect to="/home" />
+                                {/*<Redirect to="/home" />*/}
                             </>
                         }
 
