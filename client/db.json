@@ -1,0 +1,32 @@
+{
+  "notifications": [
+    {
+      "id": 1,
+      "text": "Group project 38 meeting",
+      "time": "12th Feb at 12:45",
+      "room": "CS:0.05"
+    },
+    {
+      "id": 2,
+      "text": "Expert lecture",
+      "time": "18th March at 18:00",
+      "room": "Ramphal building"
+    },
+    {
+      "id": 1,
+      "text": "Big reminder yes",
+      "time": "7th of June at 3:15",
+      "room": "MS:0.02"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

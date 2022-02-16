@@ -19,7 +19,7 @@ class HomePage extends React.Component {
                 <Container fluid="xl" className="m-5">
                     <Row>
                         <Col sm="12" md="8">
-                            <MeetingsPanel meetings = {this.props.meetings} />
+                            <MeetingsPanel />
                         </Col>
                         <Col sm="12" md="4">
                             <NotificationsPanel />

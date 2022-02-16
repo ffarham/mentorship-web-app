@@ -123,7 +123,7 @@ function App() {
                         {/* only give access to the routes below if user is logged in */}
                         {userState.loggedIn && 
                             <>
-                                <Route path="/home" exact render={props => <HomePage  meetings={meetings}  />} />
+                                <Route path="/home" exact render={props => <HomePage />} />
                                 <Route path="/meetings" exact render={props => <MeetingsPage/>} />
                                 <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
                                 <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />

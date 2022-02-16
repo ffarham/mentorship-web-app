@@ -1,12 +1,58 @@
-import React from "react";
-import {Card} from 'reactstrap';
+import React, { useState, useEffect, useContext } from "react";
+import {
+    Card
+} from 'reactstrap';
 
-class NotificationsPanel extends React.Component {
-    render () {
-        return <Card className="bg-secondary shadow border-0 px-2 py-5">
-            Notifications Panel
-        </Card>
-    }
+import api from "../api/api";
+import Notification from "./Notification";
+import { UserContext } from "../helpers/UserContext";
+
+
+
+function NotificationsPanel(){
+
+    const { userState } = useContext(UserContext);
+
+    const [ notifications, setNotifications ] = useState([]);   
+
+    //runs when panel gets initially mounted 
+
+    // useEffect( () => {
+    //     api
+    //         .get("http://localhost:5000/posts")
+    //         .then((res) => {
+    //             setNotifications(res.posts);   
+    //         });
+    // }, []);
+
+    useEffect(() => {
+        const getNotifications = async () => {
+          const NotificationsFromServer = await fetchNotifications()
+          setNotifications(NotificationsFromServer)
+        }
+    
+        getNotifications()
+      }, [])
+
+      // Fetch Notifications
+  const fetchNotifications = async () => {
+    const res = await fetch('http://localhost:5000/notifications')
+    const data = await res.json()
+
+    return data
+  }
+
+    return (
+        <>
+            <Card className="bg-secondary shadow border-0 px-2 py-5">
+            {notifications.map((notification) => (
+                <Notification data={notification} />
+                ))}
+
+            </Card>
+        </>
+    );
+    
 }
 
 export default NotificationsPanel;
