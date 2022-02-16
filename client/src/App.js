@@ -34,6 +34,7 @@ function App() {
     // initialise user state
     const [userState, setUserState] = useState({
         loggedIn: true,
+        userType: "mentee",
         userID: 0,
         name: "",
         email: "",
@@ -116,20 +117,20 @@ function App() {
                                 <Route path="/login" exact render={props => <LoginPage {...props} />} />
                                 <Route path="/register" exact render={props => <RegisterPage {...props} />} />
 
-                                {/*<Redirect to="/" />*/}
+                                {/* <Redirect to="/" /> */}
                             </>
                         }
 
                         {/* only give access to the routes below if user is logged in */}
                         {userState.loggedIn && 
                             <>
-                                <Route path="/home" exact render={props => <HomePage  meetings={meetings}  />} />
-                                <Route path="/meetings" exact render={props => <MeetingsPage/>} />
+                                <Route path="/home" exact render={props => <HomePage {...props}/>} />
+                                <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
                                 <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
                                 <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
                                 <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
 
-                                {/*<Redirect to="/home" />*/}
+                                {/* <Redirect to="/home" /> */}
                             </>
                         }
 
