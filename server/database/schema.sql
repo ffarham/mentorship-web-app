@@ -23,7 +23,7 @@ CREATE TABLE users (
 
 DROP TABLE IF EXISTS authToken CASCADE;
 CREATE TABLE authToken(
-    token UUID PRIMARY KEY, --64-byte random string in hex 
+    token UUID PRIMARY KEY,
     userID UUID NOT NULL REFERENCES users(userID),
     
     timeCreated TIMESTAMP NOT NULL,

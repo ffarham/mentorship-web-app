@@ -165,7 +165,6 @@ const registerAuthTokenQuery = 'INSERT INTO authToken VALUES ($1, $2, NOW(), $3,
 async function registerToken(userID, timeToLive, type, loggedInAs) {
     //Generate a securely random token
     const token = crypto.randomUUID();
-    console.log(loggedInAs);
 
     //Register the token in the database
     try { 
@@ -207,7 +206,7 @@ async function getUserFromAccessToken(token) {
 }
 
 //Query to return the user associated with a given access token if that token is valid
-const getUserFromRefreshTokenQuery = 'SELECT users.userID, authToken.loggedInAs FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE (authToken.token = $1) AND (authToken.type = \'ref\') AND (authToken.timeCreated + authToken.timeToLive) > NOW()';
+const getUserFromRefreshTokenQuery = 'SELECT users.userID, authToken.loggedInAs FROM authToken INNER JOIN users ON authToken.userID = users.userID WHERE (authToken.token = $1) AND (authToken.kind = \'ref\') AND (authToken.timeCreated + authToken.timeToLive) > NOW()';
 
 //Query to delete a refresh token
 const deleteAllTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
@@ -232,10 +231,10 @@ async function getUserFromRefreshToken(token) {
     }
 
     //Delete any tokens associated with this user
-    const userID = result.rows[0].userID;
+    const userID = result.rows[0].userid;
     await pool.query(deleteAllTokensQuery, [userID]);
 
-    return {userID: userID, userType: result.rows[0].loggedInAs};
+    return {userID: userID, userType: result.rows[0].loggedinas};
 }
 
 
