@@ -36,4 +36,5 @@ The stack being used is:
 - If `yarn install` complains about Python. Remove Python3 PATH in the system environment variables. Install Pyhton2 v2.7 and add the "C:\...\Python27" and "C:\...\Python27\Scripts" to the system environment variable PATH.
 - If yarn complains about nodemon not being installed, try running `yarn global add nodemon`.
 - If Powershell doesn't want to run yarn because it doesn't like scripts, open powershell as an administrator and run `Set-ExecutionPolicy Unrestricted`. 
+- If Postman is not getting a response and isn't saying why, turn off `SSL Certificate Verification` in settings.
 
