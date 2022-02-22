@@ -1,5 +1,10 @@
 import React from "react";
-import { Container, Row, Col, Card } from "reactstrap";
+import { 
+    Container, 
+    Row, 
+    Col, 
+    // Card 
+} from "reactstrap";
 
 import MainNavbar from "../components/Navs/MainNavbar.js";
 import MainFooter from "../components/Navs/MainFooter.js";

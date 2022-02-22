@@ -16,7 +16,7 @@ class MainFooter extends React.Component {
   render() {
     return (
       <>
-      <footer className=" footer fixed-bottom">
+      <footer className=" footer">
         <Container>
           <hr />
           <Row className=" align-items-center justify-content-md-between">

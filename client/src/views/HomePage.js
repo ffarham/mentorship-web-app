@@ -1,5 +1,10 @@
 import React from "react";
-import { Container, Row, Col, Card } from "reactstrap";
+import { 
+    Container,
+    Row, 
+    Col, 
+    // Card 
+} from "reactstrap";
 
 import MainNavbar from "../components/Navs/MainNavbar.js";
 import MainFooter from "../components/Navs/MainFooter.js";
@@ -14,14 +19,16 @@ class HomePage extends React.Component {
                 <Container fluid="xl" className="m-5">
                     <Row>
                         <Col sm="12" md="8">
-                            <MeetingsPanel />
+                            <MeetingsPanel meetings = {this.props.meetings} />
                         </Col>
                         <Col sm="12" md="4">
                             <NotificationsPanel />
                         </Col>
                     </Row>
                 </Container>
-                <MainFooter />
+                <div className="fixed-bottom">
+                    <MainFooter />
+                </div>
             </>
         );
     }

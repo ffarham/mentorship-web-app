@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-Install [Node.js](https://nodejs.org/en/download/). Check Node.js is installed by running `node -v` in terminal.  
+Install [Node.js v14](https://nodejs.org/download/release/v14.17.5/). Ensure you check the checkbox which lets the system install neccessary build tools. Check Node.js is installed by running `node -v` in terminal.  
   
-Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
+(Only back-end) Install [PostgreSQL](https://www.postgresql.org/download/). During installation, ensure the following holds for consistency:  
 - Username: postgres  
 - Password: postgres  
 - Default port: 5432  
@@ -13,19 +13,20 @@ Install [PostgreSQL](https://www.postgresql.org/download/). During installation,
 
 ### Docker:
 Enable virtualisation in your BIOS
-Go into Turn Windows Features On and Off` (search this in the start menu) and tick virtual machine platform, windows subsystem for linux and HyperV
+Go into **Turn Windows Features On and Off** (search this in the start menu) and tick virtual machine platform, windows subsystem for linux and HyperV
 Install Docker, and WSL if prompted:
 https://docs.docker.com/desktop/windows/install/
 
 
 ## Start-up
 - Run `npm install --global yarn` to install Yarn. Check Yarn is installed by running `yarn -v`.
-- Run `yarn install` in both client and server directories to install dependencies.
+- (Front-End) Run `yarn install` in client directory to install dependencies.
+- (Back-end) Run `yarn install` in server directory to install dependencies.
 
 ## Server
-In the /server directory:
+In the /backend directory:
 Build:
-Run `docker-compose build` in the /server directory
+Run `docker-compose build`
 
 Start: 
 `docker-compose up` or `docker-compose up -d ` to run in the background. Add `--build` to build at the same time.
@@ -51,14 +52,24 @@ You can connect to the server with https://localhost:5000 as usual
 ## Development
 The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting. 
 
+### Front-End
+- Run `yarn start` in client directory to launch the website on localhost:3000. 
+- Check client/src/index.js for implemented pages.
+
+### Back-End
+Run `yarn start` in server directory to get the server running.
+
 The stack being used is:  
 - [REACT](https://reactjs.org/docs/hello-world.html) 
 - Node.js + Express.js
 - PostgreSQL
-with Docker.
 
 ## Troubleshooting
-- If yarn complains about any dependencies in `packages.json` not being installed (e.g. express), run `yarn install` to install them.
+- If `yarn install` complains about Python. Remove Python3 PATH in the system environment variables. Install Pyhton2 v2.7 and add the "C:\...\Python27" and "C:\...\Python27\Scripts" to the system environment variable PATH.
 - If yarn complains about nodemon not being installed, try running `yarn global add nodemon`.
 - If Powershell doesn't want to run yarn because it doesn't like scripts, open powershell as an administrator and run `Set-ExecutionPolicy Unrestricted`. 
+- If Postman is not getting a response and isn't saying why, turn off `SSL Certificate Verification` in settings.
+
+
+
 
