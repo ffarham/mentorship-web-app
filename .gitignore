@@ -2,13 +2,7 @@
 
 # client
 client/node_modules
-client/.next
 
 # server
 # dependencies
-<<<<<<< HEAD
 backend/server/node_modules
-=======
-server/node_modules
-.gitignore
->>>>>>> master
