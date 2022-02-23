@@ -25,10 +25,10 @@ import {
 //         </>
 //     );
 // }
-const meetings = [
+const meetingRequests = [
         {
             id: 1,
-            name: 'Meeting w/ Andrew',
+            name: 'Meeting w/ Jamie',
             time: '21:00',
             location: 'Library',
             duration: '1h30',
@@ -36,39 +36,31 @@ const meetings = [
         },
         {
             id: 2,
-            name: 'Engineering Meeting',
+            name: 'Meeting w/ George',
             time: '11:00',
             location: 'FAB',
             duration: '2h30',
             description: 'text2',
-        },
-        {
-            id: 3,
-            name: 'Workshop',
-            time: '13:00',
-            location: 'Grid',
-            duration: '30 mins',
-            description: 'text3',
-        },
+        }
 ]
 
-function Meeting(){
+function MeetingRequest(){
     // const {id, name, time, location, duration, description} = meeting;
     return(
         <>
-        {meetings.map( (meeting) => (
+        {meetingRequests.map( (meetingReq) => (
             <Card body color="dark" outline>
                 <Row>
                     <Col>
                     {/* <Card className="meeting" key={meeting.id} color="dark" outline> */}
                         <h3>
-                            {meeting.name}:
+                            {meetingReq.name}:
                         </h3>
                         <Row>
-                            <Col><big><b>Time:</b> {meeting.time}</big></Col>
-                            <Col><big><b>Location:</b> {meeting.location}</big></Col>
-                            <Col><big><b>Duration:</b> {meeting.duration}</big></Col>
-                            <Col><big><b>Description:</b> {meeting.description}</big></Col>
+                            <Col><big><b>Time:</b> {meetingReq.time} </big></Col>
+                            <Col><big><b>Location:</b> {meetingReq.location} </big></Col>
+                            <Col><big><b>Duration:</b> {meetingReq.duration}</big></Col>
+                            <Col><big><b>Description:</b> {meetingReq.description}</big></Col>
                         </Row>
                     {/* </Card> */}
                     </Col>
@@ -79,4 +71,4 @@ function Meeting(){
     );
 }
 
-export default Meeting;
+export default MeetingRequest;

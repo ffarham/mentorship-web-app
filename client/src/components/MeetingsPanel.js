@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from "react";
 import {
-    Card
+    Card,
+    CardBody,
+    CardTitle,
+    CardText
 } from 'reactstrap';
 
 import api from "../api/api";
+// import axios from 'axios'
 import Meeting from "./Meeting";
 
-function MeetingsPanel() {
-
+ function MeetingsPanel() {
     // store of meetings
     const [meetings, setMeetings] = useState([]);   // meetings = []
 
-    // runs when the Panel is initially mounted
+    //runs when the Panel is initially mounted
     useEffect( () => {
         // api request to get all meetings
         api
-            .get("/api")
+            .get("/api/meeting")
             .then( (res) => {
                 if(res.data.meetings){
                     // updates the list of meetings in the meetings state
@@ -24,15 +27,25 @@ function MeetingsPanel() {
             });
 
     }, []);
-    
 
     return (
-        <>         
-            <Card className="bg-secondary shadow border-0 px-2 py-5">
-                {meetings.map((meeting) => <Meeting data={meeting} />)} 
+        <>        
+            <Card className="bg-secondary shadow border-0 px-2 py-5 text-center">
+                <CardBody>
+                    <CardTitle tag="h5" >
+                        <div className="btn-wrapper text-center">
+                                <h1>Meetings</h1>
+                        </div>
+                    </CardTitle>
+                    <CardText>
+                        <Meeting/>
+                         {/* {meetings.map((meeting) => <Meeting data={meeting} />)}  */}
+                    </CardText>
+                </CardBody>               
             </Card>
         </>  
     );
+    
 }
 
 export default MeetingsPanel;
