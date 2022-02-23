@@ -28,26 +28,30 @@ In the /backend directory:
 Build:
 Run `docker-compose build`
 
-Start: 
-`docker-compose up` or `docker-compose up -d ` to run in the background. Add `--build` to build at the same time.
-Stop:
-`docker-compose down`
-If you ctrl+c then the images and volumes won't be removed.
-Clean restart:
-`docker rm -f $(docker ps -a -q)` (removes stopped containers)
-`docker volume rm $(docker volume ls -q)` (removes volumems)
-View current containers: 
-`docker ps -al`
-View Current Images:
-`docker images`
-Remove image (not usually necessary):
-`docker rmi <imagename>`
-Remove any dangling images (run this if `docker images` displays images with a tag of <none>):
-`docker rmi $(docker images -f “dangling=true” -q)`
-Start and build the docker instance with a compose file not named 'docker-compose.yml':
-`docker-compose -f <filename> --build`
+Start:   
+`docker-compose up` or `docker-compose up -d ` to run in the background. Add `--build` to build at the same time.  
+Stop:  
+`docker-compose down`  
+If you ctrl+c then the images and volumes won't be removed.  
+Clean restart:  
+`docker rm -f $(docker ps -a -q)` (removes stopped containers)  
+`docker volume rm $(docker volume ls -q)` (removes volumems)  
+View current containers:  
+`docker ps -al`  
+View Current Images:  
+`docker images`  
+Remove image (not usually necessary):  
+`docker rmi <imagename>`  
+Remove any dangling images (run this if `docker images` displays images with a tag of <none>):  
+`docker rmi $(docker images -f “dangling=true” -q)`  
+Start and build the docker instance with a compose file not named 'docker-compose.yml':  
+`docker-compose -f <filename> --build`  
 
-You can connect to the server with https://localhost:5000 as usual
+### Database connection  
+Run:  
+`docker exec -it backend-db-1 psql -U postgres`  
+
+You can connect to the server with https://localhost:5000 as usual  
 
 ## Development
 The project follows the git model described [here](https://nvie.com/posts/a-successful-git-branching-model/). Ensure you have read and understood the model before starting. 
