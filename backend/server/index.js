@@ -13,17 +13,16 @@ const pool = require("./db");
 
 const home = require("./routes/homepage.js");
 
-const test = require("./routes/testing/jsonserver");
-
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 app.use("/", home);
 
-app.use("/api/v1", test);
 
 // ROUTES
 // e.g. app.use("/<route>", require("./routes/<filename>"))
+
+app.use("/api/v1", require("./routes/testing/jsonserver"));
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, () => {
