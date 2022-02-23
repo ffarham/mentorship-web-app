@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const userInteractions = require('../interactions/users');
+const userInteractions = require('../database/interactions/users');
 
 //Secret key for signing tokens
 const TOKEN_SECRET = '4a6c48ca3d2730d1c77c2ff9fc89ebbd15b1943a13736f552921421820c9059fe2faea884c20aa510b08f85e5f140d014593b552ba4a1cc71fb4ae8fcb70d17f';
