@@ -3,17 +3,18 @@ import {
     Card
 } from 'reactstrap';
 
+
 import api from "../api/api";
 import Notification from "./Notification";
 import { UserContext } from "../helpers/UserContext";
-
 
 
 function NotificationsPanel(){
 
     const { userState } = useContext(UserContext);
 
-    const [ notifications, setNotifications ] = useState([]);   
+    const [ notifications, setNotifications ] = useState([]);
+  
 
     //runs when panel gets initially mounted 
 
@@ -43,14 +44,13 @@ function NotificationsPanel(){
   }
 
     return (
-        <>
-            <Card className="bg-secondary shadow border-0 px-2 py-5">
-            {notifications.map((notification) => (
-                <Notification data={notification} />
-                ))}
 
-            </Card>
-        </>
+      <Card style={{padding:0, margin:0}}  className="bg-secondary shadow border-0 px-2 py-5">
+        <h3 >Notifications</h3>
+          {notifications.map((notification) => (
+              <Notification data={notification}/>
+              ))}
+      </Card>
     );
     
 }

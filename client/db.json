@@ -1,25 +1,37 @@
 {
   "notifications": [
     {
-      "id": 1,
-      "text": "Group project 38 meeting",
-      "time": "12th Feb at 12:45",
-      "room": "CS:0.05"
-    },
-    {
       "id": 2,
       "text": "Expert lecture",
       "time": "18th March at 18:00",
       "room": "Ramphal building"
     },
     {
-      "id": 1,
+      "id": 3,
       "text": "Big reminder yes",
       "time": "7th of June at 3:15",
       "room": "MS:0.02"
     }
   ],
-  "comments": [
+  "meetings": [
+    {
+      "id": 2,
+      "text": "Expert lecture",
+      "time": "18th March at 18:00",
+      "room": "Ramphal building",
+      "title": "Very important title",
+      "contents": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    },
+    {
+      "id": 3,
+      "text": "Big reminder yes",
+      "time": "7th of June at 3:15",
+      "room": "MS:0.02",
+      "title": "Very important title",
+      "contents": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    }
+  ],
+  "descriptions": [
     {
       "id": 1,
       "body": "some comment",
