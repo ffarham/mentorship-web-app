@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 
 const saltRounds = 10; //10 should be enough
 const pool = require('../db');
-const { userInfo } = require('os');
 
 
 //Query to add user to users table and returns randomly-generated userID
@@ -58,6 +57,8 @@ async function registerUser(email, name, password, businessArea, userType, profi
         //Execute query
         await pool.query(registerMentorQuery, [userID]);
     }
+
+    return userID;
 }
 
 

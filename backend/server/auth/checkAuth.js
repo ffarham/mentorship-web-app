@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const tokens = require('./tokens');
 
 async function checkAuth(req, res, next) {
-    const token = req.body.accessToken;
+    const token = req.get('x-auth-token');
     
     var userInfo;
     try {
@@ -10,10 +10,12 @@ async function checkAuth(req, res, next) {
     } catch (err) {
         if (err.name === 'InvalidTokenError') {
             //Send failure response to frontend
-            req.status(401).json(err);
+            res.status(403).json(err);
+            next('route');
         } else if (err.name === 'AccessTokenNotFoundError') {
             //Send failure response to frontend
-            req.status(401).json(err);
+            res.status(403).json(err);
+            next('route');
         } else {
             //Crash appropriately
             throw err;

@@ -45,9 +45,10 @@ async function generateRefreshToken(userID, loggedInAs) {
 }
 
 /**
+ * Decode a given access token and return the associated user info
  * 
- * @param {*} token 
- * @returns 
+ * @param {string} token The access token to decode
+ * @returns User information
  */
 async function decodeAccessToken(token) {
     //Decode the token
@@ -69,6 +70,12 @@ async function decodeAccessToken(token) {
     return userInfo;
 }
 
+/**
+ * Decode a given refresh token and return new access and refresh tokens
+ * 
+ * @param {string} token The refresh token to decode
+ * @returns New access and refresh tokens
+ */
 async function decodeRefreshToken(token) {
     //Decode the token
     var decoded;
@@ -90,15 +97,15 @@ async function decodeRefreshToken(token) {
 
     //Generate a new access token
     try {
-        newAccToken = await generateAccessToken(user.userID, user.loggedInAs);
+        newAccToken = await generateAccessToken(user.userID, user.userType);
     } catch(err) { throw err; }
 
     //Generate a new refresh token
     try {
-        newRefToken = await generateRefreshToken(user.userID, user.loggedInAs);
+        newRefToken = await generateRefreshToken(user.userID, user.userType);
     } catch(err) { throw err; }
 
-    return {accessToken: newAccToken, refreshToken: newRefToken};
+    return {newAccessToken: newAccToken, newRefreshToken: newRefToken};
 }
 
 //Module exports
