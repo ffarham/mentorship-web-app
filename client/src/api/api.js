@@ -3,23 +3,24 @@ import TokenService from "./tokenService";
 
 // initialise an instance
 const instance = axios.create({
-    baseURL: "http://localhost:5000"
+    baseURL: "https://localhost:5000/"
 });
 
 // runs before making a request call
 instance.interceptors.request.use(
-    (config) => {
-        // get access toke stored in local browser storage
-        const token = TokenService.getLocalAccessToekn();
-        if (token) {
+    (request) => {
+        // get access token stored in local browser storage
+        const accessToken = TokenService.getLocalAccessToken();
+        if (accessToken) {
             // add token to the request header
-            config.headers["x-auth-token"] = token;
+            request.headers["x-auth-token"] = accessToken;
         }
-        return config;
+        return request;
     },
     (error) => {
         return Promise.reject(error);
     }
+
 );
 
 // runs with response data

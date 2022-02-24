@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
 // design system css
@@ -30,15 +30,17 @@ import {UserContext} from "./helpers/UserContext";
 import api from "./api/api";
 
 function App() {
+    const state = localStorage.getItem("authState");
+    console.log(state);
+    // useEffect( () => {
+    //     localStorage.removeItem('authState');
+    // }, []);
 
-    // initialise user state
-    const [userState, setUserState] = useState({
-        loggedIn: false,
-        userID: 0,
-        name: "",
-        email: "",
-        department: ""
-    });
+    // const [userState, setUserState] = useState();
+    // // runs the passed function during rendering when userState value changes
+    // const userValue = useMemo( () => (
+    //     {userState, setUserState}
+    // ), [userState]);
 
     // when app is initialized
     // check if a user is already logged in and initialise context appropriatly
@@ -70,49 +72,42 @@ function App() {
     //             }
     //         });
     // }, []);
+
+    // check if user has access to home pages
+    function checkAccess(){
+        return true;
+    }
     
     return(
         <>
-            <UserContext.Provider value={ { userState, setUserState} }>
-                <Router>
-                    <Switch>    
-                        {/* argon routes */}
-                        <Route path="/argon" exact render={props => <Index {...props} />} />
-                        <Route path="/landing-page" exact render={props => <Landing {...props} />} />
-                        <Route path="/login-page" exact render={props => <Login {...props} />} />
-                        <Route path="/profile-page" exact render={props => <Profile {...props} />} />
-                        <Route path="/register-page" exact render={props => <Register {...props} />} />
+            <Router>
+                <Switch>    
+                    {/* argon routes */}
+                    <Route path="/argon" exact render={props => <Index {...props} />} />
+                    <Route path="/landing-page" exact render={props => <Landing {...props} />} />
+                    <Route path="/login-page" exact render={props => <Login {...props} />} />
+                    <Route path="/profile-page" exact render={props => <Profile {...props} />} />
+                    <Route path="/register-page" exact render={props => <Register {...props} />} />
 
-                        {/* Routes */}
-                        {/* TODO: could direct unknown URL to PageNotFound page displaying 404 error */}
+                    {/* Routes */}
+                    {/* TODO: could direct unknown URL to PageNotFound page displaying 404 error */}
 
-                        {/* only give access to the routes below if user is not logged in */}
-                        {!userState.loggedIn && 
-                            <>
-                                <Route path="/" exact render={props => <LandingPage {...props} />} />
-                                <Route path="/login" exact render={props => <LoginPage {...props} />} />
-                                <Route path="/register" exact render={props => <RegisterPage {...props} />} />
 
-                                <Redirect to="/" />
-                            </>
-                        }
+                    <Route path="/" exact render={props => <LandingPage {...props} />} />
+                    <Route path="/login" exact render={props => <LoginPage {...props}  />} />
+                    <Route path="/register" exact render={props => <RegisterPage {...props}  />} />
 
-                        {/* only give access to the routes below if user is logged in */}
-                        {userState.loggedIn && 
-                            <>
-                                <Route path="/home" exact render={props => <HomePage {...props} />} />
-                                <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
-                                <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
-                                <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
-                                <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
+                    {/* <Redirect to="/" /> */}
 
-                                <Redirect to="/home" />
-                            </>
-                        }
+                    <Route path="/home" exact render={props => <HomePage {...props} />} />
+                    <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
+                    <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
+                    <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
+                    <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
 
-                    </Switch>
-                </Router>
-            </UserContext.Provider>
+                    <Redirect to="/" />
+                </Switch>
+            </Router>
         </>
     );
 }

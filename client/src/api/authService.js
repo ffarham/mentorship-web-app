@@ -3,32 +3,23 @@ import api from "./api";
 import TokenService from "./tokenService";
 import { UserContext } from "../helpers/UserContext";
 
-// authenticate login call
+// login call auth handler
 const login = (data) => {
     return api
-        .post("/login", data)
+        .post("/testing", data)
         .then( (res) => {
-            // TODO: maybe chack for errors??? -> can improve if statement structure
+            // initialise returned tokens
+            TokenService.setLocalAccessToken(res.data.accessToken);
+            TokenService.setLocalRefreshToken(res.data.refreshToken);
 
-            // initialise tokens
-            if (res.data.accessToken && res.data.refreshToken) {
-                TokenService.setLocalAccessToken(res.data.accessToken);
-                TokenService.setLocalRefreshToken(res.data.refreshToken);
-            }
+            // initialise auth state
+            const authState = {
+                'userID': res.data.userID,
+                'userType': res.data.userType
+            };
+            localStorage.setItem('authState', JSON.stringify(authState));
 
-            // initialise user context
-            if (res.data.user) {
-                const { setUserState } = useContext(UserContext);
-                setUserState({
-                    loggedIn: true,
-                    userType: res.data.userType,
-                    userID: res.data.userID,
-                    name: res.data.name,
-                    email: res.data.email,
-                    department: res.data.department
-                });
-            }
-            return res.data;
+            return res;
         });
 };
 
@@ -39,11 +30,9 @@ const register = (data) => {
         .then( (res) => {
             // TODO: maybe handle errors??? -> can improve if statement structure
 
-            // initialise tokens
-            if (res.data.accessToken && res.data.refreshToken) {
-                TokenService.setLocalAccessToken(res.data.accessToken);
-                TokenService.setLocalRefreshToken(res.data.refreshToken);
-            }
+            // initialise auth state
+            TokenService.setLocalAccessToken(res.data.accessToken);
+            TokenService.setLocalRefreshToken(res.data.refreshToken);
 
             // initialise user context
             if (res.data.user) {
@@ -61,24 +50,20 @@ const register = (data) => {
         });
 };
 
-// handle logout call
+// logout call auth handler
 const logout = () => {
-    // reset values in user context
-    // const { setUserState } = useContext(UserContext);
-    // setUserState({
-    //     accessToken: "",
-    //     refreshToken: "",
-    //     loggedIn: false,
-    //     userType: "",   // mentor | mentee
-    //     userID: 0,
-    //     name: "",
-    //     email: "",
-    //     department: ""
-    // });
+    return api
+        .post("/logout")
+        .then( (res) => {
+                // remove tokens from local storage
+                TokenService.removeLocalAccessToken();
+                TokenService.removeLocalRefreshToken();
+            
+                // remove auth state
+                localStorage.removeItem('authState');
 
-    // remove tokens from local storage
-    TokenService.removeLocalAccessToken();
-    TokenService.removeLocalRefreshToken();
+                return res;
+        });
 }
 
 // object containing all services related to the authentication 
