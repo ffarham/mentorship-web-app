@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, Redirect } from "react-router-dom";
 
 // reactstrap components
 import {
@@ -27,8 +27,16 @@ function MainNavbar({ activeView }) {
     const handleLogout = async () => {
         try{
             // attempt to log user out
+            // get user id
+            const userID = JSON.parse(localStorage.getItem('authState')).userID;
+            const data = {'userID': userID}
+
             // on success, it should automatically redirect the user as authState will no longer exist
-            await AuthServices.logout();
+            const res = await AuthServices.logout(data);
+            
+            // redirect user to the landing page
+            window.location.href ="/login";
+
         } catch(error){
             console.log(error);
         }
@@ -74,13 +82,13 @@ function MainNavbar({ activeView }) {
                     {userType === "mentee" &&
                         <NavItem>
                         <NavLink href="" onClick={() => history.push("/plan-of-action")}>
-                        Plans of Actions
+                        {activeView === "plan-of-action" ? <span className="text-info">Plans of Actions</span> : <span>Plans of Actions</span>}
                         </NavLink>
                     </NavItem>
                     }
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/meetings")}}>
-                        Meetings
+                        {activeView === "meetings" ? <span className="text-info">Meetings</span> : <span>Meetings</span>}
                         </NavLink>
                     </NavItem>
                     <NavItem>
