@@ -11,11 +11,8 @@ router.post('/checkrefreshtoken', (req, res, next) => {
             next();
         })
         .catch((err) => {
-            //Catch errors in getUserFromRefreshToken, generateAccessToken, generateRefreshToken
-            if (err.name === 'InvalidTokenError') {
-                res.status(401).json(err);
-            }
-
+            //TODO: Catch errors in getUserFromRefreshToken, generateAccessToken, generateRefreshToken
+            res.status(401).json(err);
             next();
         })
 });

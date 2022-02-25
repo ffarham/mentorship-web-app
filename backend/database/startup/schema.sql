@@ -105,7 +105,7 @@ CREATE TABLE groupMeeting(
 
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
-    meetingEnd TIMESTAMP,
+    meetingDuration INTERVAL,
     
     place VARCHAR(100)
 );
