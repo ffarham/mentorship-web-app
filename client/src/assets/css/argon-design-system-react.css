@@ -12291,9 +12291,9 @@ a.btn-icon-only {
   min-width: 450px;
   border-radius: 0.3rem; }
 
-  .relative{
+  .footer-wrapper{
     position: relative;
-  }
+    }
 
 .footer {
   /* background: #f4f5f7; */
@@ -13394,7 +13394,7 @@ textarea[resize="horizontal"] {
 
 .progress-wrapper {
   position: relative;
-  padding-top: 1.5rem; }
+}
 
 .progress {
   height: 8px;
