@@ -3,82 +3,75 @@ import api from "./api";
 import TokenService from "./tokenService";
 import { UserContext } from "../helpers/UserContext";
 
-// authenticate login call
+// login call auth handler
 const login = (data) => {
     return api
-        .post("/login", data)
-        .then( (res) => {
-            // TODO: maybe chack for errors??? -> can improve if statement structure
+        .post("/api/v1/login", data)
+        .then( 
+        (res) => {
+            // initialise returned tokens
+            TokenService.setLocalAccessToken(res.data.accessToken);
+            TokenService.setLocalRefreshToken(res.data.refreshToken);
 
-            // initialise tokens
-            if (res.data.accessToken && res.data.refreshToken) {
-                TokenService.setLocalAccessToken(res.data.accessToken);
-                TokenService.setLocalRefreshToken(res.data.refreshToken);
-            }
+            // initialise auth state
+            const authState = {
+                'userID': res.data.userID,
+                'userType': res.data.userType
+            };
+            localStorage.setItem('authState', JSON.stringify(authState));
 
-            // initialise user context
-            if (res.data.user) {
-                const { setUserState } = useContext(UserContext);
-                setUserState({
-                    loggedIn: true,
-                    userType: res.data.userType,
-                    userID: res.data.userID,
-                    name: res.data.name,
-                    email: res.data.email,
-                    department: res.data.department
-                });
-            }
-            return res.data;
-        });
+            return res;
+        },
+        (error) => {
+            // user not find 500 status
+            // email-password error
+            // mentor/mentee error
+            console.log(error);
+        }
+        );
 };
 
 // authenticate register call
 const register = (data) => {
     return api
-        .post("/register", data)
-        .then( (res) => {
-            // TODO: maybe handle errors??? -> can improve if statement structure
+        .post("/api/v1/register", data)
+        .then( 
+            (res) => {
 
-            // initialise tokens
-            if (res.data.accessToken && res.data.refreshToken) {
+                // initialise tokens
                 TokenService.setLocalAccessToken(res.data.accessToken);
                 TokenService.setLocalRefreshToken(res.data.refreshToken);
+                
+                // initialise auth state
+                const authState = {
+                    'userID': res.data.userID,
+                    'userType': res.data.userType,
+                };
+                localStorage.setItem('authState', JSON.stringify(authState));
+                
+                return res;
+            },
+            (error) => {
+                return error;
             }
-
-            // initialise user context
-            if (res.data.user) {
-                const { setUserState } = useContext(UserContext);
-                setUserState({
-                    loggedIn: true,
-                    userType: res.data.userType,
-                    userID: res.data.userID,
-                    name: res.data.name,
-                    email: res.data.email,
-                    department: res.data.department
-                });
-            }
-            return res.data;
-        });
+        );
 };
 
-// handle logout call
-const logout = () => {
-    // reset values in user context
-    // const { setUserState } = useContext(UserContext);
-    // setUserState({
-    //     accessToken: "",
-    //     refreshToken: "",
-    //     loggedIn: false,
-    //     userType: "",   // mentor | mentee
-    //     userID: 0,
-    //     name: "",
-    //     email: "",
-    //     department: ""
-    // });
-
-    // remove tokens from local storage
-    TokenService.removeLocalAccessToken();
-    TokenService.removeLocalRefreshToken();
+// logout call auth handler
+const logout = async (data) => {
+    return await api
+        .post("/api/v1/logout", data)
+        .then( 
+            (res) => {
+                // remove tokens from local storage
+                TokenService.removeLocalAccessToken();
+                TokenService.removeLocalRefreshToken();
+            
+                // remove auth state
+                localStorage.removeItem('authState');
+                return res;
+            },
+        );
 }
 
 // object containing all services related to the authentication 
