@@ -32,10 +32,10 @@ function MainNavbar({ activeView }) {
             const data = {'userID': userID}
 
             // on success, it should automatically redirect the user as authState will no longer exist
-            const res = await AuthServices.logout(data);
+            const res = AuthServices.logout(data);
             
             // redirect user to the landing page
-            window.location.href ="/login";
+            history.push("/");
 
         } catch(error){
             console.log(error);

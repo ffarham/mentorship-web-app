@@ -6,8 +6,9 @@ import { UserContext } from "../helpers/UserContext";
 // login call auth handler
 const login = (data) => {
     return api
-        .post("/testing", data)
-        .then( (res) => {
+        .post("/api/v1/login", data)
+        .then( 
+        (res) => {
             // initialise returned tokens
             TokenService.setLocalAccessToken(res.data.accessToken);
             TokenService.setLocalRefreshToken(res.data.refreshToken);
@@ -20,50 +21,57 @@ const login = (data) => {
             localStorage.setItem('authState', JSON.stringify(authState));
 
             return res;
-        });
+        },
+        (error) => {
+            // user not find 500 status
+            // email-password error
+            // mentor/mentee error
+            console.log(error);
+        }
+        );
 };
 
 // authenticate register call
 const register = (data) => {
     return api
-        .post("/register", data)
-        .then( (res) => {
-            // TODO: maybe handle errors??? -> can improve if statement structure
+        .post("/api/v1/register", data)
+        .then( 
+            (res) => {
 
-            // initialise auth state
-            TokenService.setLocalAccessToken(res.data.accessToken);
-            TokenService.setLocalRefreshToken(res.data.refreshToken);
-
-            // initialise user context
-            if (res.data.user) {
-                const { setUserState } = useContext(UserContext);
-                setUserState({
-                    loggedIn: true,
-                    userType: res.data.userType,
-                    userID: res.data.userID,
-                    name: res.data.name,
-                    email: res.data.email,
-                    department: res.data.department
-                });
+                // initialise tokens
+                TokenService.setLocalAccessToken(res.data.accessToken);
+                TokenService.setLocalRefreshToken(res.data.refreshToken);
+                
+                // initialise auth state
+                const authState = {
+                    'userID': res.data.userID,
+                    'userType': res.data.userType,
+                };
+                localStorage.setItem('authState', JSON.stringify(authState));
+                
+                return res;
+            },
+            (error) => {
+                return error;
             }
-            return res.data;
-        });
+        );
 };
 
 // logout call auth handler
-const logout = () => {
-    return api
-        .post("/logout")
-        .then( (res) => {
+const logout = async (data) => {
+    return await api
+        .post("/api/v1/logout", data)
+        .then( 
+            (res) => {
                 // remove tokens from local storage
                 TokenService.removeLocalAccessToken();
                 TokenService.removeLocalRefreshToken();
             
                 // remove auth state
                 localStorage.removeItem('authState');
-
                 return res;
-        });
+            },
+        );
 }
 
 // object containing all services related to the authentication 

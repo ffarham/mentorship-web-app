@@ -8,14 +8,14 @@ const instance = axios.create({
 
 // runs before making a request call
 instance.interceptors.request.use(
-    (request) => {
+    (config) => {
         // get access token stored in local browser storage
         const accessToken = TokenService.getLocalAccessToken();
         if (accessToken) {
             // add token to the request header
-            request.headers["x-auth-token"] = accessToken;
+            config.headers["x-auth-token"] = accessToken;
         }
-        return request;
+        return config;
     },
     (error) => {
         return Promise.reject(error);
@@ -28,6 +28,7 @@ instance.interceptors.response.use(
     (res) => {
         return res;
     },
+    // any status code that falls outside the range 2xx triggers this function
     async (error) => {
         const originalConfig = error.config;
 
@@ -38,18 +39,20 @@ instance.interceptors.response.use(
                 originalConfig._retry = true;
                 
                 try{
+                    console.log("requesting new access token");
                     // call endpint to get new access token
                     // TODO: add endpoint URL
-                    const newRes = await instance.post("", {
+                    const newRes = await instance.post("/api/v1/checkrefreshtoken", {
                         refreshToken: TokenService.getLocalRefreshToken()
                     });
                     
                     // get new access token
-                    const { accessToken } = newRes.data;
+                    const { newAccessToken, newRefreshToken } = newRes.data;
 
                     // update new access token
-                    TokenService.setLocalAccessToken(accessToken);
-
+                    TokenService.setLocalAccessToken(newAccessToken);
+                    TokenService.setRefreshToken(newRefreshToken);
+                    
                     return instance(originalConfig);
 
                 }catch(_error){

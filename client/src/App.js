@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
 // design system css
@@ -24,59 +24,7 @@ import MentorshipPage from "views/MentorshipPage.js";
 import PlanOfActionsPage from "views/PlanOfActionsPage.js";
 import SettingsPage from "views/SettingsPage.js";
 
-// imports from helper directory
-import {UserContext} from "./helpers/UserContext";
-
-import api from "./api/api";
-
 function App() {
-    const state = localStorage.getItem("authState");
-    console.log(state);
-    // useEffect( () => {
-    //     localStorage.removeItem('authState');
-    // }, []);
-
-    // const [userState, setUserState] = useState();
-    // // runs the passed function during rendering when userState value changes
-    // const userValue = useMemo( () => (
-    //     {userState, setUserState}
-    // ), [userState]);
-
-    // when app is initialized
-    // check if a user is already logged in and initialise context appropriatly
-    // useEffect(() => {
-    //     api
-    //         .get("", {
-    //             headers: {
-    //                 // value is null if item does not exist
-    //                 accessToken: localStorage.getItem("accessToken")
-    //             }
-    //         })
-    //         .then((res) => {
-    //             if (res.data.error){
-    //                 // if accessToken doesn't exist
-    //                 // direct user to landing page: already done by default when app is loaded
-    //                 // handle error: set user logged in state to false
-    //                 setUserState( {...userState, loggedIn: false} );
-    //             } else {
-    //                 // if user is already logged in
-    //                 // direct them to home page here????
-    //                 // set user state to the returned user associated with the sent access token
-    //                 setUserState({
-    //                     loggedIn: true,
-    //                     userID: res.data.userID,
-    //                     name: res.data.name,
-    //                     email: res.data.email,
-    //                     department: res.data.department
-    //                 });
-    //             }
-    //         });
-    // }, []);
-
-    // check if user has access to home pages
-    function checkAccess(){
-        return true;
-    }
     
     return(
         <>
