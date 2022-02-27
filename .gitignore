@@ -2,7 +2,10 @@
 
 # client
 client/node_modules
+client/.next
 
 # server
 # dependencies
-server/node_modules
+backend/server/node_modules
+backend/server/db.js
+backend/server/routes/testing

@@ -1,7 +1,5 @@
-import { useContext } from "react";
 import api from "./api";
 import TokenService from "./tokenService";
-import { UserContext } from "../helpers/UserContext";
 
 // login call auth handler
 const login = (data) => {

@@ -1,0 +1,11 @@
+FROM postgres:14.1-alpine
+
+
+ENV NODE_ENV=production
+
+ENV POSTGRES_USER=postgres 
+ENV POSTGRES_PASSWORD=postgres
+
+WORKDIR /database
+
+COPY ./dummy_data /dummy_data

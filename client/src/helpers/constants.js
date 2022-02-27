@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export const themes = {
     light: {
         
@@ -11,4 +12,19 @@ export const themes = {
 
 // button sizes
 
+=======
+export const themes = {
+    light: {
+        
+    },
+    dark: {
+
+    }
+};
+
+// font sizes
+
+// button sizes
+
+>>>>>>> master
 // logo path
