@@ -18,7 +18,9 @@ import {
     PopoverBody,
     Badge
   } from "reactstrap";
-
+import {
+    Redirect
+} from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import api from "../api/api";
 import MainFooter from "../components/Navs/MainFooter.js";
@@ -40,20 +42,28 @@ function RegisterPage () {
 
     // maximum number of interests a user can select
     const maxInterests = 5;
-   
-    
-    // get the list of departments and topics
-    const [departments, setDepartments] = useState([]);
-    const [topics, setTopics] = useState([]);
-    useEffect( () => {
-        api.get("/api/v1/register").then(
-            (res) => {
-                console.log(res.data);
-                setDepartments(res.data.departments);  
-                setTopics(res.data.topics);    
-            }
-            );
-        }, []);
+
+     // get the list of departments and topics
+     const [departments, setDepartments] = useState([]);
+     const [topics, setTopics] = useState([]);
+     const [isLoggedIn, setIsLoggedIn] = useState(false);
+     useEffect( () => {
+         const authState = localStorage.getItem('authState');
+         // if user is already logged in
+         if (authState) {
+             setIsLoggedIn(true);
+         }
+         // if user is not already logged in
+         else{
+             api.get("/api/v1/register").then(
+                 (res) => {
+                     console.log(res.data);
+                     setDepartments(res.data.departments);  
+                     setTopics(res.data.topics);    
+                 }
+                 );
+         }
+         }, []);
         
     // filter the departments by user input
     const [filteredDepartments, setFilteredDepartments] = useState([]);
@@ -108,10 +118,16 @@ function RegisterPage () {
         }
         // if topic is already added in array
         else{
+            // remove it from array
             const newArray = activeTopics.slice();
             newArray.splice(i, 1);
             setActiveTopics(newArray);
         } 
+    }
+
+     // if user is already logged in, redirect user to home page
+     if (isLoggedIn) {
+        return <Redirect to="/home" />
     }
 
     // function to handle users register request
