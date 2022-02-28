@@ -3,7 +3,6 @@ import {
     Row,
     Col,
     Card,
-    Button,
     Progress
 } from 'reactstrap';
 

@@ -70,7 +70,7 @@ function RegisterPage () {
     const handleDepartmentChange = (e) => {
         const input = e.target.value;
         // if user input is empty, show all
-        if (input == ""){
+        if (input === ""){
             setFilteredDepartments(departments);
         }else{
             const filteredWords = departments.filter((value) => {
@@ -84,7 +84,7 @@ function RegisterPage () {
     const [filteredTopics, setFilteredTopics] = useState([]);
     const handleTopicChange = (e) => {
         const input = e.target.value;
-        if(input == ""){
+        if(input === ""){
             setFilteredTopics(topics);
         }else{
             const filteredWords = topics.filter((value) => {
@@ -133,6 +133,10 @@ function RegisterPage () {
     // function to handle users register request
     const handleRegister = () => {
         // TODO: validate user inputs
+
+        if(confirmPass !== pass){
+            // TODO: inform user confirm passowrd does not match password
+        }
 
         const data = {
             'name': name,
@@ -338,7 +342,7 @@ function RegisterPage () {
                                     </small>
                                 </Col>
                                 <Col sm="7">
-                                    {activeTopics.length == 0
+                                    {activeTopics.length === 0
                                     ? <small className="text-light">Select up to 5</small>
                                     : activeTopics.map( (topic) => {
                                         return(
@@ -488,7 +492,7 @@ function RegisterPage () {
                             </div>
                             <a
                                 className="text-light"
-                                href=""
+                                href="#pablo"
                                 onClick={() => history.push("/login")}
                                 >
                                 <small className="text-primary">Login</small>
