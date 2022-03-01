@@ -53,7 +53,8 @@ CREATE TABLE mentor (
 DROP TABLE IF EXISTS mentoring CASCADE;
 CREATE TABLE mentoring (
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID)
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    PRIMARY KEY (mentorID, menteeID)
 );
 
 --Interests:
@@ -68,6 +69,7 @@ CREATE TABLE interest (
     userID UUID NOT NULL REFERENCES users(userID),
     interest VARCHAR(100) NOT NULL REFERENCES interestType(interest),
     kind CHAR(6), --Either 'mentee' or 'mentor'
+    rnk INTEGER NOT NULL,
 
     CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor')
 );

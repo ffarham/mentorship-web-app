@@ -16,6 +16,8 @@ const home = require("./routes/homepage.js");
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 
+const available = require('./matching/matchable');
+
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
@@ -31,6 +33,15 @@ app.use("/api/v1", require("./routes/login"));
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {
-    console.log("Server is running...")
-    console.log("Listening on port 5000!\n")
+    console.log("Server is running...");
+    console.log("Listening on port 5000!\n");
+    await pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson' OR name = 'Your Father'")
+        .then(result => {
+            let ids = []
+            for(let i = 0; i < result.rowCount; ++i){
+                ids.push(result.rows[i]["userid"]);
+            }
+            available.createMatches(ids);
+        }, 
+            result => {console.log("No such user exists")});
 });
