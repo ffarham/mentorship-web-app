@@ -3,23 +3,24 @@ import TokenService from "./tokenService";
 
 // initialise an instance
 const instance = axios.create({
-    baseURL: "http://localhost:5000"
+    baseURL: "https://localhost:5000/"
 });
 
 // runs before making a request call
 instance.interceptors.request.use(
     (config) => {
-        // get access toke stored in local browser storage
-        const token = TokenService.getLocalAccessToekn();
-        if (token) {
+        // get access token stored in local browser storage
+        const accessToken = TokenService.getLocalAccessToken();
+        if (accessToken) {
             // add token to the request header
-            config.headers["x-auth-token"] = token;
+            config.headers["x-auth-token"] = accessToken;
         }
         return config;
     },
     (error) => {
         return Promise.reject(error);
     }
+
 );
 
 // runs with response data
@@ -27,6 +28,7 @@ instance.interceptors.response.use(
     (res) => {
         return res;
     },
+    // any status code that falls outside the range 2xx triggers this function
     async (error) => {
         const originalConfig = error.config;
 
@@ -37,18 +39,20 @@ instance.interceptors.response.use(
                 originalConfig._retry = true;
                 
                 try{
+                    console.log("requesting new access token");
                     // call endpint to get new access token
                     // TODO: add endpoint URL
-                    const newRes = await instance.post("", {
+                    const newRes = await instance.post("/api/v1/checkrefreshtoken", {
                         refreshToken: TokenService.getLocalRefreshToken()
                     });
                     
                     // get new access token
-                    const { accessToken } = newRes.data;
+                    const { newAccessToken, newRefreshToken } = newRes.data;
 
                     // update new access token
-                    TokenService.setLocalAccessToken(accessToken);
-
+                    TokenService.setLocalAccessToken(newAccessToken);
+                    TokenService.setRefreshToken(newRefreshToken);
+                    
                     return instance(originalConfig);
 
                 }catch(_error){

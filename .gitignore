@@ -6,5 +6,6 @@ client/.next
 
 # server
 # dependencies
-server/node_modules
-.gitignore
+backend/server/node_modules
+backend/server/db.js
+backend/server/routes/testing
