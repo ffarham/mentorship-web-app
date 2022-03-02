@@ -9,9 +9,9 @@ router.get("/login", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
     //Pull out user info from request
-    const userEmail = req.email;
-    const userPassword = req.password;
-    const userType = req.userType;
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
+    const userType = req.body.userType;
 
     try {
         //Validate the email and password
@@ -20,13 +20,30 @@ router.post("/login", async (req, res, next) => {
             const userInfo = userInteractions.getUserInfoFromEmail(userEmail);
 
             //Generate tokens
-            const accessToken = tokens.generateAccessToken(userInfo.userID, userType);
-            const refreshToken = tokens.generateRefreshToken(userInfo.userID, userType);
+            const accToken = tokens.generateAccessToken(userInfo.userID, userType);
+            const refToken = tokens.generateRefreshToken(userInfo.userID, userType);
+
+            //Throw an error if the user isn't a userType
+            //Check if user is present in the appropriate database table
+            var result;
+            if (userType === 'mentee') {
+                result = await pool.query("SELECT * FROM mentee WHERE menteeID = $1", [userInfo.userID]);
+            } else if (userType === 'mentor') {
+                result = await pool.query("SELECT * FROM mentor WHERE mentorID = $1", [userInfo.userID]);
+            }
+
+            //Throw an error if the query didn't find anything
+            if (result.rowCount === 0) {
+                res.status(500).json({name: 'LoginFailureError', message: `User is not a ${userType}`});
+            }
 
             //Format and send response
-            var responseObject = userInfo;
-            responseObject.accessToken = accessToken;
-            responseObject.refreshToken = refreshToken;
+            const responseObject = {
+                userID: userInfo.userID,
+                userType: userInfo.userType,
+                accessToken: accToken,
+                refreshToken: refToken,
+            };
 
             res.json(responseObject);
         } else {

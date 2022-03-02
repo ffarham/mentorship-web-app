@@ -24,6 +24,8 @@ const registerMentorQuery = 'INSERT INTO mentor VALUES ($1)';
  * @param {string} profilePicReference Directory to user's profile picture
  * @param {boolean} emailsAllowed True if user gives us permission to send them emails, false otherwise
  * 
+ * @returns {string} The userID of the user just generated.
+ * 
  * @throws {EmailAlreadyUsedError} Fails if email is already associated with another account 
  */
 async function registerUser(email, name, password, businessArea, userType, profilePicReference, emailsAllowed) {    

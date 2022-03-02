@@ -19,15 +19,16 @@ const tokens = require('./auth/tokens');
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
-app.use("/", home);
 
 
 // ROUTES
 // e.g. app.use("/<route>", require("./routes/<filename>"))
 
-app.use("/api/v1", require("./routes/testing/jsonserver"));
+app.use("/", home);
+app.use("/api/v1", require("./routes/testing/jsonserver")); //Dummy data server
 app.use("/api/v1", require("./routes/checkRefreshToken"));
 app.use("/api/v1", require("./routes/login"));
+app.use("/api/v1", require("./routes/registerNewUser"));
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {

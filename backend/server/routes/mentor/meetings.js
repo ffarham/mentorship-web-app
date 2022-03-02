@@ -13,7 +13,7 @@ router.get("/mentor/:mentorid/meetings/reqs", (req, res) =>{
 
 // Currently scheduled meetings
 router.get("/mentor/:mentorid/meetings/schedule", (req, res) =>{
-
+    
 });
 
 
