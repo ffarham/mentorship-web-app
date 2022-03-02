@@ -14,19 +14,19 @@ import Meeting from "./Meeting";
     // store of meetings
     const [meetings, setMeetings] = useState([]);   // meetings = []
 
-    //runs when the Panel is initially mounted
-    useEffect( () => {
-        // api request to get all meetings
-        api
-            .get("/api/meeting")
-            .then( (res) => {
-                if(res.data.meetings){
-                    // updates the list of meetings in the meetings state
-                    setMeetings(res.data.meetings);
-                }
-            });
+    // //runs when the Panel is initially mounted
+    // useEffect( () => {
+    //     // api request to get all meetings
+    //     api
+    //         .get("/api/meeting")
+    //         .then( (res) => {
+    //             if(res.data.meetings){
+    //                 // updates the list of meetings in the meetings state
+    //                 setMeetings(res.data.meetings);
+    //             }
+    //         });
 
-    }, []);
+    // }, []);
 
     return (
         <>        
@@ -34,11 +34,13 @@ import Meeting from "./Meeting";
                 <CardBody>
                     <CardTitle tag="h5" >
                         <div className="btn-wrapper text-center">
-                                <h1>Meetings</h1>
+                                <h2>Meetings</h2>
                         </div>
                     </CardTitle>
                     <CardText>
+                        <div className="scrolling">
                         <Meeting/>
+                        </div>
                          {/* {meetings.map((meeting) => <Meeting data={meeting} />)}  */}
                     </CardText>
                 </CardBody>               

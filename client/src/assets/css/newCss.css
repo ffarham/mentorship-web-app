@@ -17,7 +17,7 @@
     justify-content: space-between;
   }
 
-  .btn {
+  /* .btn {
     display: inline-block;
     background: blue;
     color: #fff;
@@ -28,6 +28,42 @@
     cursor: pointer;
     text-decoration: none;
     font-size: 15px;
+    font-family: inherit;
+  } */
+
+  /* 3 bottom buttons */
+  .btn.popReq {
+    display: inline-block;
+    /* background: white; */
+    /* border-left: 5px solid green; */
+    /* color: black;  */
+    border: none;
+    padding: 20px 10px; 
+    margin: 5px;
+    /* margin-right: 15px; */
+    /* margin-left: 10px;   */
+    height: 100px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    font-family: inherit;
+  } 
+
+/* Meeting request Buttons */
+  .btn.pop {
+    display: inline-block;
+    /* background: pink; */
+    color: #fff;
+    border: none;
+    padding: 7px 2px;
+    margin: 15px;
+    /* margin-right: 25px; */
+    /* margin-left:10px; */
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
     font-family: inherit;
   }
   
@@ -42,4 +78,13 @@
   .btn-block {
     display: block;
     width: 100%;
+  }
+
+  .scrolling {
+      overflow-y: scroll;
+      height: 300px;
+      /* white-space: nowrap; */
+      /* html {
+          scroll-behaviour: smooth;
+      } */
   }

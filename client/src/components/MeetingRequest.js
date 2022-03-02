@@ -4,9 +4,16 @@ import { useState, useEffect } from "react";
 import {
     Card,
     Row,
-    Col
+    Col,
+    Button,
+    UncontrolledPopover,
+    PopoverHeader,
+    PopoverBody
 } from "reactstrap";
 
+import Modals from "./Modals"
+import ModalsView from "./ModalsView"
+import ModalsTester from "./ModalsTester";
 // function Meeting( {meeting} ){
 
     // const {id, name, time, location, duration, description} = meeting;
@@ -32,7 +39,7 @@ const meetingRequests = [
             time: '21:00',
             location: 'Library',
             duration: '1h30',
-            description: 'text1',
+            description: 'Vivamus felis lorem, laoreet ac blandit at, volutpat vitae massa. Cras congue orci sit amet placerat blandit. Curabitur mollis gravida dolor, sed auctor arcu pharetra in. Vivamus magna diam, lobortis quis elit a, mattis rutrum diam. Fusce imperdiet magna quam, a vestibulum justo blandit sed.',
         },
         {
             id: 2,
@@ -40,7 +47,7 @@ const meetingRequests = [
             time: '11:00',
             location: 'FAB',
             duration: '2h30',
-            description: 'text2',
+            description: 'Nulla faucibus convallis magna, sit amet pellentesque magna feugiat vitae. Donec venenatis egestas rhoncus. Curabitur consectetur vel tortor vitae placerat. Morbi non ornare turpis. In convallis quam est, sed laoreet nulla rhoncus eu. Proin aliquam nisl ut vehicula tincidunt.',
         }
 ]
 
@@ -49,23 +56,38 @@ function MeetingRequest(){
     return(
         <>
         {meetingRequests.map( (meetingReq) => (
-            <Card body color="dark" outline>
-                <Row>
-                    <Col>
-                    {/* <Card className="meeting" key={meeting.id} color="dark" outline> */}
-                        <h3>
-                            {meetingReq.name}:
-                        </h3>
-                        <Row>
-                            <Col><big><b>Time:</b> {meetingReq.time} </big></Col>
-                            <Col><big><b>Location:</b> {meetingReq.location} </big></Col>
-                            <Col><big><b>Duration:</b> {meetingReq.duration}</big></Col>
-                            <Col><big><b>Description:</b> {meetingReq.description}</big></Col>
-                        </Row>
-                    {/* </Card> */}
-                    </Col>
-                </Row>
-            </Card>
+            // <Card body color="dark" outline>
+            //     <Row>
+            //         <Col>
+            //             <h3>
+            //                 {meetingReq.name}:
+            //             </h3>
+            //             <Row>
+            //                 <Col><big><b>Time:</b> {meetingReq.time} </big></Col>
+            //                 <Col><big><b>Location:</b> {meetingReq.location} </big></Col>
+            //                 <Col><big><b>Duration:</b> {meetingReq.duration}</big></Col>
+
+                           // {/* Accept or Reschedule options for Meeting requests */}
+                           <>
+                           <Col>
+                            <ModalsTester {...meetingReq} title="Meeting Description" info={meetingReq.description} />
+                           </Col>
+                            {/* <Col>
+                                <ModalsView name="Description" info={meetingReq.description} title="Description of meeting:" />
+                            </Col> */}
+                            <Col>
+                                <Row className="xs-2"> 
+                                    <ModalsView name="Accept" info="Thank you for accepting the meeting" title="The meeting is now accepted!"/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <Modals name="Reschedule" />
+                                </Row>
+                            </Col>
+                            <br></br>
+                           </>
+            //             </Row>
+            //         </Col>
+            //     </Row>
+            // </Card>
             ))}
         </>
     );

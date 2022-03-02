@@ -4,8 +4,14 @@ import { useState, useEffect } from "react";
 import {
     Card,
     Row,
-    Col
+    Col,
+    Button,
+    UncontrolledPopover,
+    PopoverHeader,
+    PopoverBody
 } from "reactstrap";
+
+import ModalsTester from "./ModalsTester";
 
 // function Meeting( {meeting} ){
 
@@ -25,6 +31,27 @@ import {
 //         </>
 //     );
 // }
+
+//.........
+
+// const [meetings, setMeetings] = useState([]);
+
+// useEffect( () => {
+//     const getMeetings = async () => {
+//         const MeetingsFromServer = await fetchMeetings()
+//         setMeetings(MeetingsFromServer)
+//     }
+
+//     getMeetings()
+// }, [])
+
+// // Fetch Meetings
+// const fetchMeetings = async () => {
+//     const res = await fetch('http://localhost:5000/meetings')
+//     const data = await res.json()
+
+//     return data;
+// }
 const meetings = [
         {
             id: 1,
@@ -32,7 +59,7 @@ const meetings = [
             time: '21:00',
             location: 'Library',
             duration: '1h30',
-            description: 'text1',
+            description: 'Library meeting will happen at the second floor',
         },
         {
             id: 2,
@@ -40,7 +67,7 @@ const meetings = [
             time: '11:00',
             location: 'FAB',
             duration: '2h30',
-            description: 'text2',
+            description: 'eng: Lorem ipsum',
         },
         {
             id: 3,
@@ -48,8 +75,24 @@ const meetings = [
             time: '13:00',
             location: 'Grid',
             duration: '30 mins',
-            description: 'text3',
+            description: 'This Worksop will take place at  ... ',
         },
+        // {
+        //     id: 3,
+        //     name: 'Workshop',
+        //     time: '13:00',
+        //     location: 'Grid',
+        //     duration: '30 mins',
+        //     description: 'text3',
+        // },
+        // {
+        //     id: 3,
+        //     name: 'Workshop',
+        //     time: '13:00',
+        //     location: 'Grid',
+        //     duration: '30 mins',
+        //     description: 'text3',
+        // }
 ]
 
 function Meeting(){
@@ -57,23 +100,31 @@ function Meeting(){
     return(
         <>
         {meetings.map( (meeting) => (
-            <Card body color="dark" outline>
-                <Row>
-                    <Col>
-                    {/* <Card className="meeting" key={meeting.id} color="dark" outline> */}
-                        <h3>
-                            {meeting.name}:
-                        </h3>
-                        <Row>
-                            <Col><big><b>Time:</b> {meeting.time}</big></Col>
-                            <Col><big><b>Location:</b> {meeting.location}</big></Col>
-                            <Col><big><b>Duration:</b> {meeting.duration}</big></Col>
-                            <Col><big><b>Description:</b> {meeting.description}</big></Col>
-                        </Row>
-                    {/* </Card> */}
-                    </Col>
-                </Row>
-            </Card>
+            // <Card key ={meeting.id} body color="dark" outline>
+                // {/* <Row> */}
+                    // {/* <Col> */}
+                    // {/* <Card className="meeting" key={meeting.id} color="dark" outline> */}
+                        // {/* <h3>
+                            // {meeting.name}:
+                        // </h3> */}
+                        // <Row>
+                        <Col>
+                            <ModalsTester {...meeting} title="Meeting Description" info={meeting.description} />
+                            <br></br>
+                        </Col>
+                        // {/* </Row> */}
+                            // {/* <ModalsTester name={meeting.location} />
+                            // <ModalsTester name={meeting.duration} />
+                            // <ModalsTester name={meeting.description} /> */}
+                            // {/* <Col><big><b>Time:</b> {meeting.time}</big></Col>
+                            // <Col><big><b>Location:</b> {meeting.location}</big></Col>
+                            // <Col><big><b>Duration:</b> {meeting.duration}</big></Col>
+                            // <Col> <ButtonComp key={meeting.id} meeting={meeting.description} />  </Col>            */}
+                        // </Row>
+                    // {/* </Card> */}
+                    // {/* </Col> */}
+                // {/* </Row> */}
+            // {/* </Card> */}
             ))}
         </>
     );
