@@ -16,12 +16,31 @@ const mentorQuery = "" +
 
 
 const menteeQuery = "" + 
-"select userid, name, businessarea, email FROM (" + 
+"SELECT userid, name, businessarea, email FROM (" + 
 "SELECT userid, name, businessarea, email FROM users " +
 "JOIN (SELECT COUNT(menteeID) num, menteeID FROM " +
     "mentoring GROUP BY menteeID HAVING COUNT(menteeID) < 5) mentees ON userid = mentees.menteeID) users WHERE userid = $1";
 
+const matchCountQuery = "" +
+"select menteeid, mentorid, count(*) from " +
+"(select menteeInterests.userid as menteeid, mentorInterests.userid as mentorid from " +
+"(select mentees.userid, mentees.name, interest.interest from " +
+"(select userid, name FROM users join mentee on userid = menteeid) mentees " +
+    "join interest " + 
+    "on mentees.userid = interest.userid) menteeInterests " +
+        "join (select mentors.userid, mentors.name, interest.interest from " +
+        "(select userid, name FROM users join mentor on userid = mentorid) mentors " +
+            "join interest " + 
+            "on mentors.userid = interest.userid) mentorInterests " +
+        "ON menteeInterests.interest = mentorInterests.interest) interestMatches " +
+            "GROUP BY menteeid, mentorid";
+
+
 const userInterests = "SELECT interest, rnk FROM interest WHERE userid = $1 AND kind = $2";
+
+const menteeQueue = [];
+const flagQueue = [];
+let pollCount = 0;
 
 class Tuple {
     constructor(first, second){
@@ -33,6 +52,22 @@ class Tuple {
     }
 }
 
+class Flag { 
+    constructor(mentee){
+        this.flag = 0;
+        this.mentee = mentee;
+    }
+    setFlag(){
+        this.flag = 1;
+    }
+    isFlagSet(){
+        return this.flag == 1;
+    }
+    getMentee(){
+        return this.mentee;
+    }
+}
+
 class User {
     constructor(userid, name, bArea, email, interests){
         this.userid = userid;
@@ -41,8 +76,10 @@ class User {
         this.email = email;
         this.interests = interests;
         this.interestMap = new Map();
-        for(let i = 0; i < interests.length; ++i){
-            this.interestMap.set(interests[i].second, null);
+        if(interests != null){
+            for(let i = 0; i < interests.length; ++i){
+                this.interestMap.set(interests[i].second, null);
+            }
         }
     }
     toString(){
@@ -78,15 +115,15 @@ async function getInterests(userid, kind){
     return interestArray;
 }
 
-async function createMenteeObj(userid){
-    const menteeResults = await pool.query(menteeQuery, [userid]);
+async function createMenteeObj(mentee){
+    const menteeResults = await pool.query(menteeQuery, [mentee.userid]);
     if(menteeResults.rowCount === 0){
         throw {name: 'MenteeUnavailableError', message: 'Mentee unavailable!'};
     }
     let rows = menteeResults.rows;
     let interests = await getInterests(menteeResults.rows[0]["userid"], "mentee");
     // interests.map(a => {return a}
-    let mentee = new Mentee(rows[0]["userid"], rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
+    mentee = new Mentee(mentee.userid, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
     return mentee;
 }
 
@@ -105,13 +142,32 @@ async function getAvailableMentors(){
     return mentors;
 }
 
+
+
+
+
 var AvailablePersons = {
-async createMatches(userids){
+async addMentee(flag){
+    menteeQueue.push(flag.getMentee());
+    console.log(menteeQueue[menteeQueue.length-1].userid);
+    flagQueue.push(flag);
+
+},                    
+async pollMatching(){
+    console.log("pollCount: " + pollCount);
+    ++pollCount;      
+    if((menteeQueue.length > 1 || pollCount === 3) && menteeQueue.length > 0){
+        pollCount = 0;
+        startTime = new Date();
+        this.createMatches(menteeQueue.splice(0, 2), flagQueue.splice(0, 2));
+    }    
+},
+async createMatches(menteeObjects, flags){
     const mentors = await getAvailableMentors();
     const mentees =  []; 
     
-    for(let i = 0; i < userids.length; ++i){
-        mentees.push(await createMenteeObj(userids[i]));//createMenteeObj(userid);
+    for(let i = 0; i < menteeObjects.length; ++i){
+        mentees.push(await createMenteeObj(menteeObjects[i]));//createMenteeObj(userid);
     }
 
     console.log("mentors: " + mentors);
@@ -180,7 +236,7 @@ async createMatches(userids){
             }
             //Assign the mentor to a mentee. Rank the mentor by their interest which is ranked
             //highest by the mentee.
-            //Assign the mentor's 
+            //Assign the mentor's probably delete this. 
             if(topMentee.second != null){
                 let rank = 6;
                 mentee_T = menteeArray[topMentee.second];
@@ -228,6 +284,12 @@ async createMatches(userids){
     }while(assignedMentors != menteeArray.length * mentorsToAssign.length);
 
     console.log("Finished!");
+    //Sort the result
+    for(let i = 0; i < menteeArray.length; ++i){
+        menteeArray[i].second.sort();
+        flags[i].setFlag();
+        console.log(flags[i].mentee.name + "'s flag: " + flags[i].flag);
+    }
     for(let i = 0; i < menteeArray.length; ++i){
         console.log(menteeArray[i].first + ":");
         for(let j = 0; j < menteeArray[i].second.length; ++j){
@@ -235,9 +297,10 @@ async createMatches(userids){
                 menteeArray[i].second[j].first);
         }
     }
+    return menteeArray;
 }
 
 
 }
 
-module.exports = AvailablePersons;
+module.exports = {AvailablePersons, Mentee, Flag};

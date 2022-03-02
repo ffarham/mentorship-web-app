@@ -16,7 +16,9 @@ const home = require("./routes/homepage.js");
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 
-const available = require('./matching/matchable');
+const available = require('./matching/matchable').AvailablePersons;
+const Flag = require('./matching/matchable').Flag;
+const Mentee = require('./matching/matchable').Mentee;
 
 // MIDDLEWARE
 app.use(cors());
@@ -35,7 +37,8 @@ app.use("/api/v1", require("./routes/login"));
 httpsServer.listen(5000, async () => {
     console.log("Server is running...");
     console.log("Listening on port 5000!\n");
-    await pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson' OR name = 'Your Father'")
+
+    /*pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson' OR name = 'Your Father'")
         .then(result => {
             let ids = []
             for(let i = 0; i < result.rowCount; ++i){
@@ -44,4 +47,29 @@ httpsServer.listen(5000, async () => {
             available.createMatches(ids);
         }, 
             result => {console.log("No such user exists")});
+    */
+    let resultsArray = [];
+    setInterval(() => available.pollMatching(), 1000);
+    console.log("got here");
+    pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson' or name = 'Your Father'")
+        .then(async result => {
+            for(let i = 0; i < result.rowCount; ++i){
+                let mentee = new Mentee(result.rows[i]["userid"], null, null, null, null);
+                console.log("mentee userid: " + mentee.userid);
+                let flag = new Flag(mentee);
+                console.log("flag userid: " + flag.getMentee().userid);
+                available.addMentee(flag);
+            }
+            /*let resultCopy = new Array(resultsArray);
+            console.log("printing resultCopy");
+            for(let i = 0; i < resultCopy.length; ++i){
+                console.log(resultCopy[i].first + ":");
+                for(let j = 0; j < resultCopy[i].second.length; ++j){
+                    console.log(resultCopy[i].second[j].second.second.name + ": " + 
+                    resultCopy[i].second[j].first);
+                }
+            }*/
+        }, 
+            result => {console.log("No such user exists")});
+    console.log("end me");
 });
