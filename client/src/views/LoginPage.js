@@ -29,11 +29,6 @@ function LoginPage() {
     const [password, setPassword] = useState("");
     const [userType, setUserType] = useState("");
 
-    // update user type when user toggles the switch
-    const handleToggle = () => {
-        userType === "mentor" ? setUserType("mentee") : setUserType("mentor");
-    }
-
     // check if a user is logged in or not
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect( () => {
@@ -55,9 +50,10 @@ function LoginPage() {
         // validate inputted email
         if(email === ""){ 
             // TODO: inform user they must input an email
+        }else{
             // TODO: check if email contains '@'
         }
-
+        
         // check if user has selected a user type 
         if(userType === ""){
             // inform user one of them is required

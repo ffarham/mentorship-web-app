@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Button
 } from 'reactstrap';
-import api from "../../api/api";
 import MileStone from "./MileStone";
 
 function MileStonePanel({ data }) {

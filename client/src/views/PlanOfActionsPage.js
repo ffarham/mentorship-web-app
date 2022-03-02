@@ -27,13 +27,14 @@ function PlanOfActionsPage() {
 
     // if user is not logged in, redirect user to landing page
     if (!isLoggedIn) {
-        // return <Redirect to="/" />
-        window.location.href = "/";
-    }
-    // only mentees should have access to this page
-    if (userType === "mentor"){
-        // return <Redirect to="/home" />
-        window.location.href = "/home";
+        return <Redirect to="/" />
+        // window.location.href = "/";
+    }else{
+        // only mentees should have access to this page
+        if (userType === "mentor"){
+            return <Redirect to="/home" />
+            // window.location.href = "/home";
+        }
     }
 
 
