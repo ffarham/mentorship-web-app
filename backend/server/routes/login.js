@@ -67,3 +67,5 @@ router.post("/logout", async (req, res, next) => {
     await pool.query(deleteTokensQuery, [userID]);
     res.send('Success!');
 })
+
+module.exports = router;

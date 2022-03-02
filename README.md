@@ -35,7 +35,7 @@ Stop:
 If you ctrl+c then the images and volumes won't be removed.  
 Clean restart:  
 `docker rm -f $(docker ps -a -q)` (removes stopped containers)  
-`docker volume rm $(docker volume ls -q)` (removes volumems)  
+`docker volume rm $(docker volume ls -q)` (removes volumes)  
 View current containers:  
 `docker ps -al`  
 View Current Images:  

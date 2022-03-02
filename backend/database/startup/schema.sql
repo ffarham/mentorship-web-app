@@ -58,10 +58,15 @@ CREATE TABLE mentoring (
 
 --Interests:
 
+DROP TABLE IF EXISTS interestType CASCADE;
+CREATE TABLE interestType (
+    interest VARCHAR(100) PRIMARY KEY
+);
+
 DROP TABLE IF EXISTS interest CASCADE;
 CREATE TABLE interest (
     userID UUID NOT NULL REFERENCES users(userID),
-    interest VARCHAR(100) NOT NULL,
+    interest VARCHAR(100) NOT NULL REFERENCES interestType(interest),
     kind CHAR(6), --Either 'mentee' or 'mentor'
 
     CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor')
@@ -220,16 +225,3 @@ CREATE TABLE notifications (
 
     meetingID UUID REFERENCES meeting(meetingID)
 );
-
-
-INSERT INTO users VALUES (DEFAULT, 'jimbob@gmail.com', FALSE, 'Jimothy Bobson', 'password1', '\xba0149ebc03cf8d0', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'bobjim@gmail.com', FALSE, 'Bobothy Jimson', 'password2', '\xb8cc4e102073baaf', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'biglez@gmail.com', FALSE, 'Big Lez', 'password3', '\x3b70ffbe4908bc99', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'xX_eric_cartman_Xx@gmail.com', FALSE, 'Eric Cartman', 'password4', '\xbc33175c54dbf5d9', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'farquaad@gmail.com', FALSE, 'Lord Farquaad', 'password5', '\xbcf39483cb7763cd', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'amogus@gmail.com', FALSE, 'Amogus Susson', 'password6', '\xb7bf09524d06d973', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'ur_da@gmail.com', FALSE, 'Your Father', 'password7', '\xcabed0e1d62afb1c', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'scott_tenorman@gmail.com', FALSE, 'Scott Tenorman', 'password8', '\x47fedeb585799d7b', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'totally_not_a_meth_dealer@gmail.com', FALSE, 'Walter White', 'password9', '\xdae5f4174b80dcf0', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'xXsupreme_edgelordXx@gmail.com', FALSE, 'The King of Edge', 'password10', '\x4c56e14db5a41cc2', 'qwerty', TRUE);
-INSERT INTO users VALUES (DEFAULT, 'sasee@gmail.com', FALSE, 'Sassy the Sasquatch', 'password11', '\x67cf6db69bcd78e0', 'qwerty', TRUE);

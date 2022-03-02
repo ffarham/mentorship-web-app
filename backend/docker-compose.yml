@@ -12,6 +12,8 @@ services:
     volumes: 
       - db:/var/lib/postgresql/data
       - ./database/startup/schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./database/startup/matchingData.sql:/docker-entrypoint-initdb.d/matchingData.sql
+      - ./database/startup/interestTypes.sql:/docker-entrypoint-initdb.d/interestTypes.sql
   server:
     build:
       context: ./server/
