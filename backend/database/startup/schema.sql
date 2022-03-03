@@ -67,7 +67,8 @@ DROP TABLE IF EXISTS interest CASCADE;
 CREATE TABLE interest (
     userID UUID NOT NULL REFERENCES users(userID),
     interest VARCHAR(100) NOT NULL REFERENCES interestType(interest),
-    kind CHAR(6), --Either 'mentee' or 'mentor'
+    kind CHAR(6), --Either 'mentee' or 'mentor',
+    ordering INTEGER NOT NULL,
 
     CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor')
 );
@@ -151,8 +152,8 @@ CREATE TABLE planOfAction(
     planName VARCHAR(100),
     planDescription VARCHAR(1000),
 
-    completed BOOLEAN,
-    completionMessage VARCHAR(1000)
+    completed BOOLEAN
+    --completionMessage VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS milestones CASCADE;
@@ -166,8 +167,8 @@ CREATE TABLE milestones(
     milestoneName VARCHAR(100),
     milestoneDescription VARCHAR(1000),
 
-    completed BOOLEAN,
-    completionMessage VARCHAR(1000)
+    completed BOOLEAN
+    --completionMessage VARCHAR(1000)
 ); 
 
 --Feedback:
@@ -222,6 +223,8 @@ CREATE TABLE notifications (
     notificationID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     userID UUID REFERENCES users(userID),
     msg VARCHAR(1000) NOT NULL,
+
+    timeCreated TIMESTAMP NOT NULL,
 
     meetingID UUID REFERENCES meeting(meetingID)
 );

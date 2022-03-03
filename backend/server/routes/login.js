@@ -7,6 +7,8 @@ router.get("/login", async (req, res, next) => {
 
 });
 
+const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
+
 router.post("/login", async (req, res, next) => {
     //Pull out user info from request
     const userEmail = req.body.email;
@@ -15,13 +17,16 @@ router.post("/login", async (req, res, next) => {
 
     try {
         //Validate the email and password
-        if (userInteractions.checkEmailAndPassword(userEmail, userPassword)) {
+        if (await userInteractions.checkEmailAndPassword(userEmail, userPassword)) {
             //Pull user info from database
-            const userInfo = userInteractions.getUserInfoFromEmail(userEmail);
+            const userInfo = await userInteractions.getUserInfoFromEmail(userEmail);
+
+            //Delete any tokens associated with this user
+            await pool.query(deleteTokensQuery, [userInfo.userID]);
 
             //Generate tokens
-            const accToken = tokens.generateAccessToken(userInfo.userID, userType);
-            const refToken = tokens.generateRefreshToken(userInfo.userID, userType);
+            const accToken = await tokens.generateAccessToken(userInfo.userID, userType);
+            const refToken = await tokens.generateRefreshToken(userInfo.userID, userType);
 
             //Throw an error if the user isn't a userType
             //Check if user is present in the appropriate database table
@@ -40,7 +45,7 @@ router.post("/login", async (req, res, next) => {
             //Format and send response
             const responseObject = {
                 userID: userInfo.userID,
-                userType: userInfo.userType,
+                userType: userType,
                 accessToken: accToken,
                 refreshToken: refToken,
             };
@@ -53,14 +58,12 @@ router.post("/login", async (req, res, next) => {
     } catch (err) {
         //Throw an error if the user doesn't exist in the database
         if (err.name === 'UserNotFoundError') {
-            res.status(500).json(err);
+            res.status(500).json({name: 'LoginFailureError', message: `${userEmail} not found`});
         } else {
-            throw err;
+            console.log(err);
         }
     } finally { next(); }
 });
-
-const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1'
 
 router.post("/logout", async (req, res, next) => {
     const userID = req.body.userID;

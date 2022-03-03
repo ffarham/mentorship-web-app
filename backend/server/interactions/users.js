@@ -39,7 +39,7 @@ async function registerUser(email, name, password, businessArea, userType, profi
     } catch (err) {
         //Throw appropriate error if email is already used
         if ((err.code === '23505') && (err.constraint === 'users_email_key'))
-            throw {name: 'EmailAlreadyUsedError', message: `${email} is already linked to another account!`};
+            throw {name: 'EmailAlreadyUsedError', message: `${email} is already linked to another account`};
 
         else
             throw err;
@@ -100,7 +100,7 @@ function convertUserInfo(databaseRecord) {
 }
 
 //Query to find a user's information given their email
-const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1 AND (type = $2 OR type = \'both\')';
+const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1';
 
 /**
  * Returns all user information of user with a given email as an object.
@@ -122,7 +122,7 @@ async function getUserInfoFromEmail(email, loggedInAs) {
 }
 
 //Query to register an interest for a user
-const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3)';
+const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3, $4)';
 
 /**
  * Registers a new interest for a given user
@@ -131,15 +131,15 @@ const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3)';
  * @param {string} interest Interest to be registered
  * @param {string} type Either 'mentor', 'mentee' or 'both'
  */
-async function registerInterest(userID, interest, type) {
+async function registerInterest(userID, interest, type, order) {
     try {
         //Register the interest
         if (type === 'both') {
             //Run query twice to register an interest twice
-            await pool.query(registerInterestQuery, [userID, interest, 'mentee']);
-            await pool.query(registerInterestQuery, [userID, interest, 'mentor']);
+            await pool.query(registerInterestQuery, [userID, interest, 'mentee', order]);
+            await pool.query(registerInterestQuery, [userID, interest, 'mentor', order]);
         } else {
-            await pool.query(registerInterestQuery, [userID, interest, type]);
+            await pool.query(registerInterestQuery, [userID, interest, type, order]);
         }
     } catch (err) {
         //Handle any errors

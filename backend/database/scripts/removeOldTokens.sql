@@ -1,0 +1,1 @@
+DELETE FROM authToken WHERE timeCreated + timeToLive < NOW();
