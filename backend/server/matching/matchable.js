@@ -38,7 +38,6 @@ const matchCountQuery = "" +
 
 const userInterests = "SELECT interest, rnk FROM interest WHERE userid = $1 AND kind = $2";
 
-const menteeQueue = [];
 const flagQueue = [];
 let pollCount = 0;
 
@@ -50,12 +49,18 @@ class Tuple {
     toString(){
         return "(" + this.first + ", " + this.second+ ")";
     }
+    toJSON(){
+        let keys = Object.keys(this);
+        let jsonString = `{"first":"${this.first}","second":"${this.second}"}`;
+        return jsonString;
+    }
 }
 
 class Flag { 
-    constructor(mentee){
+    constructor(menteeid){
         this.flag = 0;
-        this.mentee = mentee;
+        this.menteeid = menteeid;
+        this.mentorList = [];
     }
     setFlag(){
         this.flag = 1;
@@ -63,8 +68,14 @@ class Flag {
     isFlagSet(){
         return this.flag == 1;
     }
-    getMentee(){
-        return this.mentee;
+    getMenteeID(){
+        return this.menteeid;
+    }
+    setMentorList(mentorList){
+        this.mentorList = mentorList;
+    }
+    getMentorList(){
+        return this.mentorList;
     }
 }
 
@@ -93,6 +104,26 @@ class User {
         str += "]";
         return "[" + this.userid + ", " + this.name + ", " + this.bArea + ", " + this.email + ", " +  "," + str + "]";
     }
+    toJSON(){
+        let keys = Object.keys(this);
+        let jsonString = "{";
+        for(let i = 0; i < keys.length-3; ++i){
+            jsonString += `"${keys[i]}":"${this[keys[i]]}",`;
+        }
+
+        jsonString +=`"interests": [`;
+        let i = 0;
+        for(i; i < this.interests.length-1; ++i){
+            jsonString += this.interests[i].toJSON() + ",";
+        }
+        jsonString += this.interests[i].toJSON();
+
+        jsonString += "]";
+        jsonString += "}";
+        //console.log(JSON.stringify(this.interests));
+        //console.log(JSON.parse(JSON.stringify(this.interests)));
+        return jsonString;
+    }
 }
 
 class Mentee extends User{
@@ -115,15 +146,18 @@ async function getInterests(userid, kind){
     return interestArray;
 }
 
-async function createMenteeObj(mentee){
-    const menteeResults = await pool.query(menteeQuery, [mentee.userid]);
+async function createMenteeObj(menteeID){
+    const menteeResults = await pool.query(menteeQuery, [menteeID]);
     if(menteeResults.rowCount === 0){
         throw {name: 'MenteeUnavailableError', message: 'Mentee unavailable!'};
     }
     let rows = menteeResults.rows;
     let interests = await getInterests(menteeResults.rows[0]["userid"], "mentee");
     // interests.map(a => {return a}
-    mentee = new Mentee(mentee.userid, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
+    let mentee = new Mentee(menteeID, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
+    console.log("JSON of: " + mentee.name);
+    console.log(mentee.toJSON());
+    console.log(JSON.parse(mentee.toJSON()).name + "\n\n");
     return mentee;
 }
 
@@ -148,26 +182,26 @@ async function getAvailableMentors(){
 
 var AvailablePersons = {
 async addMentee(flag){
-    menteeQueue.push(flag.getMentee());
-    console.log(menteeQueue[menteeQueue.length-1].userid);
     flagQueue.push(flag);
-
 },                    
 async pollMatching(){
-    console.log("pollCount: " + pollCount);
+    console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
-    if((menteeQueue.length > 1 || pollCount === 3) && menteeQueue.length > 0){
+    if((flagQueue.length > 1 || pollCount === 2) && flagQueue.length > 0){
         pollCount = 0;
         startTime = new Date();
-        this.createMatches(menteeQueue.splice(0, 2), flagQueue.splice(0, 2));
-    }    
+        this.createMatches(flagQueue.splice(0, 2));
+    }
+    if(pollCount === 2) pollCount = 0;    
 },
-async createMatches(menteeObjects, flags){
+async createMatches(menteeFlags){
     const mentors = await getAvailableMentors();
     const mentees =  []; 
     
-    for(let i = 0; i < menteeObjects.length; ++i){
-        mentees.push(await createMenteeObj(menteeObjects[i]));//createMenteeObj(userid);
+    console.log("got here");
+    for(let i = 0; i < menteeFlags.length; ++i){
+        console.log("menteeid: " + menteeFlags[i].getMenteeID());
+        mentees.push( await createMenteeObj(menteeFlags[i].getMenteeID()));//createMenteeObj(userid);
     }
 
     console.log("mentors: " + mentors);
@@ -287,8 +321,8 @@ async createMatches(menteeObjects, flags){
     //Sort the result
     for(let i = 0; i < menteeArray.length; ++i){
         menteeArray[i].second.sort();
-        flags[i].setFlag();
-        console.log(flags[i].mentee.name + "'s flag: " + flags[i].flag);
+        menteeFlags[i].setMentorList(menteeArray[i].second);
+        menteeFlags[i].setFlag();
     }
     for(let i = 0; i < menteeArray.length; ++i){
         console.log(menteeArray[i].first + ":");
