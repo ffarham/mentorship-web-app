@@ -29,10 +29,7 @@ router.post('/registeruser', async (req, res, next) => {
         res.status(500).json(err);
         return;
     }
-
-    //TODO: Check with Farham about logging in the user here
-
-    res.send('Success!');
+    
     next();
 })
 

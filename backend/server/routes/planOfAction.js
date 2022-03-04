@@ -72,7 +72,10 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
 
 router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, next) => {
     try {        
-        //TODO: This query
+        /*Mark the milestone as complete
+        This query isn't quite as bad as it looks. 
+        The nested SELECT statement is needed so that it only pulls the milestoneIDs of 
+        the milestones the user is allowed to edit.*/
         await pool.query('UPDATE milestones SET completed = TRUE WHERE milestoneID = (SELECT milestones.milestoneID FROM milestones INNER JOIN planOfAction ON milestones.planID = planOfAction.planID WHERE milestones.milestoneID = $1 AND (planOfAction.menteeID = $2 or planOfAction.mentorID = $2))', [req.params.milestoneID, req.userInfo.userID]);
 
         res.send('Success!');
