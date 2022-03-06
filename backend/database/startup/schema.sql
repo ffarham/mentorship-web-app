@@ -226,5 +226,7 @@ CREATE TABLE notifications (
 
     timeCreated TIMESTAMP NOT NULL,
 
-    meetingID UUID REFERENCES meeting(meetingID)
+    dismissed BOOLEAN NOT NULL
+
+    --meetingID UUID REFERENCES meeting(meetingID)
 );
