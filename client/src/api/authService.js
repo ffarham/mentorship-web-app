@@ -5,54 +5,33 @@ import TokenService from "./tokenService";
 const login = (data) => {
     return api
         .post("/api/v1/login", data)
-        .then( 
-        (res) => {
-            // initialise returned tokens
-            TokenService.setLocalAccessToken(res.data.accessToken);
-            TokenService.setLocalRefreshToken(res.data.refreshToken);
+        .then( (response) => {
 
-            // initialise auth state
-            const authState = {
-                'userID': res.data.userID,
-                'userType': res.data.userType
-            };
-            localStorage.setItem('authState', JSON.stringify(authState));
+            // if successful
+            if(response.status === 200){
+                // initialise returned tokens
+                TokenService.setLocalAccessToken(response.data.accessToken);
+                TokenService.setLocalRefreshToken(response.data.refreshToken);
+    
+                // initialise auth state
+                const authState = {
+                    'userID': response.data.userID,
+                    'userType': response.data.userType
+                };
+                localStorage.setItem('authState', JSON.stringify(authState));
+            }
 
-            return res;
-        },
-        (error) => {
-            // user not find 500 status
-            // email-password error
-            // mentor/mentee error
-            console.log(error);
-        }
-        );
+            return response;
+        });
 };
 
 // authenticate register call
 const register = (data) => {
     return api
         .post("/api/v1/register", data)
-        .then( 
-            (res) => {
-
-                // initialise tokens
-                TokenService.setLocalAccessToken(res.data.accessToken);
-                TokenService.setLocalRefreshToken(res.data.refreshToken);
-                
-                // initialise auth state
-                const authState = {
-                    'userID': res.data.userID,
-                    'userType': res.data.userType,
-                };
-                localStorage.setItem('authState', JSON.stringify(authState));
-                
-                return res;
-            },
-            (error) => {
-                return error;
-            }
-        );
+        .then( (res) => {   
+            return res;
+        });
 };
 
 // logout call auth handler
