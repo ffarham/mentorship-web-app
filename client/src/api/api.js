@@ -3,7 +3,7 @@ import TokenService from "./tokenService";
 
 // initialise an instance
 const instance = axios.create({
-    baseURL: "https://localhost:5000/"
+    baseURL: "http://localhost:5000/"
 });
 
 // runs before making a request call
@@ -30,8 +30,9 @@ instance.interceptors.response.use(
     },
     // any status code that falls outside the range 2xx triggers this function
     async (error) => {
+        
         const originalConfig = error.config;
-
+        
         if (error.response) {
             // if access token is expired
             if (error.response.status === 403 && !originalConfig._retry) {
@@ -39,9 +40,7 @@ instance.interceptors.response.use(
                 originalConfig._retry = true;
                 
                 try{
-                    console.log("requesting new access token");
                     // call endpint to get new access token
-                    // TODO: add endpoint URL
                     const newRes = await instance.post("/api/v1/checkrefreshtoken", {
                         refreshToken: TokenService.getLocalRefreshToken()
                     });
@@ -58,6 +57,8 @@ instance.interceptors.response.use(
                 }catch(_error){
                     return Promise.reject(_error);
                 }
+            }else{
+                return error.response;
             }
         }
     }
