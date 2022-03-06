@@ -37,12 +37,17 @@ function PlanOfActionsPage() {
         }
     }
 
-
     return (
         <>
 
             <MainNavbar activeView="plan-of-action"/>
 
+            <div className="text-center mt-4">
+                <h3 className="display-3 mb-0">Plan of Action</h3>
+            </div>
+            <div className="mx-4">
+                <hr/>
+            </div>
             <PlanOfActionPanel />
 
             <MainFooter />
