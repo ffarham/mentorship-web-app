@@ -32,7 +32,7 @@ function MainNavbar({ activeView }) {
             const data = {'userID': userID}
 
             // on success, it should automatically redirect the user as authState will no longer exist
-            const res = AuthServices.logout(data);
+            const res = await AuthServices.logout(data);
             
             // redirect user to the landing page
             history.push("/");
@@ -81,10 +81,10 @@ function MainNavbar({ activeView }) {
                     {/* only display plans of actions to mentees */}
                     {userType === "mentee" &&
                         <NavItem>
-                        <NavLink href="" onClick={() => history.push("/plan-of-action")}>
-                        {activeView === "plan-of-action" ? <span className="text-info">Plans of Actions</span> : <span>Plans of Actions</span>}
-                        </NavLink>
-                    </NavItem>
+                            <NavLink href="" onClick={() => history.push("/plan-of-action")}>
+                                {activeView === "plan-of-action" ? <span className="text-light">Plans of Actions</span> : <span>Plans of Actions</span>}
+                            </NavLink>
+                        </NavItem>
                     }
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/meetings")}}>
@@ -93,12 +93,16 @@ function MainNavbar({ activeView }) {
                     </NavItem>
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/mentorship")}}>
-                        Mentorship
+                            {activeView === "mentorship" ? <span className="text-light">Mentorship</span> : <span>Mentorship</span>}
                         </NavLink>
                     </NavItem>
+                    
                     <NavItem>
-                        <NavLink href="" onClick={() => {history.push("/settings")}}>Settings</NavLink>
+                        <NavLink href="" onClick={() => {history.push("/settings")}}>
+                            {activeView === "settings" ? <span className="text-light">Settings</span> : <span>Settings</span>}
+                        </NavLink>
                     </NavItem>
+
                     <NavItem>
                         <NavLink href=""  onClick={handleLogout}>
                             <span className="text-danger">Logout</span>
