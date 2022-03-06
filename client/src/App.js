@@ -23,6 +23,7 @@ import MeetingsPage from "views/MeetingsPage.js";
 import MentorshipPage from "views/MentorshipPage.js"; 
 import PlanOfActionsPage from "views/PlanOfActionsPage.js";
 import SettingsPage from "views/SettingsPage.js";
+import FeedbackPage from "views/FeedbackPage.js";
 
 function App() {
     
@@ -52,6 +53,7 @@ function App() {
                     <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
                     <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
                     <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
+                    <Route path="/feedback" exact render={props => <FeedbackPage {...props} />} />
 
                     <Redirect to="/" />
                 </Switch>

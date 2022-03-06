@@ -53,6 +53,7 @@ const meetingRequests = [
 
 function MeetingRequest(){
     // const {id, name, time, location, duration, description} = meeting;
+    const userType = "mentor";
     return(
         <>
         {meetingRequests.map( (meetingReq) => (
@@ -79,7 +80,13 @@ function MeetingRequest(){
                                 <Row className="xs-2"> 
                                     <ModalsView name="Accept" info="Thank you for accepting the meeting" title="The meeting is now accepted!"/>
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {userType === "mentor"
+                                    ?
                                     <Modals name="Reschedule" />
+                                    :
+                                    <ModalsView name="Reject" info="The meeting request has been rejected" title="Rejected!" />
+                                    }
+                                    
                                 </Row>
                             </Col>
                             <br></br>

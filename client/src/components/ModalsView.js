@@ -43,7 +43,7 @@ class ModalsView extends React.Component {
               block
               className={`${this.props.styling ? 
                 'popReq' : 'pop'}`}
-              color={this.props.name === 'Accept' ? 'success' : 'primary'}
+              color={this.props.name === 'Accept' ? 'success' : 'danger'}
               type="button"
               onClick={() => this.toggleModal("defaultModal")}
             >
