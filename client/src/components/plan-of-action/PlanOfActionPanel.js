@@ -19,7 +19,7 @@ function PlanOfActionPanel() {
     const [planOfActions, setPlanOfActions] = useState([]);
     // get all of user's plans of actions
     useEffect(() => {
-        const url = `/api/v1/plan-of-actions/${userID}/${userType}`;
+        const url = `/api/v1/plan-of-actions/${userID}`;
         api.get(url).then(
             (res) => {
                 if(res.data){
@@ -42,7 +42,7 @@ function PlanOfActionPanel() {
     };
 
     const markComplete = () => {
-        api.post("/api/v1/markPOAcomplete", activePoA.id).then(
+        api.post(`/api/v1/markPOAcomplete/${activePoA.id}`).then(
             (res) => {
                 
             }
@@ -52,9 +52,6 @@ function PlanOfActionPanel() {
 
     return (
         <> 
-            <div className="text-center my-4">
-                <h3 className="display-3 mb-0">Plan of Action</h3>
-            </div>
             <Container fluid="xl" className="mx-9">
                 {planOfActions.map( (planOfAction) => {
                     return (
