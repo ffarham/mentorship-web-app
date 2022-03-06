@@ -15,7 +15,7 @@ function MileStone({ data }) {
 
     // function to handle mark milestone as complete requests
     const markComplete = () =>{
-        api.post("/api/v1/markMilestoneComplete", data.milestoneID).then(
+        api.post(`/api/v1/markMilestoneComplete/${data.milestoneID}`,).then(
             (res) => {
 
             }
