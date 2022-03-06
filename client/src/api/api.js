@@ -3,7 +3,7 @@ import TokenService from "./tokenService";
 
 // initialise an instance
 const instance = axios.create({
-    baseURL: "http://localhost:5000/"
+    baseURL: "https://localhost:5000/"
 });
 
 // runs before making a request call
