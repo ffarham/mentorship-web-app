@@ -37,42 +37,76 @@ function LoginPage() {
             setIsLoggedIn(true);
         }
     }, []);
+
+    const [emailErrorMsg, setEmailErrorMsg] = useState("");
+    const [passErrorMsg, setPassErrorMsg] = useState("");
+    const [userErrorMsg, setUserErrorMsg] = useState("");
+    // attempt to log user in
+    const handleLogin = async () => {
+
+        // validate user input
+        // check if email input is empty
+        if (email === ""){
+            setEmailErrorMsg("Email field is empty");
+            return;
+        }
+        else{
+            // if email doesn't contain an '@' 
+            const char = "@";
+            if( !email.includes(char) ){
+                setEmailErrorMsg("Email does not contain an '@'");
+                return;
+            }else{
+                // reset email error message
+                setEmailErrorMsg("");
+
+                // check if password field is empty
+                if(password === ""){
+                    setPassErrorMsg("Password field is empty");
+                    return;
+                }else{
+                    // reset password error message
+                    setPassErrorMsg("");
+
+                    // check if user has selected an account type
+                    if(userType === ""){
+                        setUserErrorMsg("Please select an account type");
+                        return;
+                    }else{
+                        setUserErrorMsg("");
+
+                        // create JSON onject containing inputted email and password
+                        const data = {
+                            "email": email, 
+                            "password": password, 
+                            "userType": userType
+                        };
+                        try{
+                            // attempt to log user in
+                            await AuthServices.login(data).then(
+                                (response) => {
+                                    // error handling
+                                    if(response.status === 500){
+                                        // TODO: set error message
+                                        
+                                    }else{
+                                        // on successfull login, direct user to the home page
+                                        history.push("/home");
+                                    }
+                                });
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                }
+            }
+        }        
+    };
+
     // if user is already logged in, redirect user to home page
     if (isLoggedIn) {
         return <Redirect to="/home" />
     }
-
-
-    // attempt to log user in
-    const handleLogin = async () => {
-        // TODO: validate user input
-
-        // validate inputted email
-        if(email === ""){ 
-            // TODO: inform user they must input an email
-        }else{
-            // TODO: check if email contains '@'
-        }
-        
-        // check if user has selected a user type 
-        if(userType === ""){
-            // inform user one of them is required
-        }
-
-        // create JSON onject containing inputted email and password
-        const data = {"email": email, "password": password, "userType": userType};
-        try{
-            // attempt to log user in
-            await AuthServices.login(data).then(
-                (res) => {
-                    // on successfull login, direct user to the home page
-                    history.push("/home");
-                }
-            );
-        } catch (err) {
-            console.log(err);
-        }
-    };
 
     return(
         <>
@@ -104,8 +138,19 @@ function LoginPage() {
                                         setEmail(event.target.value);
                                     }}
                                 />
+                                {emailErrorMsg === ""
+                                ? <></>
+                                : <div className="has-danger"></div>}
                             </InputGroup>
                             </FormGroup>
+
+                            {emailErrorMsg === "" 
+                            ? <></>
+                            : <Row className="mb-3 mt-2">
+                                <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                                <p className="text-danger mb-0">{emailErrorMsg}</p>
+                            </Row>
+                            }
 
                             {/* Password input */}
                             <FormGroup>
@@ -124,8 +169,19 @@ function LoginPage() {
                                         setPassword(event.target.value);
                                     }}
                                 />
+                                {passErrorMsg === ""
+                                ? <></>
+                                : <div className="has-danger"></div>}
                             </InputGroup>
                             </FormGroup>
+
+                            {passErrorMsg === "" 
+                            ? <></>
+                            : <Row className="mb-3 mt-2">
+                                <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                                <p className="text-danger mb-0">{passErrorMsg}</p>
+                            </Row>
+                            }
 
                             <hr/>
 
@@ -162,6 +218,14 @@ function LoginPage() {
                                     </div>
                                 </Col>
                             </Row>
+
+                            {userErrorMsg === "" 
+                            ? <></>
+                            : <Row className="mb-3 mt-2">
+                                <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                                <p className="text-danger mb-0">{userErrorMsg}</p>
+                            </Row>
+                            }
                             
                             <hr/>
                            

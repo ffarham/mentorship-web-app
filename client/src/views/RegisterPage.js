@@ -28,6 +28,7 @@ import AuthServices from "../api/authService";
 
 function RegisterPage () {
 
+    // app navigation
     const history = useHistory();
 
     // keep track of user inputs
@@ -35,10 +36,10 @@ function RegisterPage () {
     const [email, setEmail] = useState("");
     const [accountType, setAccountType] = useState("");
     const [activeDepartment, setActiveDepartment] = useState("");
-    const [activeTopics, setActiveTopics] = useState([]);
+    const [activeInterests, setActiveInterests] = useState([]);
+    const [activeSpecialties, setActiveSpecialties] = useState([]);
     const [pass, setPass] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
-
 
     // maximum number of interests a user can select
     const maxInterests = 5;
@@ -73,89 +74,249 @@ function RegisterPage () {
         if (input === ""){
             setFilteredDepartments(departments);
         }else{
-            const filteredWords = departments.filter((value) => {
+            const filter = departments.filter((value) => {
                 return value.includes(input);
             });
-            setFilteredDepartments(filteredWords);
+            setFilteredDepartments(filter);
         }
     }
 
-    // filter the topics by user input
-    const [filteredTopics, setFilteredTopics] = useState([]);
-    const handleTopicChange = (e) => {
+    // filter the interests by user input
+    const [filteredInterests, setFilteredInterests] = useState([]);
+    const handleInterestChange = (e) => {
         const input = e.target.value;
         if(input === ""){
-            setFilteredTopics(topics);
+            setFilteredInterests(topics);
         }else{
-            const filteredWords = topics.filter((value) => {
+            const filter = topics.filter((value) => {
                 return value.includes(input);
             });
-            setFilteredTopics(filteredWords);
+            setFilteredInterests(filter);
+        }
+    }
+
+    // filter the specialists by user input
+    const [filteredSpecialties, setFilteredSpecialties] = useState([]);
+    const handleSpecialtiesChange = (e) => {
+        const input = e.target.value;
+        if (input === "") {
+            setFilteredSpecialties(topics);
+        } else {
+            const filter = topics.filter((value) => {
+                return value.includes(input);
+            });
+            setFilteredSpecialties(filter);
         }
     }
 
     // initialise filtered data to departments once fetched, this is so the first empty search will show all departments
     useEffect( () => {
         setFilteredDepartments(departments);
-        setFilteredTopics(topics);
+        setFilteredInterests(topics);
+        setFilteredSpecialties(topics);
     }, [departments, topics]);
 
-    // function to handle topic click
-    const handleTopicClick = (value) => {
+    // function to handle interest click
+    const handleInterestClick = (value) => {
         
         // get the index of the value in the array
-        const i = activeTopics.indexOf(value);
+        const i = activeInterests.indexOf(value);
         
         // if array does not contain the value
         if(i === -1){
             // only add if array is not at its limit
-            if(activeTopics.length < maxInterests){
+            if(activeInterests.length < maxInterests){
                 // add value to array
-                const newArray = activeTopics.slice();
+                const newArray = activeInterests.slice();
                 newArray.push(value);
-                setActiveTopics(newArray);
+                setActiveInterests(newArray);
             }
         }
         // if topic is already added in array
         else{
             // remove it from array
-            const newArray = activeTopics.slice();
+            const newArray = activeInterests.slice();
             newArray.splice(i, 1);
-            setActiveTopics(newArray);
+            setActiveInterests(newArray);
         } 
     }
 
-     // if user is already logged in, redirect user to home page
-     if (isLoggedIn) {
-        return <Redirect to="/home" />
+    // function to handle interest click
+    const handleSpecialtiesClick = (value) => {
+        
+        // get the index of the value in the array
+        const i = activeSpecialties.indexOf(value);
+        
+        // if array does not contain the value
+        if(i === -1){
+            // only add if array is not at its limit
+            if(activeSpecialties.length < maxInterests){
+                // add value to array
+                const newArray = activeSpecialties.slice();
+                newArray.push(value);
+                setActiveSpecialties(newArray);
+            }
+        }
+        // if topic is already added in array
+        else{
+            // remove it from array
+            const newArray = activeSpecialties.slice();
+            newArray.splice(i, 1);
+            setActiveSpecialties(newArray);
+        } 
     }
+
+    // keep track of any errors
+    const [nameErrorMsg, setNameErrorMsg] = useState("");
+    const [emailErrorMsg, setEmailErrorMsg] = useState("");
+    const [accountErrorMsg, setAccountErrorMsg] = useState("");
+    const [departmentErrorMsg, setDepartmentErrorMsg] = useState("");
+    const [interestsErrorMsg, setInterestsErrorMsg] = useState("");
+    const [specialtiesErrorMsg, setSpecialtiesErrorMsg] = useState("");
+    const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
+    const [confirmPassErrorMsg, setConfirmPassErrorMsg] = useState("");
 
     // function to handle users register request
     const handleRegister = () => {
-        // TODO: validate user inputs
 
-        if(confirmPass !== pass){
-            // TODO: inform user confirm passowrd does not match password
+        // validate user input; inform user input at a time
+        // check if name input field is empty
+        if (name === ""){
+            setNameErrorMsg("Input field is empty");
+            return;
         }
+        else{
+            // reset name error message
+            setNameErrorMsg("");
 
-        const data = {
-            'name': name,
-            'email': email,
-            'userType': accountType,
-            'department': activeDepartment,
-            'interests': activeTopics,
-            'password': pass,
-        }
-        AuthServices.register(data).then(
-            (res) => {
-                // on successful registeration
-                history.push("/home");
-            },
-            (error) => {
-                // errors: account under email already exists
-
+            // check if email input is empty
+            if (email === ""){
+                setEmailErrorMsg("Email field is empty");
+                return;
             }
-        );
+            else{
+                // if email doesn't contain an '@' 
+                const char = "@";
+                if( !email.includes(char) ){
+                    setEmailErrorMsg("Email does not contain an '@'");
+                    return;
+                }
+                else{
+                    // reset email error message
+                    setEmailErrorMsg("");
+
+                    // check if user has selected an account type
+                    if(accountType === ""){
+                        setAccountErrorMsg("Please select an account type");
+                        return;
+                    }else{
+                        // reset account error
+                        setAccountErrorMsg("");
+
+                        // check if user has selected a department
+                        if(activeDepartment === ""){
+                            setDepartmentErrorMsg("Please select a department");
+                            return;
+                        }else{
+                            // reset department error message
+                            setDepartmentErrorMsg("");
+
+                            // check if user has selected interests
+                            if(activeInterests.length === 0 && accountType !== "mentor"){
+                                setInterestsErrorMsg("Please select atleast one interest");
+                                return;
+                            }else{
+                                // reset interest error message
+                                setInterestsErrorMsg("");
+
+                                // check if user has selected specialties
+                                if(activeSpecialties.length === 0 && accountType !== "mentee"){
+                                    setSpecialtiesErrorMsg("Please select atleast one specialty");
+                                    return;
+                                }else{
+                                    // reset specialties error message
+                                    setSpecialtiesErrorMsg("");
+
+                                    // check user has inputted a password
+                                    if(pass === ""){
+                                        setPasswordErrorMsg("Input field is empty");
+                                        return;
+                                    }else{
+                                        setPasswordErrorMsg("");
+                                        
+                                        // check password strength 
+                                        if(passStrength === "weak"){
+                                            setPasswordErrorMsg("Password strength is weak");
+                                            return;
+                                        }else{
+                                            setPasswordErrorMsg("");
+
+                                            // check confirm password
+                                            if(confirmPass !== pass){
+                                                setConfirmPassErrorMsg("Input does not match the password");
+                                                return;
+                                            }else{
+                                                setConfirmPassErrorMsg("");
+
+                                                // send register request to backend
+                                                const data = {
+                                                    'name': name,
+                                                    'email': email,
+                                                    'userType': accountType,
+                                                    'department': activeDepartment,
+                                                    'interests': activeInterests,
+                                                    'specialties': activeSpecialties,
+                                                    'password': pass,
+                                                }
+                                                AuthServices.register(data)
+                                                .then( response => {
+                                                    if(response.status === 500){
+                                                        // TODO: set error message
+                                                        
+                                                    }else{
+                                                        // on successful registeration
+                                                        history.push("/login");
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // password strength regex
+    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_!@#\$%\^&\*])(?=.{8,})");
+    const goodRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+    const [passStrength, setPassStrength] = useState("");
+    // function to handle password input
+    const handlePasswordChange = (event) => {
+        // get user input
+        const input = event.target.value;
+
+        
+        // set the password state to user input
+        setPass(input);
+        
+        // determine password strength
+        if(strongRegex.test(input)){setPassStrength("strong");}
+        else if(goodRegex.test(input)){setPassStrength("good");}
+        else{ setPassStrength("weak");}
+
+        // reset pass strength is user input is empty
+        if(input === ""){setPassStrength("");}
+    }
+
+
+    // if user is already logged in, redirect user to home page
+    if (isLoggedIn) {
+    return <Redirect to="/home" />
     }
 
     
@@ -171,6 +332,7 @@ function RegisterPage () {
                         </div>
                     </CardHeader>
                     <CardBody className="px-lg-5 py-lg-5">
+                    
                     <Form role="form">
                         <FormGroup className="mb-3">
                             <InputGroup className="input-group-alternative">
@@ -185,9 +347,21 @@ function RegisterPage () {
                                     onChange={ (event) => {
                                         setName(event.target.value);
                                     }}
-                                />
+                                    />
+                                {nameErrorMsg === ""
+                                ? <></>
+                                : <div className="has-danger"></div>}
                             </InputGroup>
                         </FormGroup>
+
+                        {nameErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{nameErrorMsg}</p>
+                        </Row>
+                        }
+
                         <FormGroup className="mb-3">
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
@@ -202,8 +376,19 @@ function RegisterPage () {
                                         setEmail(event.target.value);
                                     }}
                                 />
+                                {emailErrorMsg === ""
+                                ? <></>
+                                : <div className="has-danger"></div>}
                             </InputGroup>
                         </FormGroup>
+
+                        {emailErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{emailErrorMsg}</p>
+                        </Row>
+                        }
 
                         <hr/>
 
@@ -253,6 +438,14 @@ function RegisterPage () {
                                 </Col>
                             </Row>
 
+                            {accountErrorMsg === "" 
+                            ? <></>
+                            : <Row className="mb-3 mt-2">
+                                <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                                <p className="text-danger mb-0">{accountErrorMsg}</p>
+                            </Row>
+                            }
+
                             <hr/>
 
                         {/* search department */}
@@ -284,8 +477,6 @@ function RegisterPage () {
                                         <Input
                                         placeholder="Find department"
                                         type="text"
-                                        onFocus={e => e.preventDefault()}
-                                        onBlur={e => e.preventDefault()}
                                         onChange={handleDepartmentChange}
                                         />
                                     </InputGroup>
@@ -329,6 +520,13 @@ function RegisterPage () {
                                 </Button>
                             </Col>
                         </Row>  
+
+                        {departmentErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3 mt-2">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{departmentErrorMsg}</p>
+                        </Row>}
                         
                         {accountType === "mentor" || accountType === ""
                         ? <></>
@@ -342,9 +540,9 @@ function RegisterPage () {
                                     </small>
                                 </Col>
                                 <Col sm="7">
-                                    {activeTopics.length === 0
-                                    ? <small className="text-light">Select up to 5</small>
-                                    : activeTopics.map( (topic) => {
+                                    {activeInterests.length === 0
+                                    ? <small className="text-light">Select in order of priority</small>
+                                    : activeInterests.map( (topic) => {
                                         return(
                                             <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
                                                 {topic}
@@ -366,14 +564,14 @@ function RegisterPage () {
                                             <Input
                                             placeholder="Find topic"
                                             type="text"
-                                            onChange={handleTopicChange}
+                                            onChange={handleInterestChange}
                                             />
                                         </InputGroup>
                                     </div>
                                     <div>
                                         <UncontrolledPopover
                                         placement="right"
-                                        target="topicSearch"
+                                        target="interestSearch"
                                         trigger="legacy"
                                         >
                                             <PopoverHeader>
@@ -383,12 +581,12 @@ function RegisterPage () {
                                             </PopoverHeader>
                                             <PopoverBody>
                                                 <div>
-                                                    {filteredTopics.length === 0
-                                                    ? <p>No such topic exists</p>
-                                                    : filteredTopics.map( (value) => {
+                                                    {filteredInterests.length === 0
+                                                    ? <p>No such interest exists</p>
+                                                    : filteredInterests.map( (value) => {
                                                         return(
                                                             <div>
-                                                                <div onClick={() => handleTopicClick(value)}>
+                                                                <div onClick={() => handleInterestClick(value)}>
                                                                     <p>{value}</p>
                                                                 </div>
                                                             </div>
@@ -401,7 +599,7 @@ function RegisterPage () {
                                 </Col>
                                 <Col md="4">
                                     <Button 
-                                        id="topicSearch"
+                                        id="interestSearch"
                                         className="btn-1 btn-neutral ml-1"
                                         color="default"
                                         type="button">
@@ -411,7 +609,110 @@ function RegisterPage () {
                             </Row>
                         </>}
 
+                        {interestsErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3 mt-2">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{interestsErrorMsg}</p>
+                        </Row>
+                        }
+
+                        {accountType === "mentee" || accountType === ""
+                        ? <></>
+                        : <>
+                            <hr/>
+
+                            <Row className="mb-4">
+                                <Col className="" sm="5">
+                                    <small className="text-uppercase text-muted font-weight-bold">
+                                        Specialties
+                                    </small>
+                                </Col>
+                                <Col sm="7">
+                                    {activeSpecialties.length === 0
+                                    ? <small className="text-light">Select in order of priority</small>
+                                    : activeSpecialties.map( (topic) => {
+                                        return(
+                                            <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                {topic}
+                                            </Badge>
+                                        );
+                                    })                                
+                                    }
+                                </Col>
+                            </Row>
+                            <Row className="mr-3">
+                                <Col md="8">
+                                    <div>
+                                        <InputGroup className="input-group-alternative mb-4">
+                                            <InputGroupAddon addonType="prepend">
+                                            <InputGroupText>
+                                                <i className="ni ni-zoom-split-in" />
+                                            </InputGroupText>
+                                            </InputGroupAddon>
+                                            <Input
+                                            placeholder="Find topic"
+                                            type="text"
+                                            onChange={handleSpecialtiesChange}
+                                            />
+                                        </InputGroup>
+                                    </div>
+                                    <div>
+                                        <UncontrolledPopover
+                                        placement="right"
+                                        target="specialtiesSearch"
+                                        trigger="legacy"
+                                        >
+                                            <PopoverHeader>
+                                                <div>
+                                                    <h3 className="heading mb-0">Specialties</h3>
+                                                </div>
+                                            </PopoverHeader>
+                                            <PopoverBody>
+                                                <div>
+                                                    {filteredSpecialties.length === 0
+                                                    ? <p>No such specialty exists</p>
+                                                    : filteredSpecialties.map( (value) => {
+                                                        return(
+                                                            <div>
+                                                                <div onClick={() => handleSpecialtiesClick(value)}>
+                                                                    <p>{value}</p>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </PopoverBody>
+                                        </UncontrolledPopover>
+                                    </div>
+                                </Col>
+                                <Col md="4">
+                                    <Button 
+                                        id="specialtiesSearch"
+                                        className="btn-1 btn-neutral ml-1"
+                                        color="default"
+                                        type="button">
+                                            Search
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </>}
+
+                        {specialtiesErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3 mt-2">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{specialtiesErrorMsg}</p>
+                        </Row>
+                        }
+
                         <hr/>
+
+                        {passStrength === ""
+                        ? <></>
+                        : <div>
+                            <p>{passStrength}</p>    
+                        </div>}
 
                         <FormGroup className="mb-3">
                         <InputGroup className="input-group-alternative">
@@ -424,12 +725,18 @@ function RegisterPage () {
                             placeholder="Password"
                             type="password"
                             autoComplete="off"
-                            onChange={ (event) => {
-                                setPass(event.target.value);
-                            }}
+                            onChange={handlePasswordChange}
                             />
                         </InputGroup>
                         </FormGroup>
+
+                        {passwordErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3 mt-2">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{passwordErrorMsg}</p>
+                        </Row>
+                        }
 
                         <FormGroup className="mb-3">
                             <InputGroup className="input-group-alternative">
@@ -448,6 +755,14 @@ function RegisterPage () {
                                 />
                             </InputGroup>
                         </FormGroup>
+
+                        {confirmPassErrorMsg === "" 
+                        ? <></>
+                        : <Row className="mb-3 mt-2">
+                            <small className="text-uppercase text-danger font-weight-bold mt-1 mr-2 ml-3">Error:</small>
+                            <p className="text-danger mb-0">{confirmPassErrorMsg}</p>
+                        </Row>
+                        }
                         {/* <div className="custom-control custom-control-alternative custom-checkbox">
                         <input
                             className="custom-control-input"
