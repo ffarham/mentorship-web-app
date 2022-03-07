@@ -41,43 +41,6 @@ httpsServer.listen(5000, async () => {
     console.log("Listening on port 5000!\n");
 
     setInterval(() => available.pollMatching(), 1000);
-    /*pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson' OR name = 'Your Father'")
-        .then(result => {
-            let ids = []
-            for(let i = 0; i < result.rowCount; ++i){
-                ids.push(result.rows[i]["userid"]);
-            }
-            available.createMatches(ids);
-        }, 
-            result => {console.log("No such user exists")});
-    */
-    /*let resultsArray = [];
-    poll();
-    console.log("got here");
-    let userid = await pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson'") //or name = 'Your Father'")
-        /*.then(async result => {
-            for(let i = 0; i < result.rowCount; ++i){
-                let mentee = new Mentee(result.rows[i]["userid"], null, null, null, null);
-                console.log("mentee userid: " + mentee.userid);
-                let flag = new Flag(mentee);
-                console.log("flag userid: " + flag.getMentee().userid);
-                available.addMentee(flag);
-            }
-        },
-        .then(async result => {
-            return result.rows[0]["userid"];
-        }, 
-            result => {console.log("No such user exists")});
-
-        sendFlag(userid);
-
-    console.log("end me");*/
+    //console.log("weighted cost: " + available.calculateWeightedCost(1, 0, 5));
+    
 });
-
-
-
-
-/*
-async function poll(){
-    setInterval(() => available.pollMatching(), 1000);
-}*/

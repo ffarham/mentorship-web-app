@@ -7,12 +7,9 @@ const Flag = require("../../matching/matchable").Flag;
 router.get("/matching/:userid", async (req, res, next) => {
     try{ 
 
-        //const userid = req.params.userID;
-        const userid = await pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson'") //or name = 'Your Father'")
-        .then(async result => {
-            return result.rows[0]["userid"];
-        }, 
-            result => {console.log("No such user exists")});
+        const userid = req.params.userid;
+        console.log("userid: " + userid);
+        
         const flag = new Flag(userid);
         matchingSystem.addMentee(flag);
         await pollFlag(flag, res);
@@ -28,8 +25,19 @@ async function pollFlag(flag, res){
         setTimeout(pollFlag, 0, flag, res);
     }
     else{
-        return;
+        let JSONString = await makeJSONList(flag.getMentorList());
+        console.log("Final JSON string: " + JSONString);
+        res.send(JSONString);
     }
+}
+
+async function makeJSONList(mentorList){
+    let JSONString = "[";
+    let i = 0;
+    for(i; i < mentorList.length; ++i){
+        JSONString += mentorList[i].toJSON() + ",";
+    }
+    return JSONString;
 }
 
 module.exports = router;
