@@ -273,7 +273,7 @@ async addMentee(flag){
     flagQueue.push(flag);
 },                  
 async pollMatching(){
-    //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
+    console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
     if((flagQueue.length > 2 || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
@@ -331,7 +331,7 @@ async createMatches(menteeFlags){
 
                 let mentee_T = menteeArray[j];
                 console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor_T.first.name);
-                console.log("mentee's bArea: " + mentee_T.first.bArea, " mentors: " + mentor_T.first.bArea);
+                console.log("mentee's bArea: " + mentee_T.first.bArea, " mentor's: " + mentor_T.first.bArea);
                 console.log("number of common interests: " + 
                 await menteeMentorMap.get(mentee_T.first.userid).get(mentor_T.first.userid));
                 //Do not attempt to match mentees and mentors with the same business area
@@ -340,17 +340,17 @@ async createMatches(menteeFlags){
                     ++assignedMentors;
                     continue;    
                 }
+                //If the mentor-mentee pair has already been considered, do not do so again
+                if(mentee_T.first.aTable.has(mentor_T.first)){
+                    console.log("already assigned");
+                    continue;
+                }
                 if(currentPairs.has(mentee_T.first.userid)){
                     if(currentPairs.get(mentee_T.first.userid).has(mentor_T.first.userid)){
                         mentee_T.first.aTable.set(mentor_T.first, null);
                         ++assignedMentors;
                         continue;
                     }
-                }
-                //If the mentor-mentee pair has already been considered, do not do so again
-                if(mentee_T.first.aTable.has(mentor_T.first)){
-                    console.log("already assigned");
-                    continue;
                 }
                 
                 //Check for common interests between the mentor and mentee
