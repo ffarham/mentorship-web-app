@@ -38,6 +38,7 @@ app.use(apiString, require("./routes/checkRefreshToken"));
 app.use(apiString, require("./routes/login"));
 app.use(apiString, require("./routes/registerNewUser"));
 app.use(apiString, require("./routes/planOfAction"));
+app.use(apiString, require("./routes/matching/matching"));
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {

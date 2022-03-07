@@ -79,31 +79,31 @@ WHERE A.name = 'Hajime' AND B.name = 'Big Lez';
 
 
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Research', 'mentor', 1 from users where users.name = 'Astolfo';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Risk', 'mentor', 3 from users where users.name = 'Astolfo';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Marketing', 'mentor', 4 from users where users.name = 'Astolfo';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Sales', 'mentor', 2 from users where users.name = 'Astolfo';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Research', 'mentor', 1 from users where users.name = 'Astolfo';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentor', 3 from users where users.name = 'Astolfo';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Marketing', 'mentor', 4 from users where users.name = 'Astolfo';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Sales', 'mentor', 2 from users where users.name = 'Astolfo';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Research', 'mentor', 1 from users where users.name = 'Stein';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Risk', 'mentor', 3 from users where users.name = 'Stein';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Stocks', 'mentor', 2 from users where users.name = 'Stein';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Bonds', 'mentor', 4 from users where users.name = 'Stein';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Research', 'mentor', 1 from users where users.name = 'Stein';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentor', 3 from users where users.name = 'Stein';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Stocks', 'mentor', 2 from users where users.name = 'Stein';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Bonds', 'mentor', 4 from users where users.name = 'Stein';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Growth', 'mentor', 1 from users where users.name = 'Mahito';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Marketing', 'mentor', 3 from users where users.name = 'Mahito';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Sales', 'mentor', 2 from users where users.name = 'Mahito';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Growth', 'mentor', 1 from users where users.name = 'Mahito';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Marketing', 'mentor', 3 from users where users.name = 'Mahito';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Sales', 'mentor', 2 from users where users.name = 'Mahito';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Research', 'mentor', 4 from users where users.name = 'Fullmetal';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'IPO', 'mentor', 3 from users where users.name = 'Fullmetal';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Risk', 'mentor', 2 from users where users.name = 'Fullmetal';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'HFT', 'mentor', 1 from users where users.name = 'Fullmetal';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Research', 'mentor', 4 from users where users.name = 'Fullmetal';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'IPO', 'mentor', 3 from users where users.name = 'Fullmetal';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentor', 2 from users where users.name = 'Fullmetal';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'HFT', 'mentor', 1 from users where users.name = 'Fullmetal';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'HFT', 'mentor', 1 from users where users.name = 'Hyouoin Kyouma';
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'IPO', 'mentor', 2 from users where users.name = 'Hyouoin Kyouma';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'HFT', 'mentor', 1 from users where users.name = 'Hyouoin Kyouma';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'IPO', 'mentor', 2 from users where users.name = 'Hyouoin Kyouma';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'Sales', 'mentor', 1 from users where users.name = 'Cerulea';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Sales', 'mentor', 1 from users where users.name = 'Cerulea';
 
-INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'M&A', 'mentor', 1 from users where users.name = 'Hajime';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'M&A', 'mentor', 1 from users where users.name = 'Hajime';
 
 
 
@@ -111,13 +111,13 @@ INSERT INTO interest (userid, interest, kind, rnk) SELECT userid, 'M&A', 'mentor
 
 /*Jimothy's Interests*/
 
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'Risk', 'mentee', 1 from users where users.name = 'Jimothy Bobson';
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'IPO', 'mentee', 3 from users where users.name = 'Jimothy Bobson';
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'Sales', 'mentee', 2 from users where users.name = 'Jimothy Bobson';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentee', 1 from users where users.name = 'Jimothy Bobson';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'IPO', 'mentee', 3 from users where users.name = 'Jimothy Bobson';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Sales', 'mentee', 2 from users where users.name = 'Jimothy Bobson';
 
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'Marketing', 'mentee', 1 from users where users.name = 'Your Father';
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'IPO', 'mentee', 2 from users where users.name = 'Your Father';
-INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'M&A', 'mentee', 3 from users where users.name = 'Your Father';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Marketing', 'mentee', 1 from users where users.name = 'Your Father';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'IPO', 'mentee', 2 from users where users.name = 'Your Father';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'M&A', 'mentee', 3 from users where users.name = 'Your Father';
 
 /*INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'Research', 'mentee', 2 from users where users.name = 'Scott Tenorman';
 INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'M&A', 'mentee', 1 from users where users.name = 'Scott Tenorman';*/

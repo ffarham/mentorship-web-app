@@ -18,12 +18,12 @@ const menteeQuery = "" +
     "mentoring GROUP BY menteeID HAVING COUNT(menteeID) < 10) mentees ON userid = mentees.menteeID) users WHERE userid = $1";
 
 const matchingInterestQuery = "" +
-"select menteeInterests.userid as menteeid, mentorInterests.userid as mentorid, menteeInterests.interest as commonInterest, menteeInterests.rnk as menteeRank, mentorInterests.rnk as mentorRank from " +  
-"(select mentees.userid, mentees.name, interest.interest, interest.rnk from " + 
+"select menteeInterests.userid as menteeid, mentorInterests.userid as mentorid, menteeInterests.interest as commonInterest, menteeInterests.ordering as menteeRank, mentorInterests.ordering as mentorRank from " +  
+"(select mentees.userid, mentees.name, interest.interest, interest.ordering from " + 
 "(select userid, name FROM users join mentee on userid = menteeid) mentees " + 
     "join interest " + 
     "on mentees.userid = interest.userid) menteeInterests " + 
-        "join (select mentors.userid, mentors.name, interest.interest, interest.rnk from " + 
+        "join (select mentors.userid, mentors.name, interest.interest, interest.ordering from " + 
         "(select userid, name FROM users join mentor on userid = mentorid) mentors " + 
             "join interest " + 
             "on mentors.userid = interest.userid) mentorInterests " + 
@@ -32,7 +32,7 @@ const matchingInterestQuery = "" +
 const mentoringPairs = "" + 
 "SELECT menteeid, mentorid FROM mentoring";
 
-const userInterests = "SELECT interest, rnk FROM interest WHERE userid = $1 AND kind = $2";
+const userInterests = "SELECT interest, ordering FROM interest WHERE userid = $1 AND kind = $2";
 
 const flagQueue = [];
 
@@ -150,7 +150,7 @@ async function getInterests(userid, kind){
     const interests = await pool.query(userInterests, [userid, kind]);
     let interestArray = new Array();
     for(let j = 0; j < interests.rowCount; ++j){
-        interestArray.push(new Tuple(interests.rows[j]["rnk"], interests.rows[j]["interest"]));
+        interestArray.push(new Tuple(interests.rows[j]["ordering"], interests.rows[j]["interest"]));
     }
     interestArray.sort((first, second) => { return first.first - second.first});
     return interestArray;
@@ -273,7 +273,7 @@ async addMentee(flag){
     flagQueue.push(flag);
 },                  
 async pollMatching(){
-    console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
+    //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
     if((flagQueue.length > 2 || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
