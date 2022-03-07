@@ -18,10 +18,10 @@ class HomePage extends React.Component {
                 <MainNavbar />
                 <Container fluid="xl" className="m-5">
                     <Row>
-                        <Col sm="12" md="8">
+                        <Col md="8">
                             <MeetingsPanel />
                         </Col>
-                        <Col sm="12" md="4">
+                        <Col md="4">
                             <NotificationsPanel />
                         </Col>
                     </Row>
