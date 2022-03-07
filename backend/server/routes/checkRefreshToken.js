@@ -3,8 +3,10 @@ const tokens = require('../auth/tokens');
 
 
 router.post('/checkrefreshtoken', (req, res, next) => {
+    //Pull the token from the request
     const refreshToken = req.body.refreshToken;
 
+    //Decode the token
     tokens.decodeRefreshToken(refreshToken)
         .then((newTokens) => {
             res.json(newTokens);

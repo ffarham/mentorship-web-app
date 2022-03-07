@@ -1,30 +1,54 @@
-<<<<<<< HEAD
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+    
+} from 'reactstrap';
+import { Redirect } from 'react-router-dom';
+
+import MainNavbar from "../components/Navs/MainNavbar.js";
+import MainFooter from "../components/Navs/MainFooter.js";
+import PlanOfActionPanel from "../components/plan-of-action/PlanOfActionPanel.js";
 
 
-class PlanOfActionsPage extends React.Component {
-    render () {
-        return (
-            <>
-                <h1>Plan of Actions page</h1>
-            </>
-        );
+function PlanOfActionsPage() {
+
+    // check if a user is logged in or not, assume the user is already logged in so the use effect callback runs
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    // store user type
+    const [userType, setUserType] = useState("");
+    useEffect( () => {
+        // if auth state exists then user is logged in
+        const authState = localStorage.getItem('authState');
+        if (!authState) {
+            setIsLoggedIn(false);
+        }else{
+            setUserType(JSON.parse(authState).userType);
+        }
+    }, []);
+
+    // if user is not logged in, redirect user to landing page
+    if (!isLoggedIn) {
+        return <Redirect to="/" />
+        // window.location.href = "/";
+    }else{
+        // only mentees should have access to this page
+        if (userType === "mentor"){
+            return <Redirect to="/home" />
+            // window.location.href = "/home";
+        }
     }
+
+
+    return (
+        <>
+
+            <MainNavbar activeView="plan-of-action"/>
+
+            <PlanOfActionPanel />
+
+            <MainFooter />
+        </>
+    );
+
 }
 
-=======
-import React from 'react';
-
-
-class PlanOfActionsPage extends React.Component {
-    render () {
-        return (
-            <>
-                <h1>Plan of Actions page</h1>
-            </>
-        );
-    }
-}
-
->>>>>>> master
 export default PlanOfActionsPage;
