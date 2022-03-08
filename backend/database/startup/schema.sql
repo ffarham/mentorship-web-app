@@ -61,7 +61,8 @@ CREATE TABLE mentorshipRequests (
 DROP TABLE IF EXISTS mentoring CASCADE;
 CREATE TABLE mentoring (
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID)
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    PRIMARY KEY (mentorID, menteeID)
 );
 
 --Interests:
