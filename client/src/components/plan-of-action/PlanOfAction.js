@@ -6,7 +6,7 @@ import {
     Progress
 } from 'reactstrap';
 
-function PlanOfAction({ data }) {
+function PlanOfAction({ data, from }) {
 
      // get user information
      const authState = JSON.parse(localStorage.getItem('authState'));
@@ -66,20 +66,22 @@ function PlanOfAction({ data }) {
             <div className="py-2 pb-3" >
                 <Card className="bg-secondary shadow border-0 px-4 py-4">
                     <Row className="justify-content-center">
+                        {from === "planOfActionPanel"
+                        ? <>
                         <Col lg="3">
-                            <div className="">
+                            <div className="mt-4">
                                 {userType === "mentor"
                                 ? <p>{data.mentee}</p>
                                 : <p>{data.mentor}</p>
                                 }
                             </div>
                         </Col>
-                        <Col className="" lg="6">
-                            <div className="">
+                        <Col className="" lg="5">
+                            <div className="mt-4">
                                 <p>{data.planName}</p>
                             </div>
                         </Col>
-                        <Col className="text-lg-right align-self-lg-center" lg="3">
+                        <Col className="text-lg-right align-self-lg-center" lg="4">
                             <div className="progress-wrapper">
                                 <div className="progress-info">
                                     <div className="progress-label">
@@ -91,6 +93,26 @@ function PlanOfAction({ data }) {
                                 <Progress max="100" value={progress} color={colour} />
                             </div>
                         </Col>
+                        </>
+                        : <>
+                        <Col className="" lg="5">
+                            <div className="mt-4">
+                                <p>{data.planName}</p>
+                            </div>
+                        </Col>
+                        <Col className="text-lg-right align-self-lg-center" lg="7">
+                            <div className="progress-wrapper">
+                                <div className="progress-info">
+                                    <div className="progress-label">
+                                        <small>{progressMsg}</small>
+                                    </div>
+                                <div className="progress-percentage">
+                                </div>
+                                </div>
+                                <Progress max="100" value={progress} color={colour} />
+                            </div>
+                        </Col>
+                        </>}
                     </Row>
                 </Card>        
             </div>

@@ -56,7 +56,7 @@ function PlanOfActionPanel() {
                 {planOfActions.map( (planOfAction) => {
                     return (
                         <div onClick={() => handleClick(planOfAction)}>
-                            <PlanOfAction data={planOfAction} />
+                            <PlanOfAction data={planOfAction} from="planOfActionPanel" />
                         </div>
                     );
                 }
