@@ -17,7 +17,7 @@ const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 const { AvailablePersons } = require("./matching/matchable");
 
-const available = require('./matching/matchable').AvailablePersons;
+const available = require('./matching/matchable').pairMatching;
 const Flag = require('./matching/matchable').Flag;
 const Mentee = require('./matching/matchable').Mentee;
 
@@ -45,7 +45,5 @@ httpsServer.listen(5000, async () => {
     console.log("Server is running...");
     console.log("Listening on port 5000!\n");
 
-    setInterval(() => available.pollMatching(), 1000);
-    //console.log("weighted cost: " + available.calculateWeightedCost(1, 0, 5));
-    
+    setInterval(() => available.pollMatching(), 1000);    
 });

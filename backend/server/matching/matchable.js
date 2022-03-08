@@ -123,8 +123,7 @@ class User {
 
         jsonString += "]";
         jsonString += "}";
-        //console.log(JSON.stringify(this.interests));
-        //console.log(JSON.parse(JSON.stringify(this.interests)));
+        
         return jsonString;
     }
 }
@@ -147,7 +146,16 @@ class Mentor extends User{
 }
 
 async function getInterests(userid, kind){
-    const interests = await pool.query(userInterests, [userid, kind]);
+    let interests = undefined;
+    try{
+        interests = await pool.query(userInterests, [userid, kind]);
+    } catch(err){
+        throw err;
+    }
+    if(interests.rowCount === 0){
+        throw {name: "InterestsNotFoundError", message: "Could not find a user's interests"};
+    }
+
     let interestArray = new Array();
     for(let j = 0; j < interests.rowCount; ++j){
         interestArray.push(new Tuple(interests.rows[j]["ordering"], interests.rows[j]["interest"]));
@@ -157,21 +165,23 @@ async function getInterests(userid, kind){
 }
 
 async function createMenteeObj(menteeID){
-    const menteeResults = await pool.query(menteeQuery, [menteeID]).then(async result => {
-        return result;
-    }, 
-        result => {console.log("No such user exists")});
-    console.log("a");
-    if(menteeResults.rowCount === 0){
-        throw {name: 'MenteeUnavailableError', message: 'Mentee unavailable!'};
+    let menteeResults = null;
+    try{
+        menteeResults = await pool.query(menteeQuery, [menteeID])
+    } catch(err) {
+        throw err;
     }
-    console.log("b");
+    if(menteeResults.rowCount === 0){
+        throw {name: 'MenteeNotFoundError', message: 'Mentee unavailable!'};
+    }
+
     let rows = menteeResults.rows;
-    let interests = await getInterests(rows[0]["userid"], "mentee").then(result =>{
-        return result;
-    },
-        () => {console.log("Error")});
-    // interests.map(a => {return a}
+    let interests = null;
+    try{
+        interests = await getInterests(rows[0]["userid"], "mentee")
+    } catch(err){
+        throw(err);
+    }
     let mentee = new Mentee(menteeID, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
     return mentee;
 }
@@ -179,13 +189,23 @@ async function createMenteeObj(menteeID){
 async function getAvailableMentors(){
     let mentors = [];
 
-    const mentorResults = await pool.query(mentorQuery);
+    let mentorResults = null
+    try{
+        mentorResults = await pool.query(mentorQuery);
+    } catch(err){
+        throw(err);
+    }
     if(mentorResults.rowCount === 0){
         throw {name: 'NoAvailableMentorsError', message: 'No mentors available!'}
     }
     let rows = mentorResults.rows;
     for(let i = 0; i < mentorResults.rowCount; ++i){
-        let interests = await getInterests(rows[i]["userid"], "mentor");
+        let interests = null 
+        try{
+            interests = await getInterests(rows[i]["userid"], "mentor");
+        } catch(err){
+            throw(err);
+        }
         mentors.push(new Mentor(rows[i]["userid"], rows[i]["name"], rows[i]["businessarea"], rows[i]["email"], interests, rows[i]["menteenum"])); 
     }
     return mentors;
@@ -196,15 +216,18 @@ async function createMentorList(flag, mentors){
     for(let i = 0 ; i < mentors.length; ++i){
         tempList.push(mentors[i].second.second);
     }
-   
     flag.setMentorList(tempList);
 }
 
 async function createMenteeMentorMap(){
     let map = new Map();
-    const result = await pool.query(matchingInterestQuery).then(
-                    result => {return result;}, 
-                    () => console.log("Failed to get common interest count"))
+    let result = null;
+    try{
+         result = await pool.query(matchingInterestQuery);
+    } catch(err){
+        throw(err);
+    }
+                    
     for(let i = 0; i < result.rowCount; ++i){
         let row = result.rows[i];
         let newEntry = new Tuple(row["commoninterest"], new Tuple(row["menteerank"], row["mentorrank"]));
@@ -216,10 +239,10 @@ async function createMenteeMentorMap(){
         }
         else{
             let mentorMap = map.get(row["menteeid"]);
-            if(!map.get(row["menteeid"]).has(row["mentorid"])){
-                map.get(row["menteeid"]).set(row["mentorid"], [newEntry]);
+            if(!mentorMap.has(row["mentorid"])){
+                mentorMap.set(row["mentorid"], [newEntry]);
             } else{
-                map.get(row["menteeid"]).get(row["mentorid"])
+                mentorMap.get(row["mentorid"])
                 .push(newEntry);
             }
         }
@@ -227,7 +250,7 @@ async function createMenteeMentorMap(){
     return map;
 }
  
-async function calculateWeightedCost(rank, numMatches, numMentees){
+async function rankFormula(rank, numMatches, numMentees){
     return rank - (numMatches + (maxMentees - numMentees))/(maxInterests + maxMentees);
 } 
 
@@ -244,15 +267,18 @@ async function calculateRanking(mentee_T, mentor_T){
         } 
     }
 
-    rank = calculateWeightedCost(rank, commonInterestTuples.length, mentor_T.first.menteeNum);
+    rank = rankFormula(rank, commonInterestTuples.length, mentor_T.first.menteeNum);
     return rank;
 }
 
 async function getCurrentPairs(){
-    let rows = await pool.query(mentoringPairs).then(result => {
-        return result.rows;
-    }, 
-        () => {throw {name:'MentoringPairsError', message: 'Failed to get mentoring pairs' }});
+    let rows = null;
+    
+    try{ 
+        rows = await pool.query(mentoringPairs); 
+    } catch(err){
+        throw(err);
+    }
     let pairMap = new Map();
 
     for(let i = 0; i < rows.length; ++i){
@@ -268,7 +294,7 @@ async function getCurrentPairs(){
 }
 
 
-var AvailablePersons = {
+var pairMatching = {
 async addMentee(flag){
     flagQueue.push(flag);
 },                  
@@ -277,21 +303,29 @@ async pollMatching(){
     ++pollCount;      
     if((flagQueue.length > 2 || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
-        await this.createMatches(flagQueue.splice(0, flagQueue.length));
+        try {
+            await this.createMatches(flagQueue.splice(0, flagQueue.length));
+        } catch(err) {
+            throw(err);
+        }
     }
     if(pollCount === pollLimit) pollCount = 0;    
 },
 async createMatches(menteeFlags){
     const mentees =  []; 
+    let mentors = null;
+    let currentPairs = null;
+    try {
+        menteeMentorMap = await createMenteeMentorMap();
 
-    menteeMentorMap = await createMenteeMentorMap();
-    
-    for(let i = 0; i < menteeFlags.length; ++i){
-        mentees.push( await createMenteeObj(menteeFlags[i].getMenteeID()));//createMenteeObj(userid);
+        for(let i = 0; i < menteeFlags.length; ++i){
+            mentees.push( await createMenteeObj(menteeFlags[i].getMenteeID()));//createMenteeObj(userid);
+        }
+        mentors =  await getAvailableMentors();
+        currentPairs = await getCurrentPairs();
+    } catch(err){
+        throw(err);
     }
-    const mentors = await getAvailableMentors();
-    const currentPairs = await getCurrentPairs();
-    
     //console.log("mentors: " + mentors);
     //console.log("mentees: " + mentees);
 
@@ -334,16 +368,17 @@ async createMatches(menteeFlags){
                 console.log("mentee's bArea: " + mentee_T.first.bArea, " mentor's: " + mentor_T.first.bArea);
                 console.log("number of common interests: " + 
                 await menteeMentorMap.get(mentee_T.first.userid).get(mentor_T.first.userid));
+                  
+                //If the mentor-mentee pair has already been considered, do not do so again
+                if(mentee_T.first.aTable.has(mentor_T.first)){
+                    console.log("already assigned");
+                    continue;
+                }
                 //Do not attempt to match mentees and mentors with the same business area
                 if(mentee_T.first.bArea === mentor_T.first.bArea || mentee_T.first.userid === mentor_T.first.userid){
                     mentee_T.first.aTable.set(mentor_T.first, null);
                     ++assignedMentors;
                     continue;    
-                }
-                //If the mentor-mentee pair has already been considered, do not do so again
-                if(mentee_T.first.aTable.has(mentor_T.first)){
-                    console.log("already assigned");
-                    continue;
                 }
                 if(currentPairs.has(mentee_T.first.userid)){
                     if(currentPairs.get(mentee_T.first.userid).has(mentor_T.first.userid)){
@@ -384,7 +419,10 @@ async createMatches(menteeFlags){
                 ++assignedMentors;
                 //Find the ranking that the mentee gives the mentor, which is the highest ranking 
                 //given to an interest that the mentor has by the mentee.
-                let rank = await calculateRanking(mentee_T, mentor_T);
+                let rank = null 
+                try{
+                    rank = await calculateRanking(mentee_T, mentor_T);
+                } catch(err){ throw err}
                 //If the mentee has less than 5 mentors assigned to them, add the new mentor
                 if(mentee_T.second.length < 5) {
                     mentee_T.second.push(new Tuple(rank, new Tuple(i, mentor_T.first)));
@@ -394,7 +432,7 @@ async createMatches(menteeFlags){
                 //Otherwise, check if the new mentor is better ranked than one of 
                 //the existing assignments and if so, replace the old assignment
                 else{
-                    let tempIndex = 0;
+                    let tempIndex = -1;
                     let tempRank = rank;
                     for(let p = 0; p < 5; ++p){
                         if(mentee_T.second[p].first > tempRank){
@@ -402,11 +440,13 @@ async createMatches(menteeFlags){
                             tempRank = mentee_T.second[p].first
                         }
                     }
-                    console.log("Swapping mentor " + mentorsToAssign[mentee_T.second[tempIndex].second.first].first.name + 
+                    if(tempIndex != -1){
+                        console.log("Swapping mentor " + mentorsToAssign[mentee_T.second[tempIndex].second.first].first.name + 
                             " for: " + mentor_T.first.name);
-                    mentorsToAssign[mentee_T.second[tempIndex].second.first].second = false;
-                    mentee_T.second[tempIndex] = new Tuple(rank, new Tuple(i, mentor_T.first));
-                    mentor_T.second = true;
+                        mentorsToAssign[mentee_T.second[tempIndex].second.first].second = false;
+                        mentee_T.second[tempIndex] = new Tuple(rank, new Tuple(i, mentor_T.first));
+                        mentor_T.second = true;
+                    }
                 }
             }
         }
@@ -418,8 +458,13 @@ async createMatches(menteeFlags){
     console.log("Finished!");
     //Sort the result
     for(let i = 0; i < menteeArray.length; ++i){
+        console.log(menteeArray[i].first.name + ": ");
+        console.log(menteeArray[i].second);
         menteeArray[i].second.sort();
-        await createMentorList(menteeFlags[i], menteeArray[i].second);
+        
+        try{await createMentorList(menteeFlags[i], menteeArray[i].second);}
+        catch(err) {throw err;}
+        
         menteeFlags[i].setFlag();
     }
     for(let i = 0; i < menteeArray.length; ++i){
@@ -433,4 +478,4 @@ async createMatches(menteeFlags){
 },
 }
 
-module.exports = {AvailablePersons, Mentee, Flag};
+module.exports = {pairMatching, Mentee, Flag};
