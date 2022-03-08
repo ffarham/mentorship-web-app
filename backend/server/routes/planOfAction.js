@@ -2,7 +2,7 @@ const router = require("express").Router();
 const checkAuth = require('../auth/checkAuth');
 const pool = require('../db.js');
 
-router.get('/plan-of-actions/:userID', checkAuth, async (req, res, next) => {
+router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
     try {
         //Pull all plans from the database
         const planResult = await pool.query('SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1', [req.userInfo.userID]);

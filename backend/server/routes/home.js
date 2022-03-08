@@ -39,12 +39,61 @@ router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, 
     res.send('Success!');
 });
 
+/* Mentee query:
+  (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.feedback 
+    FROM meeting 
+    INNER JOIN users ON meeting.mentorID = users.userID 
+    WHERE meeting.menteeID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW())
+
+  UNION
+
+  (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.place, groupMeeting.meetingStart, groupMeeting.meetingDuration, (SELECT COUNT(*) FROM groupMeetingAttendee INNER JOIN groupMeeting on groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID WHERE groupMeetingAttendee.confirmed = TRUE) AS confirmed FROM groupMeeting 
+    INNER JOIN users ON groupMeeting.mentorID = users.userID 
+    WHERE groupMeetingAttendee.menteeID = $1 AND (groupMeeting.meetingStart + groupMeeting.meetingDuration > NOW()))
+
+  ORDER BY meetingStart 
+
+  Mentor query:
+    (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.feedback FROM meeting INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()) UNION (SELECT groupMeetingID AS meetingID, kind AS meetingType, name, groupMeetingName AS meetingName, place, meetingStart, meetingDuration, (SELECT COUNT(*) FROM groupMeetingAttendee INNER JOIN groupMeeting on groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID WHERE groupMeetingAttendee.confirmed = TRUE) AS confirmed FROM groupMeeting WHERE mentorID = $1 AND (meetingStart + meetingDuration > NOW())) ORDER BY meetingStart
+
+*/
+
 //Route to pull all upcoming meetings
 router.get("/meetings", checkAuth, async (req, res, next) => {
-    //Pull the meetings from the database
-    const meetingResult = await pool.query('SELECT * FROM meeting WHERE mentorID = $1 OR menteeID = $1 AND meetingStart + meetingDuration > NOW() ORDER BY meetingStart');
+    //Choose the correct database query
+    var query;
+    if (req.userInfo.userType === 'mentee') {
+        query = "(SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.feedback FROM meeting INNER JOIN users ON meeting.mentorID = users.userID WHERE meeting.menteeID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()) UNION (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.place, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.description, (SELECT COUNT(*) FROM groupMeetingAttendee INNER JOIN groupMeeting on groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID WHERE groupMeetingAttendee.confirmed = TRUE) AS confirmed FROM groupMeeting INNER JOIN users ON groupMeeting.mentorID = users.userID WHERE groupMeetingAttendee.menteeID = $1 AND (groupMeeting.meetingStart + groupMeeting.meetingDuration > NOW())) ORDER BY meetingStart DESC";
+    } else if (req.userInfo.userType === 'mentor') {
+        query = "(SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.feedback FROM meeting INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()) UNION (SELECT groupMeetingID AS meetingID, kind AS meetingType, name, groupMeetingName AS meetingName, place, meetingStart, meetingDuration, description, (SELECT COUNT(*) FROM groupMeetingAttendee INNER JOIN groupMeeting on groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID WHERE groupMeetingAttendee.confirmed = TRUE) AS confirmed, groupMeeting.attended FROM groupMeeting WHERE mentorID = $1 AND (meetingStart + meetingDuration > NOW())) ORDER BY meetingStart DESC";
+    }
 
-    //Pull the group meetings from the database
-    const groupMeetingResult = await pool.query('SELECT groupMeeting.* FROM groupMeeting INNER JOIN groupMeetingAttendee ON groupMeeting.groupMeetingID = groupMeetingAttendee.groupMeetingID WHERE (groupMeetingAttendee.menteeID = $1 OR groupMeeting.mentorID = $1) AND ( groupMeeting.meetingStart + groupMeeting.meetingDuration > NOW() ) ORDER BY meetingStart');
+    //Run the database query
+    const result = await pool.query(query, [req.userInfo.userID]);
 
+    //Format the results
+    var meetingResult;
+    for (var i = 0; i < result.rowCount; i++) {
+        meetingResult = result.rows[i];
+
+        meeting = {
+            meetingID : meetingResult.meetingID,
+            meetingType : meetingResult.meetingType,
+            meetingName : meetingResult.meetingName,
+            mentorName : '',
+            menteeName : '',
+            meetingStart : meetingResult.meetingStart,
+            meetingDuration : meetingResult.meetingDuration,
+            place : meetingResult.place,
+            confirmed : meetingResult.confirmed,
+            attended : meetingResult.attended,
+            description : meetingResult.description
+        }
+
+        if (req.userInfo.userType === 'mentee') {
+
+        } else if (req.userInfo.userType === 'mentor') {
+            
+        }
+    }
 });

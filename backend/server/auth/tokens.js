@@ -55,7 +55,6 @@ async function decodeAccessToken(token) {
     var decoded;
     try {
         decoded = jwt.verify(token, TOKEN_SECRET).data;
-        console.log(decoded);
     } catch(err) {
         //Throw an error if the token is invalid
         throw {name: 'InvalidTokenError', message: 'Attemped to decode an invalid token.'};
