@@ -52,9 +52,9 @@ CREATE TABLE mentor (
 
 DROP TABLE IF EXISTS mentorshipRequests CASCADE;
 CREATE TABLE mentorshipRequests (
-    requestID UUID NOT NULL DEFAULT gen_random_uuid(),
-    mentorID UUID NOT NULL,
-    menteeID UUID NOT NULL,
+    requestID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
     status VARCHAR(10) DEFAULT 'pending' --accepted, rejected or pending
 );
 
@@ -130,7 +130,7 @@ CREATE TABLE groupMeeting(
 
     attended BOOLEAN,
 
-    description VARCHAR(1000),
+    description VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;

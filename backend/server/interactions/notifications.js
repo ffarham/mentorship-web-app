@@ -10,6 +10,7 @@ const createNewNotificationQuery = 'INSERT INTO notifications VALUES (DEFAULT, $
  * @param {string} msg The notification message 
  */
 async function notify(userID, msg) {
+    //TODO: email user if they want it
     await pool.query(createNewNotificationQuery, [userID, msg]);
 }
 
