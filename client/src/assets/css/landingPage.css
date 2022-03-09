@@ -4,7 +4,8 @@ h3 {
 
 body {
 /* Backgrounds/Red-Blue */
-background: conic-gradient(from 243.55deg at 180.03% -10.07%, #AF3148 0deg, #E06565 41.62deg, #449AC6 41.62deg, #6EDBEB 360deg);
+font-family: 'Proxima-Nova-Black';
+background: conic-gradient(from 225deg at 90vw -16vh, #AF3148 0deg, #E06565 41.62deg, #449AC6 292.87deg, #6EDBEB 360deg);
 }
 
 .bar {
@@ -27,7 +28,7 @@ box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
 
 .lgText {
     /* REGISTER AND LOGIN*/
- /* font-family: Proxima Nova; */
+font-family: 'Proxima-Nova-Black';
 font-style: normal;
 font-weight: 900;
 font-size: 25px;
@@ -56,8 +57,10 @@ background-color: white;
 }
 
 .rec {
-    width: 1389px;
-    height: 437px;
+    padding: 60px;
+    width: 100vw;
+    /* height: 437px; */
+    height: 100vh;
     /* left: 0px;
     top: 1037px; */
     
@@ -136,8 +139,9 @@ background-color: white;
 left: 0px;
 top: 1037px; 
     background: #424242; */
-    width: 923px;
-height: 247px;
+    width: 100%;
+    padding-top: 40px;
+/* height: 247px; */
 /* left: 4px;
 top: 1121px; */
 
@@ -152,11 +156,8 @@ align-items: center;
 color: #E06565;
 }
 .text2 {
-    width: 1129px;
-height: 200px;
-left: 604px;
-top: 1337px;
-
+    width: 100%;
+    padding-top: 20px;
 font-style: normal;
 font-weight: 900;
 font-size: 40px;
@@ -171,8 +172,10 @@ color: #FFFFFF;
 .txtbox1 {
     width: 610px;
 height: 432px;
-left: 1146px;
-top: 1931px;
+/* left: 1146px;
+top: 1931px; */
+padding-left: 20px;
+padding-right: 20px;
 
 border: 12px solid #F5F5F5;
 box-sizing: border-box;
@@ -187,13 +190,11 @@ top: 1931px;
 }
 
 .bold{
-    width: 613px;
+    width: 100%;
 height: 168px;
-margin-left: -15px;
-/* font-family: Proxima Nova; */
 font-style: normal;
 font-weight: 900;
-font-size: 48px;
+font-size: 44px;
 line-height: 58px;
 display: flex;
 align-items: center;
@@ -203,9 +204,9 @@ color: #FFFFFF;
 }
 
 .smltext {
-    width: 573px;
+    width: 100%;
 height: 204px;
-
+font-family: 'Proxima-Nova-Regular';
 font-style: normal;
 font-weight: normal;
 font-size: 25px;
@@ -223,6 +224,8 @@ height: 432px;
 margin-left:35px;
 /* left: 1146px;
 top: 1931px; */
+padding-left: 20px;
+padding-right: 20px;
 
 background: #424242;
 border-radius: 5px 0px 0px 5px;
@@ -234,12 +237,12 @@ height: 432px;
 }
 
 .bold2{
-    width: 713px;
+    width: 100%;
 height: 168px;
 margin-left: 75px;
 font-style: normal;
 font-weight: 900;
-font-size: 48px;
+font-size: 44px;
 line-height: 58px;
 display: flex;
 align-items: center;
@@ -249,10 +252,11 @@ color: #FFFFFF;
 }
 
 .smltext2 {
-    width: 597px;
+    width: 100%;
 height: 204px;
-margin-left: 5px;
+/* margin-left: 5px; */
 
+font-family: 'Proxima-Nova-Regular';
 font-style: normal;
 font-weight: normal;
 font-size: 25px;
@@ -331,3 +335,49 @@ color: #E06565;
       width: 100%;
     }
   }
+
+  @font-face {
+    font-family: "Proxima-Nova-Black";
+    src: url(../fonts/Proxima_Nova_Black.woff) format("truetype");
+}
+
+@font-face {
+    font-family: "Proxima-Nova-Regular";
+    src: url(../fonts/FontsFree-Net-proxima_nova_reg-webfont.woff) format("truetype");
+}
+
+.floating {
+    animation: floating 3s ease infinite;
+    will-change: transform; }
+    .floating:hover {
+      animation-play-state: running; }
+  
+  .floating-lg {
+    animation: floating-lg 3s ease infinite; }
+  
+  .floating-sm {
+    animation: floating-sm 3s ease infinite; }
+  
+  @keyframes floating-lg {
+    0% {
+      transform: translateY(0px); }
+    50% {
+      transform: translateY(15px); }
+    100% {
+      transform: translateY(0px); } }
+  
+  @keyframes floating {
+    0% {
+      transform: translateY(0px); }
+    50% {
+      transform: translateY(10px); }
+    100% {
+      transform: translateY(0px); } }
+  
+  @keyframes floating-sm {
+    0% {
+      transform: translateY(0px); }
+    50% {
+      transform: translateY(5px); }
+    100% {
+      transform: translateY(0px); } }

@@ -129,20 +129,20 @@ class Landing extends React.Component {
                     src={require("assets/img/LandingPage/Pages/Log In + Registration/Log In-1.png")}
                   />
 
-                  <div className="txtbox1">
-                  <span className="bold">BEAUTIFUL, INTUITIVE USER-FRIENDLY DESIGN</span>
-                  <span className="smltext">Discipulo was designed with intuitivity at its heart. 
-                  Discipulo makes sure that experience in IT and technology will not affect 
-                  accessibility. We encourage everyone to use the system. 
-                  A colourful and bright design reflects the values of education, 
-                  self-improvement and fun.</span>
+                  <div className="txtbox1 floating img-fluid">
+                    <span className="bold">BEAUTIFUL, INTUITIVE USER-FRIENDLY DESIGN</span>
+                    <span className="smltext">Discipulo was designed with intuitivity at its heart. 
+                    Discipulo makes sure that experience in IT and technology will not affect 
+                    accessibility. We encourage everyone to use the system. 
+                    A colourful and bright design reflects the values of education, 
+                    self-improvement and fun.</span>
                   </div>
                 </Row>
 
                 {/* subsection */}
                 <Row className="row-grid align-items-center">
 
-                <div className="txtbox2">
+                <div className="txtbox2 floating img-fluid">
                     <span className="bold2">FOR THE MENTEE ...</span>
                     <span className="smltext2"> The learner should always be in the driving seat of their education; they know what they need to learn the most and when they are in the driving seat they will get the most out of the experience. </span>
                 </div>
@@ -162,7 +162,7 @@ class Landing extends React.Component {
                     src={require("assets/img/LandingPage/Pages/Mentor/Meetings-1.png")}
                     />
 
-                    <div className="txtbox1">
+                    <div className="txtbox1 floating img-fluid">
                     <span className="bold">... IN HARMONY WITH THE MENTOR</span>
                     <span className="smltext">The mentee is not the only one who wins in a 
                     mentoring system. Mentors are always surprised in the leadership skills they can develop 

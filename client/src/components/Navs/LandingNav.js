@@ -56,12 +56,12 @@ function LandingNav({ activeView }) {
                     <Nav className="ml-lg-auto" navbar>
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/login")}}>
-                        {activeView === "login" ? <span className="text-info">Login</span> : <span className="lgText">Login</span>}
+                        {activeView === "login" ? <span className="text-info">Login</span> : <span className="lgText">LOGIN</span>}
                         </NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/register")}}>
-                        {activeView === "register" ? <span className="text-info">Register</span> : <span className="lgText">Register</span>}
+                        {activeView === "register" ? <span className="text-info">Register</span> : <span className="lgText">REGISTER</span>}
                         </NavLink>
                     </NavItem>
                     </Nav>
