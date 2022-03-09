@@ -50,10 +50,19 @@ CREATE TABLE mentor (
     mentorID UUID PRIMARY KEY REFERENCES users(userID)
 );
 
+DROP TABLE IF EXISTS mentorshipRequests CASCADE;
+CREATE TABLE mentorshipRequests (
+    requestID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    status VARCHAR(10) DEFAULT 'pending' --accepted, rejected or pending
+);
+
 DROP TABLE IF EXISTS mentoring CASCADE;
 CREATE TABLE mentoring (
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID)
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    PRIMARY KEY (mentorID, menteeID)
 );
 
 --Interests:
@@ -79,6 +88,8 @@ DROP TABLE IF EXISTS meeting CASCADE;
 CREATE TABLE meeting (
     meetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
+    meetingName VARCHAR(100),
+
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
     menteeID UUID NOT NULL REFERENCES mentee(menteeID),
 
@@ -88,12 +99,15 @@ CREATE TABLE meeting (
     
     place VARCHAR(100),
 
-    confirmed BOOLEAN,
+    confirmed VARCHAR(10), --true, false, or reschedule
 
     attended BOOLEAN,
 
     requestMessage VARCHAR(1000),
-    feedback VARCHAR(1000)
+    feedback VARCHAR(1000),
+    description VARCHAR(1000),
+
+    CONSTRAINT legalConfirmed CHECK (confirmed = 'true' OR confirmed = 'false' OR confirmed = 'reschedule')
 );
 
 --Group sessions:
@@ -102,13 +116,21 @@ DROP TABLE IF EXISTS groupMeeting CASCADE;
 CREATE TABLE groupMeeting(
     groupMeetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
+    groupMeetingName VARCHAR(100),
+
     mentorID UUID NOT NULL REFERENCES mentor(mentorID),
 
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
     meetingDuration INTERVAL,
+
+    kind VARCHAR(12),
     
-    place VARCHAR(100)
+    place VARCHAR(100),
+
+    attended BOOLEAN,
+
+    description VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
@@ -116,8 +138,9 @@ CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
     menteeID UUID NOT NULL REFERENCES mentee(menteeID),
 
-    accepted BOOLEAN,
-    attended BOOLEAN
+    confirmed BOOLEAN,
+
+    feedback VARCHAR(1000)
 );
 
 --Workshops:
@@ -226,5 +249,7 @@ CREATE TABLE notifications (
 
     timeCreated TIMESTAMP NOT NULL,
 
-    meetingID UUID REFERENCES meeting(meetingID)
+    dismissed BOOLEAN NOT NULL
+
+    --meetingID UUID REFERENCES meeting(meetingID)
 );

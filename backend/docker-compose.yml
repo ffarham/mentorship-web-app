@@ -14,11 +14,17 @@ services:
       - ./database/startup/schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
       - ./database/startup/matchingData.sql:/docker-entrypoint-initdb.d/matchingData.sql
       - ./database/startup/interestTypes.sql:/docker-entrypoint-initdb.d/interestTypes.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
   server:
     build:
       context: ./server/
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - 5000:5000
     environment:

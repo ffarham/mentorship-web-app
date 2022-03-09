@@ -16,20 +16,18 @@ router.post('/registeruser', async (req, res, next) => {
     try {
         //Register mentee interests
         for (var i = 0; i < req.body.interests.length; i++) {
-            console.log("Registering interest = " + req.body.interests[i])
             await userInteractions.registerInterest(userID, req.body.interests[i], 'mentee', i);
         }
 
         //Register mentor interests
         for (var i = 0; i < req.body.specialties.length; i++) {
-            console.log("Registering specialty = " + req.body.specialties[i])
             await userInteractions.registerInterest(userID, req.body.specialties[i], 'mentor', i);
         }
     } catch (err) {
         res.status(500).json(err);
         return;
     }
-    
+    res.send("success");
     next();
 })
 
