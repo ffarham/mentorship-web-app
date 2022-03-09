@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const pool = require("../../db");
-const matchingSystem = require("../../matching/matchable").AvailablePersons;
+const matchingSystem = require("../../matching/matchable").pairMatching;
 const Mentee = require("../../matching/matchable").Mentee;
 const Flag = require("../../matching/matchable").Flag;
                                      
@@ -15,7 +15,7 @@ router.get("/matching/:userid", async (req, res, next) => {
         await pollFlag(flag, res);
     }catch(err){
         console.log(err);
-        res.status(500).send("500: Server Error");
+        res.status(500).send(err.message);
     }
 
 });
@@ -25,9 +25,16 @@ async function pollFlag(flag, res){
         setTimeout(pollFlag, 0, flag, res);
     }
     else{
-        let JSONString = await makeJSONList(flag.getMentorList());
-        console.log("Final JSON string: " + JSONString);
-        res.send(JSONString);
+        if(flag.getFlag() === 1){
+            let JSONString = await makeJSONList(flag.getMentorList());
+            console.log("Final JSON string: " + JSONString);
+            res.send(JSONString);
+        }
+        else{
+            let err = flag.getError();
+            console.log("flag error: " + err);
+            res.status(500).send(err.message);
+        }
     }
 }
 
