@@ -7,6 +7,7 @@ import {
 } from 'reactstrap';
 
 import api from "../api/api";
+import HomeBar from "./HomeBar";
 // import axios from 'axios'
 import Meeting from "./Meeting";
 
@@ -39,7 +40,7 @@ import Meeting from "./Meeting";
                     </CardTitle>
                     <CardText>
                         <div className="scrolling">
-                        <Meeting/>
+                        <HomeBar/>
                         </div>
                          {/* {meetings.map((meeting) => <Meeting data={meeting} />)}  */}
                     </CardText>

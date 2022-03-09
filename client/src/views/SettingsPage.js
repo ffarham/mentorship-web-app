@@ -22,7 +22,7 @@ function SettingsPage() {
     const [userData, setUserData] = useState({});
 
     // get user data 
-    const userID = JSON.parse(localStorage.getItem("authState")).userID;
+    const userID = 1;//JSON.parse(localStorage.getItem("authState")).userID;
     useEffect(() => {   
         api.get(`/api/v1/settings/${userID}`).then(
             (res) => {

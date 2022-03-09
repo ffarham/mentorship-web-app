@@ -14,6 +14,40 @@ const Mentee = require('../matching/matchable').Mentee;
 //         res.status(500).send("Server error")
 //     }
 // });
+
+router.get("/api/v1/settings/:userID", async (req,res) => {
+    try{
+        console.log(req.params);
+        const userID = req.params.userID;
+        const userData = {
+            name: "farham",
+            email: "farham@gmail.com",
+            department: "DCS",
+            interests: ['NFTS', 'trading', 'trends', 'stocks', 'options'],
+        }
+        res.send(userData);
+    }catch(e){
+        console.log(e);
+    }
+});
+
+router.get("/api/v1/notifications/:userID", async (req,res) => {
+    try{
+        console.log(req.params);
+        const userID = req.params.userID;
+        const userData = [{
+            userID: 1,
+            text: "farham@gmail.com",
+            time: "DCS",
+            room: "fuck",
+        }];
+        res.send(userData);
+    }catch(e){
+        console.log(e);
+    }
+});
+
+
 const findPasswordQuery = 'SELECT password FROM users;'
 
 router.get("/", async (req, res) => {
