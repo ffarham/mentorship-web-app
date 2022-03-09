@@ -27,7 +27,7 @@ router.post('/registeruser', async (req, res, next) => {
         res.status(500).json(err);
         return;
     }
-    
+    res.send("success");
     next();
 })
 

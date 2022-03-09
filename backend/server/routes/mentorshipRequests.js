@@ -2,8 +2,8 @@ const router = require("express").Router();
 const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 
-router.post('/requstMentor/:mentorID', checkAuth, async (req, res, next) => {
-
+router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
+   res.send("success"); 
 });
 
 router.get('/getMentorshipRequests', checkAuth, async (req, res, next) => {

@@ -317,7 +317,7 @@ async addMentee(flag){
     flagQueue.push(flag);
 },                  
 async pollMatching(){
-    console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
+    //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
     if((flagQueue.length > 2 || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
