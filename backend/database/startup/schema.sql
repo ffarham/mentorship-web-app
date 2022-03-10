@@ -17,7 +17,9 @@ CREATE TABLE users (
 
     profilePicReference VARCHAR(200),
 
-    emailsAllowed BOOLEAN NOT NULL
+    emailsAllowed BOOLEAN NOT NULL,
+
+    bio VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS authToken CASCADE;
@@ -104,7 +106,10 @@ CREATE TABLE meeting (
     attended BOOLEAN,
 
     requestMessage VARCHAR(1000),
-    feedback VARCHAR(1000),
+
+    menteeFeedback VARCHAR(1000),
+    mentorFeedback VARCHAR(100),
+
     description VARCHAR(1000),
 
     CONSTRAINT legalConfirmed CHECK (confirmed = 'true' OR confirmed = 'false' OR confirmed = 'reschedule')
@@ -253,3 +258,28 @@ CREATE TABLE notifications (
 
     --meetingID UUID REFERENCES meeting(meetingID)
 );
+
+--App feedback
+DROP TABLE IF EXISTS appFeedback CASCADE;
+CREATE TABLE appFeedback (
+    appFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    rating INTEGER,
+    feedback VARCHAR(1000)
+);
+
+--Functions:
+CREATE OR REPLACE FUNCTION countAttendees(gmID UUID)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+    attendees INTEGER;
+BEGIN
+    SELECT COUNT(*) FROM groupMeetingAttendee
+        WHERE confirmed AND groupMeetingID = gmID
+        INTO attendees;
+
+    RETURN attendees;
+END;
+$$;

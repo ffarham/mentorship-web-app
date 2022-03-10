@@ -6,7 +6,7 @@ router.post('/registeruser', async (req, res, next) => {
     //Register the user and pull their userID
     var userID;
     try {
-        userID = await userInteractions.registerUser(req.body.email, req.body.name, req.body.password, req.body.department, req.body.userType, 'pfp', req.body.emailsAllowed);
+        userID = await userInteractions.registerUser(req.body.email, req.body.name, req.body.password, req.body.department, req.body.userType, 'pfp', req.body.emailsAllowed, req.body.bio);
     } catch (err) {
         res.status(500).json(err);
         return;
@@ -28,6 +28,7 @@ router.post('/registeruser', async (req, res, next) => {
         return;
     }
     
+    res.send('Success!');
     next();
 })
 
