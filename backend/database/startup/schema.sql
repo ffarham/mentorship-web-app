@@ -129,7 +129,7 @@ CREATE TABLE groupMeeting(
     meetingStart TIMESTAMP,
     meetingDuration INTERVAL,
 
-    kind VARCHAR(12),
+    kind VARCHAR(30), --'group-meeting' or 'workshop'
     
     place VARCHAR(100),
 

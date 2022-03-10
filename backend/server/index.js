@@ -44,6 +44,8 @@ app.use(apiString, require("./routes/home")); //Endpoints for user's home page
 app.use(apiString, require("./routes/matching/matching")); //Endpoints for matchings
 app.use(apiString, require("./routes/mentorshipRequests")); //Endpoints for mentorship requests
 app.use(apiString, require("./routes/settings/settings")); //Endpoints for settings
+app.use(apiString, require('./routes/meetings')); //Endpoints for meetings
+app.use(apiString, require("./routes/mentorship")); //Endpoints for the mentorship page
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {

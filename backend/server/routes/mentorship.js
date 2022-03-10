@@ -27,8 +27,6 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
             bio : otherUserResult.bio,
             email : otherUserResult.email,
             department : otherUserResult.department,
-            planOfActions : [],
-            meetings : []
         };
 
         //Add user to the response
