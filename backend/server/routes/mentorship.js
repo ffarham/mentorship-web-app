@@ -31,6 +31,167 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
             meetings : []
         };
 
+        //Add user to the response
+        responseObject.push(otherUser);
+    }
+
+    //Send the response
+    res.json(responseObject);
+});
+
+router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
+    try {
+        //Pull all the meetings from the database
+        
+        //Choose the right query
+        var meetingsQuery;
+        if (req.userInfo.userType === 'mentee') {
+            meetingsQuery = `
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+                FROM meeting 
+                INNER JOIN users ON meeting.mentorID = users.userID 
+                WHERE meeting.menteeID = $1)
+                
+            UNION 
+            
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+                FROM groupMeeting 
+                INNER JOIN users ON groupMeeting.mentorID = users.userID
+                INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
+                WHERE groupMeetingAttendee.menteeID = $1) 
+                
+            ORDER BY meetingStart DESC
+            `;
+        } else if (req.userInfo.userType === 'mentor') {
+            meetingsQuery = `
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+                FROM meeting 
+                INNER JOIN users ON meeting.menteeID = users.userID 
+                WHERE meeting.mentorID = $1)
+                
+            UNION 
+            
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+                FROM groupMeeting 
+                WHERE groupMeeting.mentorID = $1) 
+                
+            ORDER BY meetingStart DESC
+            `;
+        }
+
+        //Run the query
+        const meetingsResult = await pool.query(meetingsQuery, [req.userInfo.userID]);
+
+        //Format the results
+        var responseObject = [];
+        var meetingResult;
+        for (var i = 0; i < result.rowCount; i++) {
+            meetingResult = meetingsResult.rows[i];
+
+            meeting = {
+                meetingID : meetingResult.meetingID,
+                meetingType : meetingResult.meetingType,
+                meetingName : meetingResult.meetingName,
+                mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
+                menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
+                meetingStart : meetingResult.meetingStart,
+                meetingDuration : meetingResult.meetingDuration,
+                place : meetingResult.place,
+                confirmed : meetingResult.confirmed,
+                attended : meetingResult.attended,
+                description : meetingResult.description
+            }
+
+            //Add meeting to user info
+            responseObject.push(meetingResult);
+        }
+
+        //Send the response
+        res.json(responseObject);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.get('/meetings/plans-of-action/:otherID', checkAuth, async (req, res, next) => {
+    try {
+        //Pull all the meetings from the database
+        
+        //Choose the right query
+        var meetingsQuery;
+        if (req.userInfo.userType === 'mentee') {
+            meetingsQuery = `
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+                FROM meeting 
+                INNER JOIN users ON meeting.mentorID = users.userID 
+                WHERE meeting.menteeID = $1 AND meeting.mentorID = $2)
+                
+            UNION 
+            
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+                FROM groupMeeting 
+                INNER JOIN users ON groupMeeting.mentorID = users.userID
+                INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
+                WHERE groupMeetingAttendee.menteeID = $1 AND groupMeeting.mentorID = $2) 
+                
+            ORDER BY meetingStart DESC
+            `;
+        } else if (req.userInfo.userType === 'mentor') {
+            meetingsQuery = `
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+                FROM meeting 
+                INNER JOIN users ON meeting.menteeID = users.userID 
+                WHERE meeting.mentorID = $1 AND meeting.menteeID = $1)
+                
+            UNION 
+            
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+                FROM groupMeeting 
+                INNER JOIN groupMeetingAttendees ON groupMeetingAttendees.groupMeetingID = groupMeeting.groupMeetingID
+                WHERE groupMeeting.mentorID = $1 AND groupMeetingAttendees.menteeID = $2) 
+                
+            ORDER BY meetingStart DESC
+            `;
+        }
+
+        //Run the query
+        const meetingsResult = await pool.query(meetingsQuery, [req.userInfo.userID, req.params.otherID]);
+
+        //Format the results
+        var responseObject = [];
+        var meetingResult;
+        for (var i = 0; i < result.rowCount; i++) {
+            meetingResult = meetingsResult.rows[i];
+
+            meeting = {
+                meetingID : meetingResult.meetingID,
+                meetingType : meetingResult.meetingType,
+                meetingName : meetingResult.meetingName,
+                mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
+                menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
+                meetingStart : meetingResult.meetingStart,
+                meetingDuration : meetingResult.meetingDuration,
+                place : meetingResult.place,
+                confirmed : meetingResult.confirmed,
+                attended : meetingResult.attended,
+                description : meetingResult.description
+            }
+
+            //Add meeting to user info
+            responseObject.push(meetingResult);
+        }
+
+        //Send the response
+        res.json(responseObject);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.get('/WAIT_FOR_FARHAM_TO_DECIDE', checkAuth, async (req, res, next) => {
+    try {
+        var responseObject = [];
+        
         //Pull the plans of action from the database
         var poaQuery;
         if (req.userInfo.userType === 'mentee') {
@@ -79,78 +240,16 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
             }
 
             //Add plan of action to the user's info
-            otherUser.planOfActions.push(planOfAction);
+            responseObject.push(planOfAction);
         }
 
-        //Pull all the meetings from the database
-        var meetingsQuery;
-        if (req.userInfo.userType === 'mentee') {
-            meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
-                FROM meeting 
-                INNER JOIN users ON meeting.mentorID = users.userID 
-                WHERE meeting.menteeID = $1)
-                 
-            UNION 
-            
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
-                FROM groupMeeting 
-                INNER JOIN users ON groupMeeting.mentorID = users.userID
-                INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
-                WHERE groupMeetingAttendee.menteeID = $1) 
-                
-            ORDER BY meetingStart DESC
-            `;
-        } else if (req.userInfo.userType === 'mentor') {
-            meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
-                FROM meeting 
-                INNER JOIN users ON meeting.menteeID = users.userID 
-                WHERE meeting.mentorID = $1)
-                 
-            UNION 
-            
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
-                FROM groupMeeting 
-                WHERE groupMeeting.mentorID = $1) 
-                
-            ORDER BY meetingStart DESC
-            `;
-        }
+        res.json(responseObject);
 
-        //Run the query
-        const meetingsResult = await pool.query(meetingsQuery, [req.userInfo.userID]);
+    } catch (err) {
+        res.status(500).json(err);
+    } 
 
-        //Format the results
-        var responseObject = [];
-        var meetingResult;
-        for (var i = 0; i < result.rowCount; i++) {
-            meetingResult = result.rows[i];
-
-            meeting = {
-                meetingID : meetingResult.meetingID,
-                meetingType : meetingResult.meetingType,
-                meetingName : meetingResult.meetingName,
-                mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
-                menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                meetingStart : meetingResult.meetingStart,
-                meetingDuration : meetingResult.meetingDuration,
-                place : meetingResult.place,
-                confirmed : meetingResult.confirmed,
-                attended : meetingResult.attended,
-                description : meetingResult.description
-            }
-
-            //Add meeting to user info
-            otherUser.meetings.push(meetingResult);
-        }        
-
-        //Add user to the response
-        responseObject.push(otherUser);
-    }
-
-    //Send the response
-    res.json(responseObject);
+    next();
 });
 
 module.exports = router;
