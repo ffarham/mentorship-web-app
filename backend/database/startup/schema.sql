@@ -141,7 +141,7 @@ CREATE TABLE groupMeeting(
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
 CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    menteeID UUID NOT NULL REFERENCES users(userID),
 
     confirmed BOOLEAN,
 

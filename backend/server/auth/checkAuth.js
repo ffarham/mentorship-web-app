@@ -13,15 +13,15 @@ async function checkAuth(req, res, next) {
         if (err.name === 'InvalidTokenError') {
             //Send failure response to frontend
             res.status(403).json(err);
-            next('route');
+            return;
         } else if (err.name === 'AccessTokenNotFoundError') {
             //Send failure response to frontend
             res.status(403).json(err);
-            next('route');
+            return;
         } else {
             //Crash appropriately
             res.status(500).json(err);
-            next('route');
+            return;
         }
     }
 
