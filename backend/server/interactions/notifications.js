@@ -14,4 +14,4 @@ async function notify(userID, msg) {
     await pool.query(createNewNotificationQuery, [userID, msg]);
 }
 
-exports.notify = notify
+module.exports = notify;

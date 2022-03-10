@@ -1,61 +1,30 @@
-// The main page from which profile, account, appearance (for accessibility),
-// the feedback form for the whole site and logging out can be accessed.
-
 const router = require("express").Router();
+const pool = require('../db');
+const checkAuth = require('../auth/checkAuth');
+const notify = require('../interactions/notifications');
+const { restart } = require("nodemon");
 
 
-//----GET ROUTES----
-
-// Settings
-router.get("/user/:userid/settings", (req, res) => {
-
-});
-
-// The user's profile
-router.get("/user/:userid/profile", (req, res) => {
-
-});
-
-// The user's account details (email, password, delete account)/
-router.get("/user/:userid/account", (req, res) => {
-
-});
-
-// Appearance of the site for the user
-router.get("/user/:userid/appearance", (req, res) => {
-
-});
-
-// Feedback form for the whole site
-router.get("/user/:userid/feedback", (req, res) => {
+router.get("/api/v1/settings/:userID", async (req,res) => {
 
 });
 
 
-//----POST ROUTES ---
+router.post("/api/v1/feedback", async (req,res, next) => {
+    try{
 
-// Save changes to the profile page.
-router.post("/user/:userid/profile", (req, res) => {
-
-});
-
-// Save changes to password
-router.post("/user/:userid/account", (req, res) => {
-
-});
+    }catch(err){
+        res.status(500).json(err);
+        next()
+    }
 
 
-//Submit request to delete the account (pop-up window)
-router.post("/user/:userid/account/delete", (req, res) => {
 
 });
 
-// Save changes to site's appearance
-router.post("/user/:userid/appearance", (req, res) => {
 
-});
 
-// Submit feedback
-router.post("/user/:userid/feedback", (req, res) => {
 
-});
+
+
+module.exports = router;

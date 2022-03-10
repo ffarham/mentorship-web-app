@@ -15,6 +15,7 @@ const home = require("./routes/homepage.js");
 
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
+const mentorshipRequests = require('./routes/mentorshipRequests');
 const { AvailablePersons } = require("./matching/matchable");
 
 const available = require('./matching/matchable').pairMatching;
@@ -41,11 +42,16 @@ app.use(apiString, require("./routes/registerNewUser")); //Endpoint for user reg
 app.use(apiString, require("./routes/planOfAction")); //Endpoints for plans of action
 app.use(apiString, require("./routes/home")); //Endpoints for user's home page
 app.use(apiString, require("./routes/matching/matching")); //Endpoints for matchings
+app.use(apiString, require("./routes/mentorshipRequests"));
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {
     console.log("Server is running...");
     console.log("Listening on port 5000!\n");
 
+<<<<<<< HEAD
+    setInterval(() => available.pollMatching(), 500);    
+=======
     setInterval(() => available.pollMatching(), 1000); //Poll matching every second    
+>>>>>>> d46752e07f7bff48a59ccf6a3262400170eb42a4
 });

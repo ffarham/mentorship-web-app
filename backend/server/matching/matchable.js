@@ -1,7 +1,7 @@
 //Process all matchable mentors and mentees
 const pool = require('../db');
 
-/*This needs to include mentors not in the mentoring table*/
+
 
 const mentorQuery = "" +
 "SELECT userid, name, businessarea, email, menteeNum FROM " + 
@@ -37,6 +37,7 @@ const userInterests = "SELECT interest, ordering FROM interest WHERE userid = $1
 const flagQueue = [];
 let menteeFlags = [];
 
+const poolLimit = 10;
 const pollLimit = 3;
 let pollCount = 0;
 
@@ -158,14 +159,15 @@ class Mentor extends User{
 
 async function getInterests(userid, kind){
     let interests = undefined;
+    console.log("userid to get requests for: " + userid);
     try{
         interests = await pool.query(userInterests, [userid, kind]);
     } catch(err){
         throw err;
     }
-    if(interests.rowCount === 0){
+    /*if(interests.rowCount === 0){
         throw {name: "InterestsNotFoundError", message: "Could not find user's interests"};
-    }
+    }*/
 
     let interestArray = new Array();
     for(let j = 0; j < interests.rowCount; ++j){
@@ -319,7 +321,7 @@ async addMentee(flag){
 async pollMatching(){
     //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
-    if((flagQueue.length > 2 || pollCount === pollLimit) && flagQueue.length > 0){
+    if((flagQueue.length >= poolLimit || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
         try {
             await this.createMatches(flagQueue.splice(0, flagQueue.length));
@@ -331,6 +333,7 @@ async pollMatching(){
     if(pollCount === pollLimit) pollCount = 0;    
 },
 async createMatches(flagList){
+
     menteeFlags = flagList;
     const mentees =  []; 
     let mentors = null;

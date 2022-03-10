@@ -188,7 +188,7 @@ DROP TABLE IF EXISTS milestones CASCADE;
 CREATE TABLE milestones(
     milestoneID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    planID UUID NOT NULL REFERENCES planOfAction(planID),
+    planID UUID NOT NULL REFERENCES planOfAction(planID) ON DELETE CASCADE,
 
     ordering INTEGER NOT NULL,
 
