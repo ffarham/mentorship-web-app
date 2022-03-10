@@ -60,21 +60,10 @@ router.post("/password", checkAuth, async(req, res, next) => {
     try{
         let userid = req.userInfo.userID;
         let oldPassword = req.body.old;
-        let newPassword = req.body.new;
 
-        const result = await pool.query("SELECT * FROM users WHERE userid = $1", [userid]);
+        const newHash = await bcrypt.hash(req.body.new, userInteractions.saltRounds);
 
-        const hash = result.rows[0].password;
-
-        let isPassCorrect = await bcrypt.compare(oldPassword, hash);
-
-        if(isPassCorrect){
-            const newHash = await bcrypt.hash(newPassword, userInteractions.saltRounds);
-            await pool.query("UPDATE users SET password = $1 WHERE userid = $2", [newHash, userid]);
-        }
-        else{
-            throw {name: "InvalidPasswordError", message: "Invalid Password"}
-        }
+        await changeUserInfo(userid, oldPassword, "password", newHash);
         res.send("success");
         next();
     }catch(err){
@@ -87,12 +76,8 @@ router.post("/password", checkAuth, async(req, res, next) => {
 
 router.post("/email", checkAuth, async(req, res, next) => {
     try{
-        let userid = req.userInfo.userID;
-        let password = req.body.password;
-        let newEmail = req.body.newemail;
+        await changeUserInfo(req.userInfo.userID, req.body.password, "email", req.body.newemail);
 
-        await changeUserInfo(userid, password, "email", newEmail);
-        
         res.send("success");
         next();
     }catch(err){
@@ -102,8 +87,20 @@ router.post("/email", checkAuth, async(req, res, next) => {
     
 });
 
+router.post("/department", checkAuth, async(req, res, next) => {
+    try{
+        await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
+    }catch(err){
+        res.status(500).jsono(err);
+        next();
+    }
+    res.send("success");
+    next();
+});
+
 async function changeUserInfo(userid, password, field, newInfo){
     try{
+        console.log("new: " + newInfo);
         const result = await pool.query("SELECT * FROM users WHERE userid = $1", [userid]);
 
         const hash = result.rows[0].password;
