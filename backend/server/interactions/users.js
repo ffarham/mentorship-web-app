@@ -242,6 +242,7 @@ async function getUserFromRefreshToken(token) {
 
 
 //Module exports:
+exports.saltRounds = saltRounds;
 exports.registerUser = registerUser;
 exports.checkEmailAndPassword = checkEmailAndPassword;
 exports.getUserInfoFromEmail = getUserInfoFromEmail;

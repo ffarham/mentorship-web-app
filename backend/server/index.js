@@ -42,16 +42,13 @@ app.use(apiString, require("./routes/registerNewUser")); //Endpoint for user reg
 app.use(apiString, require("./routes/planOfAction")); //Endpoints for plans of action
 app.use(apiString, require("./routes/home")); //Endpoints for user's home page
 app.use(apiString, require("./routes/matching/matching")); //Endpoints for matchings
-app.use(apiString, require("./routes/mentorshipRequests"));
+app.use(apiString, require("./routes/mentorshipRequests")); //Endpoints for mentorship requests
+app.use(apiString, require("./routes/settings/settings")); //Endpoints for settings
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {
     console.log("Server is running...");
     console.log("Listening on port 5000!\n");
 
-<<<<<<< HEAD
-    setInterval(() => available.pollMatching(), 500);    
-=======
-    setInterval(() => available.pollMatching(), 1000); //Poll matching every second    
->>>>>>> d46752e07f7bff48a59ccf6a3262400170eb42a4
+    setInterval(() => available.pollMatching(), 500); //Poll matching every 0.5 seconds
 });
