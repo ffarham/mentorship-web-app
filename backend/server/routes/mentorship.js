@@ -113,7 +113,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
     }
 });
 
-router.get('/meetings/plans-of-action/:otherID', checkAuth, async (req, res, next) => {
+router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) => {
     try {
         //Pull all the meetings from the database
         
