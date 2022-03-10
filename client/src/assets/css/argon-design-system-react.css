@@ -79,7 +79,13 @@ body {
   line-height: 1.5;
   color: #525f7f;
   text-align: left;
-  background-color: #fff; }
+  background-color: #fff; 
+  /* /* position: relative; 
+  width: 1440px;
+  height: 3665px; */
+  /* Backgrounds/Red-Blue */
+  /* background-color: conic-gradient(from 243.55deg at 89.03% -16.07%, #AF3148 0deg, #E06565 41.62deg, #449AC6 292.87deg, #6EDBEB 360deg); */ */
+}
 
 [tabindex="-1"]:focus {
   outline: 0 !important; }

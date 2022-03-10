@@ -7,7 +7,7 @@ const pool = require('../db');
 
 
 //Query to add user to users table and returns randomly-generated userID
-const registerUserQuery = 'INSERT INTO users VALUES (DEFAULT, $1, FALSE, $2, $3, $4, $5, $6) RETURNING userID';
+const registerUserQuery = 'INSERT INTO users VALUES (DEFAULT, $1, FALSE, $2, $3, $4, $5, $6, $7) RETURNING userID';
 
 //Queries to add mentee/mentor to mentee/mentor table
 const registerMenteeQuery = 'INSERT INTO mentee VALUES ($1)';
@@ -28,14 +28,14 @@ const registerMentorQuery = 'INSERT INTO mentor VALUES ($1)';
  * 
  * @throws {EmailAlreadyUsedError} Fails if email is already associated with another account 
  */
-async function registerUser(email, name, password, businessArea, userType, profilePicReference, emailsAllowed) {    
+async function registerUser(email, name, password, businessArea, userType, profilePicReference, emailsAllowed, bio) {    
     //Generate password hash
     const hash = await bcrypt.hash(password, saltRounds)
 
     //Execute query that adds user to users table
     var result;
     try {
-        result = await pool.query(registerUserQuery, [email, name, hash, businessArea, profilePicReference, emailsAllowed]);
+        result = await pool.query(registerUserQuery, [email, name, hash, businessArea, profilePicReference, emailsAllowed, bio]);
     } catch (err) {
         //Throw appropriate error if email is already used
         if ((err.code === '23505') && (err.constraint === 'users_email_key'))
