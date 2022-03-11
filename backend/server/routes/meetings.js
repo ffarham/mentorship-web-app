@@ -254,6 +254,24 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     next();
 });
 
+router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
+    console.log('/markMeetingComplete\n' + req.params.meetingID + '/' + req.params.meetingType + '\n');
+    try {
+        if (req.params.meetingType === 'meeting') {
+            await pool.query('UPDATE meeting SET attended = TRUE WHERE mentorID = $1 AND meetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+        } else {
+            await pool.query('UPDATE groupMeeting SET attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+        }
+
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
+    }
+
+    next();
+});
+
 // Give feedback on a one-to=one meeting
 router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
