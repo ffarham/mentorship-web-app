@@ -3,6 +3,7 @@ const userInteractions = require('../interactions/users')
 const tokens = require('../auth/tokens');
 
 router.post('/registeruser', async (req, res, next) => {
+    console.log("/registeruser\n" + req.body)
     //Register the user and pull their userID
     var userID;
     try {

@@ -4,6 +4,7 @@ const pool = require('../db.js');
 const notifications = require('../interactions/notifications');
 
 router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
+    console.log("/createPOA/" + req.params.menteeID+ "\n" + req.body)
     try {
         if (req.userInfo.userType === 'mentee') {
             throw {name: 'WrongUserTypeError', message: 'User must be logged in as a mentor to create a plan of action'}
@@ -25,6 +26,7 @@ router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
 });
 
 router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
+    console.log("/createMilestone/" + req.params.planID + "\n" + req.body)
     try {
         //Find the ordering of this milestone in the POA 
         const result = await pool.query('SELECT MAX(ordering) FROM milestones WHERE planID = $1', [req.params.planID]);
@@ -44,6 +46,7 @@ router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
 });
 
 router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
+    console.log("/plan-of-actions\n" + req.body)
     try {
         //Pull all user's plans from the database
         const planResult = await pool.query('SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1', [req.userInfo.userID]);
@@ -100,6 +103,7 @@ router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
 });
 
 router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
+    console.log("/markPOAcomplete/" + req.params.planID+ "\n" + req.body)
     try {
         //Mark the POA as complete
         const result = await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND (menteeID = $2 OR mentorID = $2) RETURNING menteeID, planName', [req.params.planID, req.userInfo.userID]);
@@ -118,6 +122,7 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
 })
 
 router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, next) => {
+    console.log("/markMilestoneComplete/" + req.params.milestoneID + "\n" + req.body)
     try {        
         //Mark the milestone as complete
         await pool.query('UPDATE milestones SET completed = TRUE WHERE milestoneID = (SELECT milestones.milestoneID FROM milestones INNER JOIN planOfAction ON milestones.planID = planOfAction.planID WHERE milestones.milestoneID = $1 AND (planOfAction.menteeID = $2 or planOfAction.mentorID = $2))', [req.params.milestoneID, req.userInfo.userID]);

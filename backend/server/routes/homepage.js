@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) =>{
+    console.log("/home\n" + req.body);
     try{
         const result = await pool.query(findPasswordQuery);
         if(result.rowCount === 0){
@@ -37,7 +38,7 @@ router.get("/home", async (req, res) =>{
     
 });
 
-async function processUser(){
+/*async function processUser(){
 let resultsArray = [];
     console.log("got here");
     let userid = await pool.query("SELECT userid FROM users WHERE name = 'Jimothy Bobson'") //or name = 'Your Father'")
@@ -50,6 +51,7 @@ let resultsArray = [];
                 available.addMentee(flag);
             }
         },*/
+        /*
         .then(async result => {
             return result.rows[0]["userid"];
         }, 
@@ -58,7 +60,8 @@ let resultsArray = [];
     sendFlag(userid);
 
     console.log("end me");
-}
+}*/
+/*
 async function sendFlag(userid){
     const flag = new Flag(userid);
     console.log("row result: " + userid);
@@ -78,4 +81,5 @@ async function sendFlag(userid){
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+*/
 module.exports = router;

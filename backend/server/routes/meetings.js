@@ -14,6 +14,7 @@ const getGroupMeetingFeedback =
 
 router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
+        console.log("/createmeeting \n" + req.body);
         //Add the new meeting to the database
         await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, NULL, FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
 
@@ -31,6 +32,9 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
 
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
+
+        console.log("/createGroupMeeting\n" + req.body);
+
         var meetingName = req.body.meetingType === 'group-meeting' ? req.body.meetingName : req.body.specialty;
 
         //Add the new meeting to the database
@@ -80,6 +84,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
 //
 router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
     try {
+        console.log("/getMeetingRequests\n" + req.body);
         //Pull the meeting info from the database
         var query;
         if (req.userInfo.userType === 'mentee') {
@@ -140,6 +145,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
 
 router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
+        console.log("/rescheduleMeeting\n" + req.body);
         //Update the meeting table and pull the menteeID
         const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
@@ -159,6 +165,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
 
 router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     try {
+        console.log("/meetingUpdate\n" + req.body);
         //Update the meeting table with the new times and pull the mentorID
         const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.params.meetingID, req.userInfo.userID]);
 
@@ -177,6 +184,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
 
 router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     try {
+        console.log("/cancelMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
         var affectedUsers = [];
         var meetingName;
 
@@ -220,6 +228,7 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
 router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     try {
+        console.log("/acceptMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
         if (req.userInfo.userType === 'mentor' && req.params.meetingType === 'meeting') {
             //Update the meeting table
             const menteeResult = await pool.query('UPDATE meeting SET confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $1 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
@@ -242,6 +251,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
 router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
+        console.log("/rejectMeeting/" + req.params.meetingID + "\n" + req.body);
         //Update the groupMeetingAttendees table accordingly
         await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
 
@@ -275,6 +285,7 @@ router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (re
 // Give feedback on a one-to=one meeting
 router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
+        console.log("/feeback/meeting/" + req.params.meetingID + "\n" + req.body);
         let feedback = req.body.feedback;
         var result;
         if (req.userInfo.userType === 'mentor') {
@@ -297,6 +308,7 @@ router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) =>
 //Give feedback on a group meeting to the mentor that ran the meeting
 router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, next) => {
     try{
+        console.log("/feedback/groupmeeting/" + req.params.meetingID + "\n" + req.body);
         let feedback = req.body.feedback;
         await pool.query("INSERT INTO groupMeetingFeedback VALUES(DEFAULT, $1, $2)", [req.params.meetingID, feedback]); 
         res.send("success");
@@ -312,6 +324,7 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
 // View feedback from the mentor or mentee for a one-to-one meeting 
 router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
     try{
+        console.log("/feedback/view/meeting/" + req.params.meetingID + "\n" + req.body);
         let results = null;
         let feedbackString = null;
         if(req.userInfo.userType === 'mentor'){
@@ -336,6 +349,8 @@ router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, nex
 // View feedback from mentees on a group meeting
 router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
     try {
+        console.log("/feedback/view/groupmeeting/" + req.params.meetingID + "\n" + req.body);
+
         const results = await pool.query(getGroupMeetingFeedback, [req.params.meetingID, req.userInfo.userID]);
         let feedbackMessages = [];
         for(let i = 0; i < results.rowCount; ++i){
