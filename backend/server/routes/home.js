@@ -41,7 +41,7 @@ router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, 
 
     try {
         //Dismiss the notification
-        await pool.query('UPDATE notifications SET dismissed = TRUE WHERE notificationID = $1', [req.params.notificationID]);
+        await pool.query('UPDATE notifications SET dismissed = TRUE WHERE notificationID = $1 AND userID = $2', [req.params.notificationID, req.userInfo.userID]);
 
         res.send('Success!');
     } catch (err) {
