@@ -31,6 +31,8 @@ router.get("/notifications", checkAuth, async (req, res, next) => {
     } catch(err) {
         res.status(500).json(err);
     }
+
+    next();
 });
 
 //Route to dismiss a notification
