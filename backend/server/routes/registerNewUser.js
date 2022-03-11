@@ -16,12 +16,12 @@ router.post('/registeruser', async (req, res, next) => {
     try {
         //Register mentee interests
         for (var i = 0; i < req.body.interests.length; i++) {
-            await userInteractions.registerInterest(userID, req.body.interests[i], 'mentee', i);
+            await userInteractions.registerInterest(userID, req.body.interests[i], 'mentee', i+1);
         }
 
         //Register mentor interests
         for (var i = 0; i < req.body.specialties.length; i++) {
-            await userInteractions.registerInterest(userID, req.body.specialties[i], 'mentor', i);
+            await userInteractions.registerInterest(userID, req.body.specialties[i], 'mentor', i+1);
         }
     } catch (err) {
         res.status(500).json(err);

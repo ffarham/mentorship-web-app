@@ -47,7 +47,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
 
             //Pick a notification message
             notificationMessage = `${req.userInfo.name} is running a group meeting.`
-        } else if (req.body.kind === 'workshop') {
+        } else if (req.body.meetingType === 'workshop') {
             //Pull the IDs of users interested in what the workshop is about
             interestedUsersResult = await pool.query('SELECT users.userID FROM users INNER JOIN interest ON users.userID = interest.userID WHERE interest.interest = $1', [req.body.specialty]);
 
@@ -61,7 +61,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
             attendeeID = interestedUsersResult.rows[i].userid;
 
             //Notify the user
-            notifications.notify(attendeeID, notificationMessage, req.body.kind === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
+            notifications.notify(attendeeID, notificationMessage, req.body.meetingType === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
             
             //Add the user to the groupMeetingAttendees table
             await pool.query('INSERT INTO groupMeetingAttendees VALUES ($1, $2, FALSE, NULL)', [groupMeetingID, attendeeID]);
@@ -79,7 +79,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
 //
 router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
     try {
-        
+        //Pull the meeting info from the database
         var query;
         if (req.userInfo.userType === 'mentee') {
             query = `
@@ -97,6 +97,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
 
         const result = await pool.query(query, [req.userInfo.userID]);
 
+        //Format the response nicely
         var responseObject = [];
         var meetingResult;
         for (var i = 0; i < result.rowCount; i++) {
@@ -110,9 +111,10 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     otherName : meetingResult.name,
                     meetingStart : meetingResult.meetingstart,
                     meetingDuration : meetingResult.meetingduration,
-                    place : meetingResult.place
+                    place : meetingResult.place,
+                    meetingType : meetingResult.kind
                 });
-            } else if (req.userInfo.userType === 'mentee') {
+            } else if (req.userInfo.userType === 'mentor') {
                 responseObject.push({
                     meetingID : meetingResult.meetingid,
                     meetingName : meetingResult.meetingname,
@@ -120,11 +122,13 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     otherName : meetingResult.name,
                     meetingStart : meetingResult.meetingstart,
                     meetingDuration : meetingResult.meetingduration,
-                    place : meetingResult.place
+                    place : meetingResult.place,
+                    meetingType : 'meeting'
                 });
             }
         }
 
+        //Send response
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
