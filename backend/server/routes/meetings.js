@@ -29,11 +29,12 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
     next();
 });
 
-//TODO: workshops have title of specialty
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
+        var meetingName = req.body.meetingType === 'group-meeting' ? req.body.meetingName : req.body.specialty;
+
         //Add the new meeting to the database
-        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.description]);
+        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.description]);
 
         //Get the ID of the new meeting
         const groupMeetingID = makeMeetingResult.rows[0].groupmeetingid;
