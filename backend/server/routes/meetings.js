@@ -29,6 +29,7 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
     next();
 });
 
+//TODO: workshops have title of specialty
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
         //Add the new meeting to the database
@@ -40,13 +41,13 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
         //Inform appropriate users
         var interestedUsersResult;
         var notificationMessage;
-        if (req.body.kind === 'group-meeting') {
+        if (req.body.meetingType === 'group-meeting') {
             //Pull the user IDs of users the mentor is mentoring
             interestedUsersResult = await pool.query('SELECT users.userID FROM users INNER JOIN mentoring ON users.userID = mentoring.menteeID WHERE mentoring.mentorID = $1', [req.userInfo.userID]);
 
             //Pick a notification message
             notificationMessage = `${req.userInfo.name} is running a group meeting.`
-        } else if (req.body.kind === 'workshop') {
+        } else if (req.body.meetingType === 'workshop') {
             //Pull the IDs of users interested in what the workshop is about
             interestedUsersResult = await pool.query('SELECT users.userID FROM users INNER JOIN interest ON users.userID = interest.userID WHERE interest.interest = $1', [req.body.specialty]);
 
@@ -60,7 +61,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
             attendeeID = interestedUsersResult.rows[i].userid;
 
             //Notify the user
-            notifications.notify(attendeeID, notificationMessage, req.body.kind === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
+            notifications.notify(attendeeID, notificationMessage, req.body.meetingType === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
             
             //Add the user to the groupMeetingAttendees table
             await pool.query('INSERT INTO groupMeetingAttendees VALUES ($1, $2, FALSE, NULL)', [groupMeetingID, attendeeID]);
@@ -73,6 +74,66 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     }
 
     next();
+});
+
+//
+router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
+    try {
+        //Pull the meeting info from the database
+        var query;
+        if (req.userInfo.userType === 'mentee') {
+            query = `
+            SELECT groupMeeting.*, users.name FROM groupMeetingAttendee 
+                INNER JOIN groupMeeting ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
+                INNER JOIN users ON users.userID = groupMeeting.mentorID
+                WHERE groupMeetingAttendee.menteeID = $1 AND confirmed IS NULL
+            `;
+        } else if (req.userInfo.userType === 'mentor') {
+            query = `
+            SELECT meeting.*, users.name FROM meeting 
+                INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed = \'false\'
+            `;
+        }
+
+        const result = await pool.query(query, [req.userInfo.userID]);
+
+        //Format the response nicely
+        var responseObject = [];
+        var meetingResult;
+        for (var i = 0; i < result.rowCount; i++) {
+            meetingResult = result.rows[i];
+
+            if (req.userInfo.userType === 'mentee') {
+                responseObject.push({
+                    meetingID : meetingResult.groupmeetingid,
+                    meetingName : meetingResult.kind === 'workshop' ? meetingResult.groupmeetingname : meetingResult.name,
+                    meetingDescription : meetingResult.description,
+                    otherName : meetingResult.name,
+                    meetingStart : meetingResult.meetingstart,
+                    meetingDuration : meetingResult.meetingduration,
+                    place : meetingResult.place,
+                    meetingType : meetingResult.kind
+                });
+            } else if (req.userInfo.userType === 'mentor') {
+                responseObject.push({
+                    meetingID : meetingResult.meetingid,
+                    meetingName : meetingResult.meetingname,
+                    meetingDescription : meetingResult.description,
+                    otherName : meetingResult.name,
+                    meetingStart : meetingResult.meetingstart,
+                    meetingDuration : meetingResult.meetingduration,
+                    place : meetingResult.place,
+                    meetingType : 'meeting'
+                });
+            }
+        }
+
+        //Send response
+        res.json(responseObject);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
 });
 
 router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) => {
@@ -173,7 +234,6 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
-//Possibly redundant
 router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the groupMeetingAttendees table accordingly

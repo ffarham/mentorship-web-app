@@ -250,11 +250,3 @@ exports.registerInterest = registerInterest;
 exports.registerToken = registerToken;
 exports.getUserFromAccessToken = getUserFromAccessToken;
 exports.getUserFromRefreshToken = getUserFromRefreshToken;
-
-//Informal Testing:
-async function main() {
-    //await registerUser('bobjim@gmail.com', 'Bob Jimson', 'password', 'area51', 'both', 'pfpic', false);
-    registerToken('f74e80fe-148b-40ff-bb8a-c927e33f6c39', '5m');
-}
-
-//main();
