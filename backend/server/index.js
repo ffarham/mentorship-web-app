@@ -56,4 +56,5 @@ httpsServer.listen(5000, async () => {
 
     setInterval(() => available.pollMatching(), 500); //Poll matching every 0.5 seconds
     setInterval(suggestWorkshops, 8640000); //Suggest workshops every 24 hours
+    setInterval(() => pool.query('DELETE FROM authToken WHERE timeCreated + timeToLive < NOW();'), 600000); //Delete old tokens every 10 minutes
 });
