@@ -20,7 +20,8 @@ router.get("/notifications", checkAuth, async (req, res, next) => {
                 notificationID : notification.notificationid,
                 userID : notification.userid,
                 msg : notification.msg,
-                timeCreated : notification.timecreated
+                timeCreated : notification.timecreated,
+                type : notification.kind
             });
         }
 

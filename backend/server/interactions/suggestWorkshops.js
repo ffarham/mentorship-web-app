@@ -20,7 +20,7 @@ async function suggestWorkshops() {
 
         //Notify those experts about the popularity of their area
         for (var j = 0; j < expertsResult.rowCount; j++) {
-            notifications.notify(expertsResult.rows[j].userID, `${interest} is popular. Consider running a workshop.`);
+            notifications.notify(expertsResult.rows[j].userID, `${interest} is popular. Consider running a workshop.`, 'Workshop Demand');
         }
 
 

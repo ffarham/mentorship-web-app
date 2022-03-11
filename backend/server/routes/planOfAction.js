@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const checkAuth = require('../auth/checkAuth');
 const pool = require('../db.js');
+const notifications = require('../interactions/notifications');
 
 router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
     try {
@@ -10,6 +11,9 @@ router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
 
         //Add the new plan of action to the database
         await pool.query('INSERT INTO planOfAction VALUES (DEFAULT, $1, $2, $3, $4, FALSE)', [req.userInfo.userID, req.params.menteeID, req.body.planName, req.body.planDescription]);
+
+        //Notify the user
+        notifications.notify(req.params.menteeID, `New Plan of Action created by ${req.userInfo.name}.`, 'Plan Created');
 
         res.send('Success!');
     } catch (err) {
@@ -95,8 +99,11 @@ router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
 router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
     try {
         //Mark the POA as complete
-        await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND (menteeID = $2 OR mentorID = $2)', [req.params.planID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND (menteeID = $2 OR mentorID = $2) RETURNING menteeID, planName', [req.params.planID, req.userInfo.userID]);
         
+        //Notify the mentee
+        notifications.notify(result.rows[0].menteeid, `${result.rows[0].planid} complete!`, 'Plan Completed');
+
         res.send('Success!');
         next();
     } catch (err) {
