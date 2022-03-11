@@ -154,26 +154,6 @@ CREATE TABLE groupMeetingFeedback(
     feedback VARCHAR(1000)
 );
 
---Workshops:
-
-DROP TABLE IF EXISTS workshop CASCADE;
-CREATE TABLE workshop(
-    workshopID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    leaderID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
-
-    timeCreated TIMESTAMP NOT NULL,
-
-    workshopStart TIMESTAMP,
-    workshopEnd TIMESTAMP
-);
-
-DROP TABLE IF EXISTS workshopTopics CASCADE;
-CREATE TABLE workshopTopics(
-    workshopID UUID NOT NULL REFERENCES workshop(workshopID) ON DELETE CASCADE,
-    topic VARCHAR(100) NOT NULL --Should exist in interests table somewhere
-);
-
 --Plans of action:
 
 DROP TABLE IF EXISTS planOfAction CASCADE;
@@ -204,51 +184,6 @@ CREATE TABLE milestones(
     completed BOOLEAN
     --completionMessage VARCHAR(1000)
 ); 
-
---Feedback:
-
-DROP TABLE IF EXISTS mentorToMenteeFeedback CASCADE;
-CREATE TABLE mentorToMenteeFeedback(
-    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
-
-    meetingID UUID REFERENCES meeting(meetingID) ON DELETE CASCADE,
-    groupMeetingID UUID REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
-
-    feedback VARCHAR(1000)
-);
-
-DROP TABLE IF EXISTS menteeToMentorFeedback CASCADE;
-CREATE TABLE menteeToMentorFeedback(
-    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
-
-    feedback VARCHAR(1000)
-);
-
-DROP TABLE IF EXISTS prosAndCons CASCADE;
-CREATE TABLe prosAndCons(
-    feedbackID UUID NOT NULL REFERENCES menteeToMentorFeedback(feedbackID) ON DELETE CASCADE,
-
-    kind CHAR(3), --Either 'pro' or 'con'
-
-    content VARCHAR(100),
-
-    CONSTRAINT legalKind CHECK (kind = 'pro' OR kind = 'con')
-);
-
-DROP TABLE IF EXISTS workshopFeedback CASCADE;
-CREATE TABLE workshopFeedback(
-    workshopFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    workshopID UUID NOT NULL REFERENCES workshop(workshopID) ON DELETE CASCADE,
-
-    feedback VARCHAR(1000)
-);
 
 --Notifications:
 
