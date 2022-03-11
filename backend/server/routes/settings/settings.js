@@ -27,49 +27,6 @@ router.post("/feedback", checkAuth, async (req,res, next) => {
     res.send("success");
     next();
 });
-
-/**
- * Gets all notifications a user has been sent that have not yet been dismissed
- */
-router.get("/notifications", checkAuth, async (req, res, next) => {
-    try{
-        const userid = req.userInfo.userID;        
-        const notifications = [];
-
-        const results = await pool.query("SELECT * FROM notifications WHERE userID = $1 AND dismissed = FALSE", [userid]);
-
-        for(let i = 0; i < results.rowCount; ++i){
-            row = results.rows[i];
-            let notif = {
-                notificationID: row.notificationid,
-                userID: userid,
-                text: row.msg,
-                time: row.timecreated,
-            }
-
-            notifications.push(notif);
-        }
-        res.json(notifications);
-        next();
-    }catch(err){
-        res.status(500).json(err);
-        next();
-    }
-});
-/**
- * Dismiss a notification
- */
-router.post("/notifications/dismiss/:notificationID", checkAuth, async (req, res, next) => {
-    try{
-        await pool.query("DELETE FROM notifications WHERE notificationID = $1", [req.params.notificationID]);
-        res.send("success");
-        next();
-    } catch(err){
-        res.status(500).json(err);
-        next();
-    }
-});
-
 /**
  * Allows a user to change their password
  */
