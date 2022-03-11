@@ -29,11 +29,12 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
     next();
 });
 
-//TODO: workshops have title of specialty
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
+        var meetingName = req.body.meetingType === 'group-meeting' ? req.body.meetingName : req.body.specialty;
+
         //Add the new meeting to the database
-        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.description]);
+        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.description]);
 
         //Get the ID of the new meeting
         const groupMeetingID = makeMeetingResult.rows[0].groupmeetingid;
@@ -157,7 +158,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
 router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the meeting table with the new times and pull the mentorID
-        const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1, meetingDuration = $2 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.body.meetingDuration, req.params.meetingID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.params.meetingID, req.userInfo.userID]);
 
         //Notify the user
         notifications.notify(result.rows[0].mentorid, `A new time has been set for ${result.rows[0].meetingname}.`, 'Meeting Rescheduled');
@@ -234,7 +235,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
-router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) => {
+router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the groupMeetingAttendees table accordingly
         await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
