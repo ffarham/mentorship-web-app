@@ -3,12 +3,12 @@ const Pool = require("pg").Pool;
 
 const connectionString= 'postgres://postgres:postgres@db:5432/discipulo'
 
-/*
+
 const pool = new Pool({
     connectionString,
 })
-*/
 
+/*
 const pool = new Pool({
     user: "postgres",
     password: "postgres",
@@ -16,5 +16,6 @@ const pool = new Pool({
     port: 5432,
     database: "discipulo"   
 });
+*/ 
 
 module.exports = pool;
