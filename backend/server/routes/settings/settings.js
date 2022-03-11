@@ -20,6 +20,7 @@ router.post("/feedback", checkAuth, async (req,res, next) => {
         await pool.query("INSERT INTO appFeedback VALUES(DEFAULT, $1, $2)", [rating, feedback]);
 
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -40,6 +41,7 @@ router.post("/password", checkAuth, async(req, res, next) => {
         res.send("success");
         next();
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -55,6 +57,7 @@ router.post("/email", checkAuth, async(req, res, next) => {
         res.send("success");
         next();
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -66,11 +69,12 @@ router.post("/department", checkAuth, async(req, res, next) => {
     console.log("/department\n" + req.body)
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
+        res.send("success");
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
-    res.send("success");
     next();
 });
 
@@ -84,6 +88,7 @@ router.post("/bio", checkAuth, async(req, res, next) => {
     } catch(err) {
         res.status(500).json(err);
         next();
+        console.log(err);
     }
 })
 
@@ -125,6 +130,7 @@ router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
     try{
         await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }

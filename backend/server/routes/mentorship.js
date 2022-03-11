@@ -3,39 +3,44 @@ const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 
 router.get('/mentorship', checkAuth, async (req, res, next) => {
-    //Pull the appropriate user info from the database
-    console.log("/mentorship\n" + req.body);
-    var usersQuery;
-    if (req.userInfo.userType === 'mentee') {
-        usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.mentorID = users.userID WHERE mentoring.menteeID = $1' 
-    } else if (req.userInfo.userType === 'mentor') {
-        usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.menteeID = users.userID WHERE mentoring.mentorID = $1'
+    console.log("/mentorship\n" + req.body)
+    try {
+        //Pull the appropriate user info from the database
+        var usersQuery;
+        if (req.userInfo.userType === 'mentee') {
+            usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.mentorID = users.userID WHERE mentoring.menteeID = $1' 
+        } else if (req.userInfo.userType === 'mentor') {
+            usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.menteeID = users.userID WHERE mentoring.mentorID = $1'
+        }
+
+        const otherUsersResult = await pool.query(usersQuery, [req.userInfo.userID]);
+
+        //Format the results nicely and append the plans of action and the meetings
+        var responseObject = [];
+        var otherUserResult;
+        var otherUser;
+        for (var i = 0; i < otherUsersResult.rowCount; i++) {
+            otherUserResult = otherUsersResult.rows[i];
+
+            //Format user info nicely
+            otherUser = {
+                otherID : otherUserResult.userid,
+                name : otherUserResult.name,
+                bio : otherUserResult.bio,
+                email : otherUserResult.email,
+                department : otherUserResult.department,
+            };
+
+            //Add user to the response
+            responseObject.push(otherUser);
+        }
+
+        //Send the response
+        res.json(responseObject);
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
     }
-
-    const otherUsersResult = await pool.query(usersQuery, [req.userInfo.userID]);
-
-    //Format the results nicely and append the plans of action and the meetings
-    var responseObject = [];
-    var otherUserResult;
-    var otherUser;
-    for (var i = 0; i < otherUsersResult.rowCount; i++) {
-        otherUserResult = otherUsersResult.rows[i];
-
-        //Format user info nicely
-        otherUser = {
-            otherID : otherUserResult.userid,
-            name : otherUserResult.name,
-            bio : otherUserResult.bio,
-            email : otherUserResult.email,
-            department : otherUserResult.department,
-        };
-
-        //Add user to the response
-        responseObject.push(otherUser);
-    }
-
-    //Send the response
-    res.json(responseObject);
 });
 
 router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
@@ -111,6 +116,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 });
 
@@ -140,14 +146,14 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             `;
         } else if (req.userInfo.userType === 'mentor') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
                 WHERE meeting.mentorID = $1 AND meeting.menteeID = $1)
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, groupMeeting.attended groupMeeting.description, '' AS feedback
                 FROM groupMeeting 
                 INNER JOIN groupMeetingAttendees ON groupMeetingAttendees.groupMeetingID = groupMeeting.groupMeetingID
                 WHERE groupMeeting.mentorID = $1 AND groupMeetingAttendees.menteeID = $2) 
@@ -175,7 +181,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
                 meetingDuration : meetingResult.meetingDuration,
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
-                attended : meetingResult.attended,
+                complete : meetingResult.attended,
                 description : meetingResult.description
             }
 
@@ -187,6 +193,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 });
 
@@ -249,6 +256,7 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     } 
 
     next();

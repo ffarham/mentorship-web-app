@@ -15,6 +15,7 @@ router.post('/checkrefreshtoken', (req, res, next) => {
         })
         .catch((err) => {
             //TODO: Catch errors in getUserFromRefreshToken, generateAccessToken, generateRefreshToken
+            console.log(err);
             res.status(401).json(err);
             next();
         })

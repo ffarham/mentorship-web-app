@@ -113,6 +113,7 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
         res.json(responseObject);
 
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 });

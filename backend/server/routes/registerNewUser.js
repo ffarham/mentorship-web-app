@@ -25,6 +25,7 @@ router.post('/registeruser', async (req, res, next) => {
             await userInteractions.registerInterest(userID, req.body.specialties[i], 'mentor', i+1);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
         return;
     }
