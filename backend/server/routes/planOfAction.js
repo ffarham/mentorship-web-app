@@ -117,7 +117,7 @@ router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, n
         res.status(500).json(err);
         return;
     }
-})
+});
 
 
 module.exports = router;
