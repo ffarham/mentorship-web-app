@@ -3,6 +3,15 @@ const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 const notifications = require('../interactions/notifications')
 
+const getGroupMeetingFeedback = 
+`select * from 
+    (select groupMeetingID, feedback from groupMeetingFeedback 
+        where groupMeetingID = $1) A 
+    JOIN 
+    (select groupMeetingID from groupMeeting 
+        where mentorID = $2) B 
+    ON A.groupMeetingID = B.groupMeetingID`;
+
 router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
         //Add the new meeting to the database
@@ -204,18 +213,6 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
     }
 });
 
-router.post('/feedback/workshop/:workshopID', checkAuth, async (req, res, next) => {
-    try{
-        await pool.query("INSERT INTO workshopFeedback VALUES(DEFAULT, $1, $2)", [req.params.workshopID, req.body.feedback]); 
-        res.send("success");
-        next();
-    }catch(err){
-        res.status(500).json(err);
-        next();
-    }    
-
-});
-
 router.post('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
     try{
         let results = null;
@@ -240,11 +237,21 @@ router.post('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, ne
 
 router.post('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
     try {
-        
+        const results = await pool.query(getGroupMeetingFeedback, [req.params.meetingID, req.userInfo.userID]);
+        let feedbackMessages = [];
+        for(let i = 0; i < results.rowCount; ++i){
+            let menteeFeedback = {
+                feedback: results.rows[i].feedback
+            };
+            menteeFeedback.push(feedbackMessages);
+        }
+        res.json(menteeFeedback);
+        next();
     } catch(err){
         res.status(500).json(err);
         next();
     }
 });
+
 
 module.exports = router;

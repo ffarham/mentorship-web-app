@@ -33,23 +33,33 @@ router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
  */
 router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
     try{
-        const result = await pool.query(getMentorshipRequests, [req.userInfo.userID]);
+        let results = null;
+        let isMentor = req.userInfo.userType === 'mentor';
+        if(isMentor){
+            results = await pool.query("SELECT * FROM mentorshipRequests WHERE mentorID = $1", [req.userInfo.userID]);
+        }
+        else{
+            results = await pool.query("SELECT * FROM mentorshipRequests WHERE menteeID = $1", [req.userInfo.userID]);
+        }
         let mentorShipRequests = [];
         for(let i = 0; i < result.rowCount; ++i){
             let row = result.rows[i];
-            const menteeInfo = await pool.query("SELECT * FROM users where userid = $1", [row.menteeID]).rows[0];
+            let userid = (isMentor) ? row.menteeID : row.mentorID;
+            const userData = await pool.query("SELECT * FROM users where userid = $1", [userid]).rows[0];
             
-            const menteeInterests = await pool.query("SELECT * FROM interest where userid = $1", [row.menteeID]);
+            const userInterests = await pool.query("SELECT * FROM interest where userid = $1", [userid]);
             let interestArr = [];
-            for(let j = 0; j < menteeInterests.rowCount; ++j){
-                interestArr.push(menteeInterests.rows[j].interest);
+            for(let j = 0; j < userInterests.rowCount; ++j){
+                interestArr.push(userInterests.rows[j].interest);
             }
             let mentorShipRequest = {
-                menteeID: row.menteeid,
-                name: menteeInfo.name,
-                department: menteeInfo.businessarea,
-                bio: menteeInfo.bio,
+                id: row.requestid,
+                user : {id: userid,
+                name: userData.name,
+                department: userData.businessarea,
+                bio: userData.bio,
                 interests: JSON.stringify(interestArr)
+                }
             }
             mentorShipRequests.push(mentorShipRequest);
         }
@@ -60,26 +70,6 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
         next();
     }
 });
-//View all mentorship requests a mentee has sent to mentors
-route.get('/mentee/requests', checkAuth, async (req, res, next) => {
-    try{
-        const results = await pool.query("SELECT * FROM mentorshipRequests WHERE menteeID = $1", [req.userInfo.userID]);
-        let requests = [];
-        for(let i = 0; i < results.rowCount; ++i){
-            let row = results.rows[i];
-            const mentorInfo = await pool.query("SELECT name FROM users WHERE userid = $1", [row.name]);
-            
-            let mentorName = mentorInfo.rows[0].name;
-            requests.push(mentorName);
-        }
-        res.json(requests);
-        next();
-    } catch(err){
-        res.status(500).json(err);
-        next();
-    }
-});
-
 
 /**
  * Accept a request to tutor a mentee
