@@ -5,7 +5,7 @@ const userInteractions = require('../interactions/users');
 const TOKEN_SECRET = '4a6c48ca3d2730d1c77c2ff9fc89ebbd15b1943a13736f552921421820c9059fe2faea884c20aa510b08f85e5f140d014593b552ba4a1cc71fb4ae8fcb70d17f';
 
 //Time to live for refresh tokens
-const refreshTTL = '4800h';
+const refreshTTL = '672h';
 
 //Time to live for access tokens
 const accessTTL = '5m';
