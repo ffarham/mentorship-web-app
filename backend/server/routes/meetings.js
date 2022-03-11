@@ -158,7 +158,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
 router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the meeting table with the new times and pull the mentorID
-        const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1, meetingDuration = $2 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.body.meetingDuration, req.params.meetingID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.params.meetingID, req.userInfo.userID]);
 
         //Notify the user
         notifications.notify(result.rows[0].mentorid, `A new time has been set for ${result.rows[0].meetingname}.`, 'Meeting Rescheduled');
