@@ -114,7 +114,7 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
         } else if (req.userInfo.userType === 'mentor') {
             //Delete the records in groupMeetingAttendees
-            const affectedUsersResult = await pool.query('DELETE FROM groupMeetingAttendees USING groupMeeting WHERE groupMeeting.groupMeetingID = groupMeetingAttendees.groupMeetingID AND groupMeetingAttendees.groupMeetingID = $1 AND groupMeeting.menteeID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+            const affectedUsersResult = await pool.query('DELETE FROM groupMeetingAttendees USING groupMeeting WHERE groupMeeting.groupMeetingID = groupMeetingAttendees.groupMeetingID AND groupMeetingAttendees.groupMeetingID = $1 AND groupMeeting.mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
             //Pull affected users
             for (var i = 0; i < affectedUsersResult.rowCount; i++) {
@@ -166,6 +166,8 @@ router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) 
     try {
         //Update the groupMeetingAttendees table accordingly
         await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
+
+        res.send('Success!');
     } catch (err) {
         res.status(500).json(err);
     }

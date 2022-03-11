@@ -45,14 +45,14 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         var meetingsQuery;
         if (req.userInfo.userType === 'mentee') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
                 WHERE meeting.menteeID = $1)
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback, '' AS requestMessage
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
@@ -62,14 +62,14 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             `;
         } else if (req.userInfo.userType === 'mentor') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
                 WHERE meeting.mentorID = $1)
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback, '' as requestMessage
                 FROM groupMeeting 
                 WHERE groupMeeting.mentorID = $1) 
                 
@@ -97,7 +97,8 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
                 attended : meetingResult.attended,
-                description : meetingResult.description
+                description : meetingResult.description,
+                requestMessage : meetingResult.requestMessage
             }
 
             //Add meeting to user info
@@ -186,19 +187,19 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
     }
 });
 
-router.get('/WAIT_FOR_FARHAM_TO_DECIDE', checkAuth, async (req, res, next) => {
+router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, next) => {
     try {
         var responseObject = [];
         
         //Pull the plans of action from the database
         var poaQuery;
         if (req.userInfo.userType === 'mentee') {
-            poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1';
+            poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1 AND planOfAction.mentorID = $2';
         } else if (req.userInfo.userType) {
-            poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.menteeID = users.userID WHERE planOfAction.mentorID = $1';
+            poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.menteeID = users.userID WHERE planOfAction.mentorID = $1 AND planOfAction.menteeID = $2';
         }
 
-        const planResult = await pool.query(poaQuery, [req.userInfo.userID]);
+        const planResult = await pool.query(poaQuery, [req.userInfo.userID, req.params.otherID]);
 
         //Format plan information and attach milestones
         var planRow;

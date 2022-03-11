@@ -22,6 +22,8 @@ const available = require('./matching/matchable').pairMatching;
 const Flag = require('./matching/matchable').Flag;
 const Mentee = require('./matching/matchable').Mentee;
 
+const suggestWorkshops = require('./interactions/suggestWorkshops').suggestWorkshops;
+
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
@@ -53,4 +55,5 @@ httpsServer.listen(5000, async () => {
     console.log("Listening on port 5000!\n");
 
     setInterval(() => available.pollMatching(), 500); //Poll matching every 0.5 seconds
+    setInterval(suggestWorkshops, 8640000); //Suggest workshops every 24 hours
 });
