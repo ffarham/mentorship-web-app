@@ -222,7 +222,7 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
 });
 
 
-router.post('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
+router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
     try{
         let results = null;
         let feedbackString = null;
@@ -244,7 +244,7 @@ router.post('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, ne
     }    
 });
 
-router.post('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
+router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
     try {
         const results = await pool.query(getGroupMeetingFeedback, [req.params.meetingID, req.userInfo.userID]);
         let feedbackMessages = [];
