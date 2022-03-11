@@ -15,6 +15,7 @@ const getMentorshipRequests = "" +
  * Send a request to the mentor speficied by the mentorID parameter to tutor a mentee
  */
 router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
+    console.log("/requestMentor/" + req.params.mentorID + "\n" + req.body)
     let mentorID = req.params.mentorID;
     let menteeID = req.userInfo.userID;
 
@@ -32,6 +33,7 @@ router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
  * Get all requests from mentees to a mentor to tutor them.
  */
 router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
+    console.log("/mentorship/requests\n" + req.body)
     try{
         let results = null;
         let isMentor = req.userInfo.userType === 'mentor';
@@ -75,6 +77,7 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
  * Accept a request to tutor a mentee
  */
 router.post('/acceptMentee/:requestID', checkAuth, async (req, res, next) => {
+    console.log("/acceptMentee/" + req.params.requestID + "\n" + req.body)
     try{
         const result = await pool.query("SELECT * FROM mentorshipRequests WHERE requestid = $1", [req.params.requestID]);
         let mentorid = req.userInfo.userID;
@@ -101,6 +104,7 @@ router.post('/acceptMentee/:requestID', checkAuth, async (req, res, next) => {
  * Reject a request to tutor a mentee
  */
 router.post('/rejectMentee/:requestID', checkAuth, async (req, res, next) => {
+    console.log("/rejectMentee/" + req.params.requestID + "\n" + req.body)
     try{
         let menteeResult = await pool.query("SELECT menteeid FROM mentorshipRequests WHERE requestID = $1", [req.params.requestID]);
         await pool.query("DELETE FROM mentorshipRequests WHERE requestid = $1", [req.params.requestID]);
@@ -121,6 +125,7 @@ router.post('/rejectMentee/:requestID', checkAuth, async (req, res, next) => {
  * Removes a user as the mentee of the tutor who sent the cancellation request
  */
 router.post('/cancelMentorship/:mentorID', checkAuth, async (req, res, next) => {
+    console.log("/cancelMentorship/" + req.params.mentorID + "\n" + req.body)
     try{
         let mentorid = req.params.mentorID;
         let menteeid = req.userInfo.userID;

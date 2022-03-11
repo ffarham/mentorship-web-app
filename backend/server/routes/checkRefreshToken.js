@@ -3,6 +3,7 @@ const tokens = require('../auth/tokens');
 
 
 router.post('/checkrefreshtoken', (req, res, next) => {
+    console.log("/checkrefreshtoken\n" + req.body)
     //Pull the token from the request
     const refreshToken = req.body.refreshToken;
 

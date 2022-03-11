@@ -10,6 +10,7 @@ const { route } = require("../homepage");
 
 // Recieves and stores a user's feedback on the app overall
 router.post("/feedback", checkAuth, async (req,res, next) => {
+    console.log("/feedback\n" + req.body)
     try{    
         
         const rating = req.body.rating; //PLACEHOLDER 
@@ -28,6 +29,7 @@ router.post("/feedback", checkAuth, async (req,res, next) => {
 
 // Allows a user to change their password
 router.post("/password", checkAuth, async(req, res, next) => {
+    console.log("/password\n" + req.body)
     try{
         let userid = req.userInfo.userID;
         let oldPassword = req.body.password;
@@ -46,6 +48,7 @@ router.post("/password", checkAuth, async(req, res, next) => {
 
 // Allows a user to change their email
 router.post("/email", checkAuth, async(req, res, next) => {
+    console.log("/email\n" + req.body)
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "email", req.body.newemail);
 
@@ -60,6 +63,7 @@ router.post("/email", checkAuth, async(req, res, next) => {
 
 // Allows a user to change their department
 router.post("/department", checkAuth, async(req, res, next) => {
+    console.log("/department\n" + req.body)
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
     }catch(err){
@@ -72,6 +76,7 @@ router.post("/department", checkAuth, async(req, res, next) => {
 
 // Allows a user to change their bio
 router.post("/bio", checkAuth, async(req, res, next) => {
+    console.log("/bio\n" + req.body)
     try{
         await pool.query("UPDATE users SET bio = $1 WHERE userid = $2", [req.body.bio, req.userInfo.userID])
         res.send("success");
@@ -116,6 +121,7 @@ async function changeUserInfo(userid, password, field, newInfo){
  * Deletes a user's profile
  */
 router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
+    console.log("/deleteProfile\n" + req.body)
     try{
         await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
     } catch(err){

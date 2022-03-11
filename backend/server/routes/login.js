@@ -3,13 +3,11 @@ const userInteractions = require('../interactions/users');
 const tokens = require('../auth/tokens')
 const pool = require('../db');
 
-router.get("/login", async (req, res, next) => {
-
-});
 
 const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
 
 router.post("/login", async (req, res, next) => {
+    console.log("/login\n" + req.body)
     //Pull out user info from request
     const userEmail = req.body.email;
     const userPassword = req.body.password;
@@ -66,6 +64,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/logout", async (req, res, next) => {
+    console.log("/logout\n" + req.body)
     const userID = req.body.userID;
     await pool.query(deleteTokensQuery, [userID]);
     res.send('Success!');

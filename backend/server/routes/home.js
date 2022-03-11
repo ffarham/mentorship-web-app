@@ -6,6 +6,7 @@ const checkAuth = require('../auth/checkAuth');
 
 //Route to pull notifications from the database
 router.get("/notifications", checkAuth, async (req, res, next) => {
+    console.log("/notifications\n" + req.body)
     try {
         //Pull out all notifications objects for the user in the correct order
         const result = await pool.query('SELECT * FROM notifications WHERE userID = $1 AND dismissed = FALSE ORDER BY timeCreated DESC', [req.userInfo.userID]);
@@ -34,6 +35,7 @@ router.get("/notifications", checkAuth, async (req, res, next) => {
 
 //Route to dismiss a notification
 router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, next) => {
+    console.log("dismissnotification/" + req.params.notificationID + "\n" + req.body)
     //Dismiss the notification
     await pool.query('UPDATE notifications SET dismissed = TRUE WHERE notificationID = $1', [req.params.notificationID]);
 
@@ -43,6 +45,7 @@ router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, 
 
 //Route to pull all upcoming meetings
 router.get("/meetings", checkAuth, async (req, res, next) => {
+    console.log("/meetings\n" + req.body)
     try {
         //Choose the correct database query
         var query;

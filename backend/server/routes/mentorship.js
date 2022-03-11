@@ -4,6 +4,7 @@ const checkAuth = require('../auth/checkAuth');
 
 router.get('/mentorship', checkAuth, async (req, res, next) => {
     //Pull the appropriate user info from the database
+    console.log("/mentorship\n" + req.body);
     var usersQuery;
     if (req.userInfo.userType === 'mentee') {
         usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.mentorID = users.userID WHERE mentoring.menteeID = $1' 
@@ -38,6 +39,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
 });
 
 router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
+    console.log("/meetings/meetings\n" + req.body);
     try {
         //Pull all the meetings from the database
         
@@ -114,6 +116,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
 
 router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) => {
     try {
+        console.log("/meetings/mentorship/" + req.params.otherID +"\n" + req.body);
         //Pull all the meetings from the database
         
         //Choose the right query
@@ -188,6 +191,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
 });
 
 router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, next) => {
+    console.log("/mentorship/plan-of-actions/" + req.params.otherID+ "\n" + req.body);
     try {
         var responseObject = [];
         
