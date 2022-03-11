@@ -8,7 +8,7 @@ const Flag = require("../../matching/matchingSystem").Flag;
 /**
  * Submit a mentee to the matching algorithm to match them with some mentors
  */
-router.get("/matching", checkAuth,  async (req, res, next) => {
+router.post("/matching", checkAuth,  async (req, res, next) => {
     try{ 
 
         const userid = req.userInfo.userID;

@@ -8,9 +8,7 @@ const { restart } = require("nodemon");
 const { route } = require("../homepage");
 
 
-/**
- * Recieves and stores a user's feedback on the app overall
- */
+// Recieves and stores a user's feedback on the app overall
 router.post("/feedback", checkAuth, async (req,res, next) => {
     try{    
         
@@ -28,15 +26,14 @@ router.post("/feedback", checkAuth, async (req,res, next) => {
     res.send("success");
     next();
 });
-/**
- * Allows a user to change their password
- */
+
+// Allows a user to change their password
 router.post("/password", checkAuth, async(req, res, next) => {
     try{
         let userid = req.userInfo.userID;
-        let oldPassword = req.body.old;
+        let oldPassword = req.body.password;
 
-        const newHash = await bcrypt.hash(req.body.new, userInteractions.saltRounds);
+        const newHash = await bcrypt.hash(req.body.newpassword, userInteractions.saltRounds);
 
         await changeUserInfo(userid, oldPassword, "password", newHash);
         res.send("success");
@@ -49,9 +46,7 @@ router.post("/password", checkAuth, async(req, res, next) => {
     
 });
 
-/**
- * Allows a user to change their email
- */
+// Allows a user to change their email
 router.post("/email", checkAuth, async(req, res, next) => {
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "email", req.body.newemail);
@@ -66,9 +61,7 @@ router.post("/email", checkAuth, async(req, res, next) => {
     
 });
 
-/**
- * Allows a user to change their department
- */
+// Allows a user to change their department
 router.post("/department", checkAuth, async(req, res, next) => {
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
@@ -81,12 +74,15 @@ router.post("/department", checkAuth, async(req, res, next) => {
     next();
 });
 
+// Allows a user to change their bio
 router.post("/bio", checkAuth, async(req, res, next) => {
     try{
         await pool.query("UPDATE users SET bio = $1 WHERE userid = $2", [req.body.bio, req.userInfo.userID])
-        res.send('Success!');
+        res.send("success");
+        next();
     } catch(err) {
         res.status(500).json(err);
+        next();
         console.log(err);
     }
 })
@@ -107,6 +103,8 @@ async function changeUserInfo(userid, password, field, newInfo){
 
         const hash = result.rows[0].password;
         let isPassCorrect = await bcrypt.compare(password, hash);
+
+        console.log(isPassCorrect);
 
         if(isPassCorrect){
             await pool.query("UPDATE users SET " + field + " = $1 WHERE userid = $2", [newInfo, userid]);

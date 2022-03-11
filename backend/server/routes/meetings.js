@@ -254,7 +254,7 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     next();
 });
 
-// Give feedback on individual meetings
+// Give feedback on a one-to=one meeting
 router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         let feedback = req.body.feedback;
@@ -276,6 +276,7 @@ router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) =>
     }
 });
 
+//Give feedback on a group meeting to the mentor that ran the meeting
 router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, next) => {
     try{
         let feedback = req.body.feedback;
@@ -290,6 +291,7 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
 });
 
 
+// View feedback from the mentor or mentee for a one-to-one meeting 
 router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
     try{
         let results = null;
@@ -313,6 +315,7 @@ router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, nex
     }    
 });
 
+// View feedback from mentees on a group meeting
 router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
     try {
         const results = await pool.query(getGroupMeetingFeedback, [req.params.meetingID, req.userInfo.userID]);
