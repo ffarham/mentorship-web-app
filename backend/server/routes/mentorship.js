@@ -29,7 +29,16 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
                 bio : otherUserResult.bio,
                 email : otherUserResult.email,
                 department : otherUserResult.department,
+                interests : []
             };
+
+            //Pull the other user's interests
+            const interestsResult = await pool.query('SELECT interest FROM interest WHERE userID = $1 AND kind = $2', [otherUser.otherID, req.userInfo.userType === 'mentee' ? 'mentor' : 'mentee']);
+
+            //Add to the otherUser object
+            for (var j = 0; j < interestsResult.rowCount; j++) {
+                otherUser.interests.push(interestsResult.rows[j].interest);
+            }
 
             //Add user to the response
             responseObject.push(otherUser);
@@ -40,6 +49,22 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
     } catch (err) {
         res.status(500).json(err);
         console.log(err);
+    }
+});
+
+router.get('/mentor/specialties', checkAuth, async (req, res, next) => {
+    try {
+        const result = await pool.query('SELECT interest FROM interest WHERE userID = $1 AND kind = \'mentor\'', [req.userInfo.userID]);
+
+        var responseObject = [];
+        for (var i = 0; i < result.rowCount; i++) {
+            responseObject.push(result.rows[i].interest);
+        }
+
+        res.json(responseObject);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
     }
 });
 
