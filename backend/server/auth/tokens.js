@@ -112,21 +112,3 @@ exports.generateAccessToken = generateAccessToken;
 exports.generateRefreshToken = generateRefreshToken;
 exports.decodeAccessToken = decodeAccessToken;
 exports.decodeRefreshToken = decodeRefreshToken;
-
-
-//Informal testing:
-async function main() {
-    var token = await generateRefreshToken('59f91506-0b06-4d35-8616-2f57dfde3ad2', 'mentee');
-    
-    /*
-    var newTokens = await decodeRefreshToken(token);
-    var newAccToken = newTokens.accessToken;
-    var refreshToken = newTokens.refreshToken;
-
-    console.log(newTokens);
-    */
-
-    console.log(token);
-}
-
-//main();
