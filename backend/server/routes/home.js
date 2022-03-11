@@ -90,16 +90,16 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
             meetingResult = result.rows[i];
 
             meeting = {
-                meetingID : meetingResult.meetingID,
-                meetingType : meetingResult.meetingType,
-                meetingName : meetingResult.meetingName,
+                meetingID : meetingResult.meetingid,
+                meetingType : meetingResult.meetingtype,
+                meetingName : meetingResult.meetingname,
                 mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
                 menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                meetingStart : meetingResult.meetingStart,
-                meetingDuration : meetingResult.meetingDuration,
+                meetingStart : meetingResult.meetingstart,
+                meetingDuration : meetingResult.meetingduration,
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
-                attended : meetingResult.attended,
+                complete : meetingResult.attended,
                 description : meetingResult.description
             }
 
