@@ -138,7 +138,7 @@ router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
     next();
 });
 
-router.get('/settings', checkAuth, (req, res, next) => {
+router.get('/settings', checkAuth, async (req, res, next) => {
     try {
         const userInfoResult = await pool.query('SELECT * FROM users WHERE userID = $1', [req.userInfo.userID]);
 
