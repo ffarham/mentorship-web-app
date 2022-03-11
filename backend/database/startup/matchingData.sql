@@ -128,7 +128,7 @@ INSERT into interest(userid, interest, kind, rnk) SELECT userid, 'M&A', 'mentee'
 INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Quant', 'mentor', 1 from users where users.name = 'Alex';
 INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Quant', 'mentor', 1 from users where users.name = 'Anne';
 INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Quant', 'mentor', 1 from users where users.name = 'Brian';
-INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Quant', 'mentor', 1 from users where users.name = 'Brienne';
+INSERT into interest(userid, interest, kind, ordering) SELECT userid, 'Quant', 'mentor', 1 from users where users.name = 'James';
 
 
 

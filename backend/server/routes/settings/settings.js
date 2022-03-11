@@ -77,6 +77,14 @@ router.post("/department", checkAuth, async(req, res, next) => {
     next();
 });
 
+router.post("/bio", checkAuth, async(req, res, next) => {
+    try{
+        await pool.query("UPDATE users SET bio = $1 WHERE userid = $2", [req.body.bio, req.userInfo.userID])
+    } catch(err) {
+
+    }
+})
+
 /**
  * Updates a users profile with some new information that the user has entered.
  * The user must give their password; if it is correct their information will be updated, else
@@ -104,6 +112,7 @@ async function changeUserInfo(userid, password, field, newInfo){
         throw err;
     }
 }
+
 /**
  * Deletes a user's profile
  */
