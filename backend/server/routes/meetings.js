@@ -7,6 +7,9 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
         //Add the new meeting to the database
         await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, NULL, FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
+
+        //Notify the mentor
+        notifications.notify(req.body.mentorID, `${req.userInfo.name} would like to create a meeting`);
         
         res.send('Success!');
     } catch (err) {
@@ -88,7 +91,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
         const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1, meetingDuration = $2 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.body.meetingDuration, req.params.meetingID, req.userInfo.userID]);
 
         //Notify the user
-        notifications.notify(result.rows[0].mentorid, `A new time has been confirmed for ${result.rows[0].meetingname}.`);
+        notifications.notify(result.rows[0].mentorid, `A new time has been set for ${result.rows[0].meetingname}.`);
         
         res.send('Success!');
     } catch (err) {
@@ -162,6 +165,8 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
+
+//Possibly redundant
 router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the groupMeetingAttendees table accordingly

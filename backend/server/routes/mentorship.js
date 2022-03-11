@@ -243,7 +243,6 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         }
 
         res.json(responseObject);
-
     } catch (err) {
         res.status(500).json(err);
     } 

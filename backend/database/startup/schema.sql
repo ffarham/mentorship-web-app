@@ -108,7 +108,7 @@ CREATE TABLE meeting (
     requestMessage VARCHAR(1000),
 
     menteeFeedback VARCHAR(1000),
-    mentorFeedback VARCHAR(100),
+    mentorFeedback VARCHAR(1000),
 
     description VARCHAR(1000),
 
@@ -253,6 +253,8 @@ CREATE TABLE notifications (
     msg VARCHAR(1000) NOT NULL,
 
     timeCreated TIMESTAMP NOT NULL,
+
+    kind VARCHAR(50),
 
     dismissed BOOLEAN NOT NULL
 
