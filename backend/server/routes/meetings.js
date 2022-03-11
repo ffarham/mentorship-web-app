@@ -283,11 +283,11 @@ router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, nex
         let results = null;
         let feedbackString = null;
         if(req.userInfo.userType === 'mentor'){
-            results = await pool.query("SELECT * from meeting WHERE meetingID = $1 AND mentorID = $2", [req.params.meetingID, req.userInfo.userID]);
-            feedbackString = result.rows[0].menteeFeedback; 
+            results = await pool.query("SELECT * FROM meeting WHERE meetingID = $1 AND mentorID = $2", [req.params.meetingID, req.userInfo.userID]);
+            feedbackString = results.rows[0].menteefeedback; 
         } else{
-            results = await pool.query("SELECT * from meeting WHERE meetingID = $1 AND menteeID = $2", [req.params.meetingID, req.userInfo.userID]);
-            feedbackString = result.rows[0].mentorFeedback;
+            results = await pool.query("SELECT * FROM meeting WHERE meetingID = $1 AND menteeID = $2", [req.params.meetingID, req.userInfo.userID]);
+            feedbackString = results.rows[0].mentorfeedback;
         }
         let f = {
             feedback: feedbackString,
@@ -308,9 +308,10 @@ router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res,
             let menteeFeedback = {
                 feedback: results.rows[i].feedback
             };
-            menteeFeedback.push(feedbackMessages);
+            feedbackMessages.push(menteeFeedback);
         }
-        res.json(menteeFeedback);
+        console.log(feedbackMessages);
+        res.json(feedbackMessages);
         next();
     } catch(err){
         res.status(500).json(err);
