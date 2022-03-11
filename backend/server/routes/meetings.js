@@ -234,7 +234,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
-router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) => {
+router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         //Update the groupMeetingAttendees table accordingly
         await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
