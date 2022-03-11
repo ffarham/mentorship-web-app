@@ -35,7 +35,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
 
         console.log("/createGroupMeeting\n" + req.body);
 
-        var meetingName = req.body.meetingType === 'group-meeting' ? req.body.meetingName : req.body.topic;
+        var meetingName = req.body.meetingName;
 
         //Add the new meeting to the database
         const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.description]);
@@ -253,12 +253,30 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/rejectMeeting/" + req.params.meetingID + "\n" + req.body);
         //Update the groupMeetingAttendees table accordingly
-        await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
+        await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
 
         res.send('Success!');
     } catch (err) {
         console.log(err);
         res.status(500).json(err);
+    }
+
+    next();
+});
+
+router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
+    console.log('/markMeetingComplete\n' + req.params.meetingID + '/' + req.params.meetingType + '\n');
+    try {
+        if (req.params.meetingType === 'meeting') {
+            await pool.query('UPDATE meeting SET attended = TRUE WHERE mentorID = $1 AND meetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+        } else {
+            await pool.query('UPDATE groupMeeting SET attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+        }
+
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
     }
 
     next();

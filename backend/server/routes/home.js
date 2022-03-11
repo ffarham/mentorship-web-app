@@ -27,19 +27,29 @@ router.get("/notifications", checkAuth, async (req, res, next) => {
         }
 
         res.json(responseObject);
-        next();
     } catch(err) {
         res.status(500).json(err);
+        console.log(err);
     }
+
+    next();
 });
 
 //Route to dismiss a notification
 router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, next) => {
     console.log("dismissnotification/" + req.params.notificationID + "\n" + req.body)
-    //Dismiss the notification
-    await pool.query('UPDATE notifications SET dismissed = TRUE WHERE notificationID = $1', [req.params.notificationID]);
 
-    res.send('Success!');
+    try {
+        //Dismiss the notification
+        await pool.query('UPDATE notifications SET dismissed = TRUE WHERE notificationID = $1 AND userID = $2', [req.params.notificationID, req.userInfo.userID]);
+
+        res.send('Success!');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+
+    next();
 });
 
 

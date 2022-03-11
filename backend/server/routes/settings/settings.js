@@ -154,5 +154,29 @@ async function checkPassword(userid, password){
     }
     return isPassCorrect;
 }
+router.get('/settings', checkAuth, async (req, res, next) => {
+    try {
+        const userInfoResult = await pool.query('SELECT * FROM users WHERE userID = $1', [req.userInfo.userID]);
+
+        var userData = {
+            name : userInfoResult.rows[0].name,
+            email : userInfoResult.rows[0].email,
+            department : userInfoResult.rows[0].businessarea,
+            interests : [],
+            bio : userInfoResult.rows[0].bio        
+        }
+
+        const interestsResult = await pool.query('SELECT interest FROM interest WHERE userID = $1 AND kind = $2', [req.userInfo.userID, req.userInfo.userType]);
+
+        for (var i = 0; i < interestsResult.rowCount; i++) {
+            userData.interests.push(interestsResult.rows[i].interest);
+        }
+
+        res.json(userData);
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
+    }
+});
 
 module.exports = router;
