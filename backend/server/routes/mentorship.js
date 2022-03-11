@@ -143,14 +143,14 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             `;
         } else if (req.userInfo.userType === 'mentor') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
                 WHERE meeting.mentorID = $1 AND meeting.menteeID = $1)
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, groupMeeting.attended groupMeeting.description, '' AS feedback
                 FROM groupMeeting 
                 INNER JOIN groupMeetingAttendees ON groupMeetingAttendees.groupMeetingID = groupMeeting.groupMeetingID
                 WHERE groupMeeting.mentorID = $1 AND groupMeetingAttendees.menteeID = $2) 
@@ -178,7 +178,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
                 meetingDuration : meetingResult.meetingDuration,
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
-                attended : meetingResult.attended,
+                complete : meetingResult.attended,
                 description : meetingResult.description
             }
 
