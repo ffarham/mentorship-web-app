@@ -103,15 +103,7 @@ router.post("/bio", checkAuth, async(req, res, next) => {
  */
 async function changeUserInfo(userid, password, field, newInfo){
     try{
-        console.log("new: " + newInfo);
-        const result = await pool.query("SELECT * FROM users WHERE userid = $1", [userid]);
-
-        const hash = result.rows[0].password;
-        let isPassCorrect = await bcrypt.compare(password, hash);
-
-        console.log(isPassCorrect);
-
-        if(isPassCorrect){
+        if(await checkPassword(userid, password)){
             await pool.query("UPDATE users SET " + field + " = $1 WHERE userid = $2", [newInfo, userid]);
         }
         else{
@@ -128,14 +120,39 @@ async function changeUserInfo(userid, password, field, newInfo){
 router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
     console.log("/deleteProfile\n" + req.body)
     try{
-        await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
+        if(await checkPassword(req.userInfo.userID, req.body.password)){
+            await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
+            res.send("success");
+            next();
+        }
+        else{
+            throw{name:"InvalidPasswordError", message: "Invalid Password"};
+        }
     } catch(err){
         console.log(err);
         res.status(500).json(err);
         next();
     }
-    res.send("success");
-    next();
 });
+
+/**
+ * Check if a user's password has been inputted correctly in order to change their settings
+ * @param {string} userid The userid of the user 
+ * @param {*} password The password the user has input
+ * @returns true if password matches the user's actual password, false otherwise
+ */
+async function checkPassword(userid, password){
+    let isPassCorrect = false;
+    try{
+        const result = await pool.query("SELECT * FROM users WHERE userid = $1", [userid]);
+        const hash = result.rows[0].password;
+        isPassCorrect = await bcrypt.compare(password, hash);
+        console.log(isPassCorrect);
+        
+    } catch(err){
+        throw(err);
+    }
+    return isPassCorrect;
+}
 
 module.exports = router;
