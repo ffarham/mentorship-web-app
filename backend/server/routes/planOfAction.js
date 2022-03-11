@@ -18,6 +18,7 @@ router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
         res.send('Success!');
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 
     next();
@@ -36,6 +37,7 @@ router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
         res.send('Success!');
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 
     next();
@@ -92,6 +94,7 @@ router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
         next();
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
         next();
     }
 });
@@ -108,6 +111,7 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
         next();
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
         return;
     }
 
@@ -122,6 +126,7 @@ router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, n
         next();
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
         return;
     }
 });

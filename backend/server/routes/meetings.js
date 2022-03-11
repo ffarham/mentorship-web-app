@@ -132,6 +132,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
         //Send response
         res.json(responseObject);
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -149,6 +150,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
 
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -165,6 +167,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
         
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -208,6 +211,7 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -229,6 +233,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -242,8 +247,8 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
 
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
-        next();
     }
 
     next();
@@ -265,6 +270,7 @@ router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) =>
         res.send('success');
         next();
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -277,6 +283,7 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
         res.send("success");
         next();
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -300,6 +307,7 @@ router.get('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, nex
         res.json(f);
         next();
     }catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }    
@@ -319,6 +327,7 @@ router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res,
         res.json(feedbackMessages);
         next();
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }

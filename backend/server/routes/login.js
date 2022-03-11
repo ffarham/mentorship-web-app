@@ -54,11 +54,13 @@ router.post("/login", async (req, res, next) => {
         } else {
             //Throw an error if the password doesn't match
             res.status(500).json({name: 'LoginFailureError', message: 'Email and password do not match'});
+            console.log(err);
         }
     } catch (err) {
         //Throw an error if the user doesn't exist in the database
         if (err.name === 'UserNotFoundError') {
             res.status(500).json({name: 'LoginFailureError', message: `${userEmail} not found`});
+            console.log(err);
         } else {
             console.log(err);
         }
@@ -66,9 +68,14 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/logout", async (req, res, next) => {
-    const userID = req.body.userID;
-    await pool.query(deleteTokensQuery, [userID]);
-    res.send('Success!');
+    try {
+        const userID = req.body.userID;
+        await pool.query(deleteTokensQuery, [userID]);
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
+    }
 })
 
 module.exports = router;

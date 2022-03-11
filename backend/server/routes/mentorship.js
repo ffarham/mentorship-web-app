@@ -3,38 +3,43 @@ const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 
 router.get('/mentorship', checkAuth, async (req, res, next) => {
-    //Pull the appropriate user info from the database
-    var usersQuery;
-    if (req.userInfo.userType === 'mentee') {
-        usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.mentorID = users.userID WHERE mentoring.menteeID = $1' 
-    } else if (req.userInfo.userType === 'mentor') {
-        usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.menteeID = users.userID WHERE mentoring.mentorID = $1'
+    try {
+        //Pull the appropriate user info from the database
+        var usersQuery;
+        if (req.userInfo.userType === 'mentee') {
+            usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.mentorID = users.userID WHERE mentoring.menteeID = $1' 
+        } else if (req.userInfo.userType === 'mentor') {
+            usersQuery = 'SELECT users.* FROM users INNER JOIN mentoring ON mentoring.menteeID = users.userID WHERE mentoring.mentorID = $1'
+        }
+
+        const otherUsersResult = await pool.query(usersQuery, [req.userInfo.userID]);
+
+        //Format the results nicely and append the plans of action and the meetings
+        var responseObject = [];
+        var otherUserResult;
+        var otherUser;
+        for (var i = 0; i < otherUsersResult.rowCount; i++) {
+            otherUserResult = otherUsersResult.rows[i];
+
+            //Format user info nicely
+            otherUser = {
+                otherID : otherUserResult.userid,
+                name : otherUserResult.name,
+                bio : otherUserResult.bio,
+                email : otherUserResult.email,
+                department : otherUserResult.department,
+            };
+
+            //Add user to the response
+            responseObject.push(otherUser);
+        }
+
+        //Send the response
+        res.json(responseObject);
+    } catch (err) {
+        res.status(500).json(err);
+        console.log(err);
     }
-
-    const otherUsersResult = await pool.query(usersQuery, [req.userInfo.userID]);
-
-    //Format the results nicely and append the plans of action and the meetings
-    var responseObject = [];
-    var otherUserResult;
-    var otherUser;
-    for (var i = 0; i < otherUsersResult.rowCount; i++) {
-        otherUserResult = otherUsersResult.rows[i];
-
-        //Format user info nicely
-        otherUser = {
-            otherID : otherUserResult.userid,
-            name : otherUserResult.name,
-            bio : otherUserResult.bio,
-            email : otherUserResult.email,
-            department : otherUserResult.department,
-        };
-
-        //Add user to the response
-        responseObject.push(otherUser);
-    }
-
-    //Send the response
-    res.json(responseObject);
 });
 
 router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
@@ -109,6 +114,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 });
 
@@ -184,6 +190,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     }
 });
 
@@ -245,6 +252,7 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         res.json(responseObject);
     } catch (err) {
         res.status(500).json(err);
+        console.log(err);
     } 
 
     next();

@@ -21,6 +21,7 @@ router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
     try{
         await pool.query(insertRequest, [mentorID, menteeID]);
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -66,6 +67,7 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
         res.json(mentorShipRequests);
         next();
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -90,6 +92,7 @@ router.post('/acceptMentee/:requestID', checkAuth, async (req, res, next) => {
         //notify mentee that their request has been accepted
         notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been accepted!");
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -111,6 +114,7 @@ router.post('/rejectMentee/:requestID', checkAuth, async (req, res, next) => {
         notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been rejected!");
         res.send("success");
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
         next();
     }
@@ -133,6 +137,7 @@ router.post('/cancelMentorship/:mentorID', checkAuth, async (req, res, next) => 
         notify(mentorid, req.userInfo.name + " is no longer your mentee");
 
     } catch(err){
+        console.log(err);
         res.status(500).json(err);
     }
     res.send("success");
