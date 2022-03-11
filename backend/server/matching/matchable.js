@@ -393,7 +393,7 @@ async createMatches(flagList){
                 await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));
                   
                 //If the mentor-mentee pair has already been considered, do not do so again
-                if(mentee_T.first.aTable.has(mentor)){
+                if(mentee_T.first.aTable.has(mentor.userid)){
                     console.log("already assigned");
                     continue;
                 }
@@ -403,6 +403,7 @@ async createMatches(flagList){
                     ++assignedMentors;
                     continue;    
                 }
+                //Do not match mentees and mentors who are already paired
                 if(currentPairs.has(mentee_T.first.userid)){
                     if(currentPairs.get(mentee_T.first.userid).has(mentor.userid)){
                         mentee_T.first.aTable.set(mentor, null);

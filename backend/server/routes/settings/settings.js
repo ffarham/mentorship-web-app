@@ -117,4 +117,15 @@ async function changeUserInfo(userid, password, field, newInfo){
     }
 }
 
+router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
+    try{
+        await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
+    } catch(err){
+        res.status(500).json(err);
+        next();
+    }
+    res.send("success");
+    next();
+});
+
 module.exports = router;
