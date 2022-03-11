@@ -2,7 +2,7 @@
 const pool = require('../db');
 
 
-
+//Get all available mentors
 const mentorQuery = "" +
 "SELECT userid, name, businessarea, email, menteeNum FROM " + 
 "(SELECT userid, name, CASE WHEN menteeNum is null THEN 0 ELSE menteeNum END, businessarea, email FROM users " + 
@@ -10,13 +10,14 @@ const mentorQuery = "" +
         "ON userid = mentors.mentorid) mentoringCount " + 
             "JOIN mentor ON mentor.mentorid = mentoringCount.userid WHERE menteeNum < 5";
 
-
+//Get a mentee based on their userid
 const menteeQuery = "" + 
 "SELECT userid, name, businessarea, email FROM (" + 
 "SELECT userid, name, businessarea, email FROM users " +
 "LEFT OUTER JOIN (SELECT COUNT(menteeID) num, menteeID FROM " +
     "mentoring GROUP BY menteeID HAVING COUNT(menteeID) < 10) mentees ON userid = mentees.menteeID) users WHERE userid = $1";
 
+//Get all pairs of mentors and mentees with matching interests
 const matchingInterestQuery = "" +
 "select menteeInterests.userid as menteeid, mentorInterests.userid as mentorid, menteeInterests.interest as commonInterest, menteeInterests.ordering as menteeRank, mentorInterests.ordering as mentorRank from " +  
 "(select mentees.userid, mentees.name, interest.interest, interest.ordering from " + 
@@ -29,24 +30,47 @@ const matchingInterestQuery = "" +
             "on mentors.userid = interest.userid) mentorInterests " + 
         "ON menteeInterests.interest = mentorInterests.interest";
 
+/*
+Get all current pairs of mentors and their mentees (to avoid matching a mentee to a mentor they
+are already being tutored by).
+*/
 const mentoringPairs = "" + 
 "SELECT menteeid, mentorid FROM mentoring";
 
+//For a particular user, get either their areas of expertise or the areas they wish to be
+//tutored in
 const userInterests = "SELECT interest, ordering FROM interest WHERE userid = $1 AND kind = $2";
 
+//A queue of flags for mentees waiting to be matched by the system
 const flagQueue = [];
+//Stores flags of mentees currently being matched
 let menteeFlags = [];
 
+//The maximum number of mentees before the system must match any waiting mentees
 const poolLimit = 10;
+//The number of polls that can occur before the system must match any waiting mentees
 const pollLimit = 3;
+//Tracks the number of polls recorded since the last matching
 let pollCount = 0;
 
+// The maximum number of mentees a mentor can tutor
 const maxMentees = 5;
+/*
+The maximum number of areas of expertise or areas to be tutored in that a mentor or 
+mentee may have, respectively. These are referred to as "interests" generically
+*/
 const maxInterests = 5;
+/*
+The worst ranking a mentee can give to a mentor
+(actually slightly worse due to how rankings are calculated)
+*/
 const worstRanking = maxInterests;
 
+//For each menteeid, stores a map for the corresponding mentee which contains the 
+//mentors already tutoring the mentee as key entries
 let menteeMentorMap = new Map();
 
+//A Tuple, structured (first, second)
 class Tuple {
     constructor(first, second){
         this.first = first;
@@ -61,6 +85,15 @@ class Tuple {
     }
 }
 
+/*
+The Flag class is used to determine whether the algorithm has finished with a 
+particular mentee, using a status flag. The flag is 0 when the mentee is still 
+being processed, 1 when the matching is complete and -1 when there has been an
+error with the matching. The flag stores the mentee's userid and, when the 
+matching on the mentee is complete, a list of mentors that the mentee has been
+matched to
+
+*/
 class Flag { 
     constructor(menteeid){
         this.flag = 0;
@@ -94,6 +127,12 @@ class Flag {
     }
 }
 
+
+/* 
+Stores information on a mentor or mentee.
+The interestMap attribute is used to quickly retrieve an interest when 
+checking for common interests between a mentee and mentor, e.g. to check whether.
+*/
 class User {
     constructor(userid, name, bArea, email, interests){
         this.userid = userid;
@@ -140,22 +179,28 @@ class User {
     }
 }
 
+
+
 class Mentee extends User{
    constructor(userid, name, bArea, email, interests){
        super(userid, name, bArea, email, interests);
-       this.aTable = new Map();
-   }
-   addMentor(mentor){
-    this.aTable.set(mentor, null);
+       this.consideredMentors = new Map(); //Mentors already considered for this mentee by the algorithm
    }
 }
 
 class Mentor extends User{
     constructor(userid, name, bArea, email, interests, menteeNum){
         super(userid, name, bArea, email, interests);
-        this.menteeNum = menteeNum;
+        this.menteeNum = menteeNum; //The number of mentees a mentor is already tutoring
     }
 }
+
+/**
+ * Get the interests of a mentee or mentor and return them as an array
+ * @param {string} userid The userid of the user
+ * @param {string} kind The type of user; either mentee or mentor
+ * @throws {INterestsNotFoundError} Thrown if the user has no interests
+ */
 
 async function getInterests(userid, kind){
     let interests = undefined;
@@ -176,7 +221,11 @@ async function getInterests(userid, kind){
     interestArray.sort((first, second) => { return first.first - second.first});
     return interestArray;
 }
-
+/**
+ * Creates a Mentee object
+ * @param  {string} menteeID The userid of the mentee 
+ * @returns A Mentee object
+ */
 async function createMenteeObj(menteeID){
     let menteeResults = null;
     try{
@@ -199,6 +248,11 @@ async function createMenteeObj(menteeID){
     return mentee;
 }
 
+/**
+ * Gets all available mentors and uses them to create a list of Mentor objects
+ * @throws {NoAvailableMentorsError} Thrown when there are no mentors available to tutor any mentees
+ * @returns A list of Mentor objects
+ */
 async function getAvailableMentors(){
     let mentors = [];
 
@@ -208,9 +262,9 @@ async function getAvailableMentors(){
     } catch(err){
         throw(err);
     }
-    if(mentorResults.rowCount === 0){
+    /*if(mentorResults.rowCount === 0){
         throw {name: 'NoAvailableMentorsError', message: 'No mentors available!'}
-    }
+    }*/
     let rows = mentorResults.rows;
     for(let i = 0; i < mentorResults.rowCount; ++i){
         let interests = null 
@@ -223,7 +277,12 @@ async function getAvailableMentors(){
     }
     return mentors;
 }
-
+/**
+ * Creates a list of mentors matched to a mentee by the algorithm for the mentee's flag object
+ * once matching is complete (but before the status flag is set).
+ * @param {Flag} flag The flag corresponding to a mentee
+ * @param {Array} mentors The list of mentors matched to the mentee
+ */
 async function createMentorList(flag, mentors){
     let tempList = [];
     for(let i = 0 ; i < mentors.length; ++i){
@@ -232,6 +291,13 @@ async function createMentorList(flag, mentors){
     flag.setMentorList(tempList);
 }
 
+/**
+ * Creates a map which stores common interests between a mentee and each available mentor.
+ * This is acheived by storing (key, value) entries of which the key is the userid of a mentee 
+ * and the value is another map. This map's (key, value) entries are a mentorid and an array of 
+ * interests common to the mentee and mentor.
+ * @returns A map as defined above.
+ */
 async function createMenteeMentorMap(){
     let map = new Map();
     let result = null;
@@ -263,10 +329,24 @@ async function createMenteeMentorMap(){
     return map;
 }
  
+/**
+ * Formula to calculate a ranking (see calculateRanking function)
+ * @param {Number} rank
+ * @param {Number} numMatches 
+ * @param {Number} numMentees
+ * @return The ranking
+ */
 async function rankFormula(rank, numMatches, numMentees){
     return rank - (numMatches + (maxMentees - numMentees))/(maxInterests + maxMentees);
 } 
-
+/**
+ * Calculates the lowest (best) possible ranking a mentor can be given when compared with a 
+ * mentee
+ * @param mentee_T Tuple containing the mentee
+ * @param mentor The mentor
+ * 
+ * @return The calculated ranking
+ */
 async function calculateRanking(mentee_T, mentor){
     let rank = worstRanking;
 
@@ -283,7 +363,14 @@ async function calculateRanking(mentee_T, mentor){
     rank = rankFormula(rank, commonInterestTuples.length, mentor.menteeNum);
     return rank;
 }
-
+/**
+ * Creates a map which stores the mentors a mentee is already being tutored by
+ * The map contains one entry per mentee, the key of which is the mentee's userid and 
+ * the value of which is another map, containing mentorids as keys and null values.
+ * This is used to efficiently query whether an available mentor is already tutoring
+ * a mentee.
+ * @return The map as defined above.
+ */
 async function getCurrentPairs(){
     let rows = null;
     
@@ -306,6 +393,11 @@ async function getCurrentPairs(){
     return pairMap;
 }
 
+/**
+ * Sets the flag value of any Flags for mentees currently being considered
+ * by the algorithm to the error value (-1)
+ * @param err The error which caused the flags to be set to the error value 
+ */
 async function setErrorFlags(err){
     for(let i = 0; i < menteeFlags.length; ++i){
         menteeFlags[i].setFlag(-1);
@@ -315,9 +407,18 @@ async function setErrorFlags(err){
 
 
 var pairMatching = {
+/**
+ * Adds a mentee to be matched with some mentors
+ * @param {Flag} flag The flag of a mentee to be matched 
+ */
 async addMentee(flag){
     flagQueue.push(flag);
-},                  
+},
+/**
+ * Checks whether any mentees waiting to be matched should be matched.
+ * Mentees will be matched when there are more than `poolLimit` (set at 10) mentees waiting
+ * or if 1.5 seconds have passed since the last round of matching.
+ */                  
 async pollMatching(){
     //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
@@ -332,20 +433,24 @@ async pollMatching(){
     }
     if(pollCount === pollLimit) pollCount = 0;    
 },
+/**
+ * The matching algorithm. The full explanation of the algorithm is documented in the Final Report.
+ * @param {Array} flagList A list of the flags of mentees to be matched with some mentors
+ */
 async createMatches(flagList){
 
-    menteeFlags = flagList;
-    const mentees =  []; 
-    let mentors = null;
-    let currentPairs = null;
+    menteeFlags = flagList; //Flags of mentees to be matched with available mentors
+    const mentees =  []; //Array of mentees to be matched
+    let mentors = null; //Array of currently available mentors
+    let currentPairs = null; //All already-existing pairings of mentors to mentees
     try {
         menteeMentorMap = await createMenteeMentorMap();
 
         for(let i = 0; i < menteeFlags.length; ++i){
-            mentees.push( await createMenteeObj(menteeFlags[i].getMenteeID()));//createMenteeObj(userid);
+            mentees.push( await createMenteeObj(menteeFlags[i].getMenteeID()));
         }
-        mentors =  await getAvailableMentors();
-        currentPairs = await getCurrentPairs();
+        mentors =  await getAvailableMentors(); 
+        currentPairs = await getCurrentPairs(); 
     } catch(err){
         console.log(err.message);
         throw(err);
@@ -355,30 +460,19 @@ async createMatches(flagList){
 
     let assignedMentors = 0;
     
+    /*
+    Creates a tuple array whose elements are a mentee and an array of tuples containing a
+    mentor matched with the mentor and the ranking calculated for that matching
+    */
     const menteeArray = new Array();
     for(let i = 0; i < mentees.length; ++i){
         //console.log(mentees[i].name + ": " + Array.from(mentees[i].interestMap));
         menteeArray.push(new Tuple(mentees[i], []));
     }
 
-    
-    /*const mentors = new Array();
-    for(let i = 0; i < mentors.length; ++i){
-        mentors.push(mentors[i]);
-    }*/
-
-    /* MIGHT BE A FEW PROBLEMS WITH REMEMBERING MENTOR INDICES IN MENTEEARRAY; CTRL+F mentor.second and remove
-    any instance of mentor.second.first or mentor.second.second*/
-    //Rounds
     /*
-    In each round, for each mentor, for each mentee check if the mentee has an interest the 
-    mentor also has. If so, check the ranking and see if this ranking is higher than that stored
-    for another mentee (or maybe the same mentee) for the mentor. If so, store the ranking, the index
-    of the ment and the 
-    mentee's array of mentors (for easy insertion later). 
-    Store the mentor in the mentee's list. 
-    Repeat with every other mentor
-    Repeat until there are no unassigned mentors remaining.
+    While there are mentors who have not been considered as a match for some mentees, take each mentor
+     and attempt to match them with each mentee they have not yet been considered for.
     */
     do{
         for(let i = 0; i < mentors.length; ++i){
@@ -386,27 +480,28 @@ async createMatches(flagList){
             let topMentee = new Tuple(worstRanking, null);
             for(let j = 0; j < menteeArray.length; ++j){
 
-                let mentee_T = menteeArray[j];
+                let mentee_T = menteeArray[j]; //Tuple of a mentee and a list of tuples of mentors currently matched to them 
+                                               //during the algorithms runtime and a calculated ranking for the match
                 console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor.name);
                 console.log("mentee's bArea: " + mentee_T.first.bArea, " mentor's: " + mentor.bArea);
                 console.log("number of common interests: " + 
                 await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));
                   
                 //If the mentor-mentee pair has already been considered, do not do so again
-                if(mentee_T.first.aTable.has(mentor.userid)){
+                if(mentee_T.first.consideredMentors.has(mentor.userid)){
                     console.log("already assigned");
                     continue;
                 }
                 //Do not attempt to match mentees and mentors with the same business area
                 if(mentee_T.first.bArea === mentor.bArea || mentee_T.first.userid === mentor.userid){
-                    mentee_T.first.aTable.set(mentor, null);
+                    mentee_T.first.consideredMentors.set(mentor, null);
                     ++assignedMentors;
                     continue;    
                 }
                 //Do not match mentees and mentors who are already paired
                 if(currentPairs.has(mentee_T.first.userid)){
                     if(currentPairs.get(mentee_T.first.userid).has(mentor.userid)){
-                        mentee_T.first.aTable.set(mentor, null);
+                        mentee_T.first.consideredMentors.set(mentor, null);
                         ++assignedMentors;
                         continue;
                     }
@@ -415,7 +510,7 @@ async createMatches(flagList){
                 //Check for common interests between the mentor and mentee
                 //If the mentor's ranking of a common interest is lower (= better) than a previous 
                 //common interest between iteself and some mentee, record this ranking and the index
-                //of the mentee as a tuple and store the tuple.
+                //of the mentee as a tuple and store the tuple in topMentee
                 //let commonInterests = 0;
                 if(menteeMentorMap.get(mentee_T.first.userid).has(mentor.userid)){
                     let commonInterests = menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid);
@@ -427,22 +522,20 @@ async createMatches(flagList){
                         }
                     }
                 }
-                else{
+                else{ //If the mentor and mentee have no common interests, add them to the mentee's map of mentors already
+                      //considered for the mentee so they are not matched again
                     console.log("no common interests");
-                    mentee_T.first.aTable.set(mentor, null);
+                    mentee_T.first.consideredMentors.set(mentor, null);
                     ++assignedMentors;
                 }
             }
-            //Assign the mentor to a mentee. Rank the mentor by their interest which is ranked
-            //highest by the mentee.
-            //Assign the mentor's probably delete this. 
+            //Attempt to assign the mentor to the mentee which the mentor ranked the highest
             if(topMentee.second != null){
-                mentee_T = menteeArray[topMentee.second];
+                mentee_T = menteeArray[topMentee.second]; //Mentee which ranked the highest for the mentor
                 console.log("Try to assign mentor: " + mentor.name + " to: " + mentee_T.first.name);
-                mentee_T.first.aTable.set(mentor, null);
+                mentee_T.first.consideredMentors.set(mentor, null); //Record that the matching has been considered so it will not be again
                 ++assignedMentors;
-                //Find the ranking that the mentee gives the mentor, which is the highest ranking 
-                //given to an interest that the mentor has by the mentee.
+                //Calculate  the ranking that the mentee gives the mentor
                 let rank = null 
                 try{
                     rank = await calculateRanking(mentee_T, mentor);
@@ -464,8 +557,7 @@ async createMatches(flagList){
                         }
                     }
                     if(tempIndex != -1){
-                        console.log("Swapping mentor " /*+ mentors[mentee_T.second[tempIndex].second.first].name + 
-                            */ + "for: " + mentor.name);
+                        console.log("Swapping mentor for: " + mentor.name);
                         mentee_T.second[tempIndex] = new Tuple(rank, mentor);
                     }
                 }
@@ -477,7 +569,13 @@ async createMatches(flagList){
     }while(assignedMentors != menteeArray.length * mentors.length);
 
     console.log("Finished!");
-    //Sort the result
+    /*
+    For each mentee, sort the mentors assigned to them by their ranking and add this array 
+    of mentors to the mentee's Flag.
+    Set the flag value of each mentee to 1 to indicate that they have been 
+    processed by the matching system and the mentors they have been matched
+    to can be sent back to the mentee
+    */
     for(let i = 0; i < menteeArray.length; ++i){
         console.log(menteeArray[i].first.name + ": ");
         console.log(menteeArray[i].second[0].second.name);
@@ -495,6 +593,7 @@ async createMatches(flagList){
                 menteeArray[i].second[j].first);
         }
     }
+    //Empty the array of mentees
     menteeArray.shift(0, menteeArray.length + 1);
 },
 }

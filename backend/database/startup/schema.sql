@@ -143,8 +143,14 @@ CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
     menteeID UUID NOT NULL REFERENCES users(userID) ON DELETE CASCADE,
 
-    confirmed BOOLEAN,
+    confirmed BOOLEAN
+);
 
+DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
+CREATE TABLE groupMeetingFeedback(
+    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
+    
     feedback VARCHAR(1000)
 );
 

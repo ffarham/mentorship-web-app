@@ -170,9 +170,81 @@ router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) 
         res.send('Success!');
     } catch (err) {
         res.status(500).json(err);
+        next();
     }
 
     next();
+});
+// Give feedback on individual meetings
+router.post('/feedback/meeting/:meetingID', checkAuth, async (req, res, next) => {
+    try {
+        let feedback = req.body.feedback;
+        if (req.userInfo.userType === 'mentor') {
+            await pool.query("UPDATE meeting SET mentorFeedback = $1 WHERE meetingID = $2", [feedback, req.params.meetingID]);
+        } else{
+            await pool.query("UPDATE meeting SET menteeFeedback = $1 WHERE meetingID = $2", [feedback, req.params.meetingID]);
+        }
+        res.send('success');
+        next();
+    } catch (err) {
+        res.status(500).json(err);
+        next();
+    }
+});
+
+router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, next) => {
+    try{
+        let feedback = req.body.feedback;
+        await pool.query("INSERT INTO groupMeetingFeedback VALUES(DEFAULT, $1, $2)", [req.params.meetingID, feedback]); 
+        res.send("success");
+        next();
+    }catch(err){
+        res.status(500).json(err);
+        next();
+    }
+});
+
+router.post('/feedback/workshop/:workshopID', checkAuth, async (req, res, next) => {
+    try{
+        await pool.query("INSERT INTO workshopFeedback VALUES(DEFAULT, $1, $2)", [req.params.workshopID, req.body.feedback]); 
+        res.send("success");
+        next();
+    }catch(err){
+        res.status(500).json(err);
+        next();
+    }    
+
+});
+
+router.post('/feedback/view/meeting/:meetingID',  checkAuth, async (req, res, next) => {
+    try{
+        let results = null;
+        let feedbackString = null;
+        if(req.userInfo.userType === 'mentor'){
+            results = await pool.query("SELECT * from meeting WHERE meetingID = $1 AND mentorID = $2", [req.params.meetingID, req.userInfo.userID]);
+            feedbackString = result.rows[0].menteeFeedback; 
+        } else{
+            results = await pool.query("SELECT * from meeting WHERE meetingID = $1 AND menteeID = $2", [req.params.meetingID, req.userInfo.userID]);
+            feedbackString = result.rows[0].mentorFeedback;
+        }
+        let f = {
+            feedback: feedbackString,
+        }
+        res.json(f);
+        next();
+    }catch(err){
+        res.status(500).json(err);
+        next();
+    }    
+});
+
+router.post('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res, next) =>{
+    try {
+        
+    } catch(err){
+        res.status(500).json(err);
+        next();
+    }
 });
 
 module.exports = router;

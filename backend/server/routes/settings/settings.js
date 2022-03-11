@@ -8,11 +8,9 @@ const { restart } = require("nodemon");
 const { route } = require("../homepage");
 
 
-router.get("/api/v1/settings/:userID", async (req,res) => {
-
-});
-
-
+/**
+ * Recieves and stores a user's feedback on the app overall
+ */
 router.post("/feedback", checkAuth, async (req,res, next) => {
     try{    
         
@@ -24,12 +22,15 @@ router.post("/feedback", checkAuth, async (req,res, next) => {
 
     }catch(err){
         res.status(500).json(err);
-        next()
+        next();
     }
     res.send("success");
     next();
 });
 
+/**
+ * Gets all notifications a user has been sent that have not yet been dismissed
+ */
 router.get("/notifications", checkAuth, async (req, res, next) => {
     try{
         const userid = req.userInfo.userID;        
@@ -55,7 +56,23 @@ router.get("/notifications", checkAuth, async (req, res, next) => {
         next();
     }
 });
+/**
+ * Dismiss a notification
+ */
+router.post("/notifications/dismiss/:notificationID", checkAuth, async (req, res, next) => {
+    try{
+        await pool.query("DELETE FROM notifications WHERE notificationID = $1", [req.params.notificationID]);
+        res.send("success");
+        next();
+    } catch(err){
+        res.status(500).json(err);
+        next();
+    }
+});
 
+/**
+ * Allows a user to change their password
+ */
 router.post("/password", checkAuth, async(req, res, next) => {
     try{
         let userid = req.userInfo.userID;
@@ -73,7 +90,9 @@ router.post("/password", checkAuth, async(req, res, next) => {
     
 });
 
-
+/**
+ * Allows a user to change their email
+ */
 router.post("/email", checkAuth, async(req, res, next) => {
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "email", req.body.newemail);
@@ -87,6 +106,9 @@ router.post("/email", checkAuth, async(req, res, next) => {
     
 });
 
+/**
+ * Allows a user to change their department
+ */
 router.post("/department", checkAuth, async(req, res, next) => {
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
@@ -98,6 +120,15 @@ router.post("/department", checkAuth, async(req, res, next) => {
     next();
 });
 
+/**
+ * Updates a users profile with some new information that the user has entered.
+ * The user must give their password; if it is correct their information will be updated, else
+ * no changes are made.
+ * @param {string} userid userid of a user who wishes to change their information
+ * @param {*} password Passwor of the user
+ * @param {*} field Name of the field in the `users` table to be altered 
+ * @param {*} newInfo The new information
+ */
 async function changeUserInfo(userid, password, field, newInfo){
     try{
         console.log("new: " + newInfo);
@@ -116,7 +147,9 @@ async function changeUserInfo(userid, password, field, newInfo){
         throw err;
     }
 }
-
+/**
+ * Deletes a user's profile
+ */
 router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
     try{
         await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
