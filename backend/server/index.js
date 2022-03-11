@@ -22,6 +22,8 @@ const available = require('./matching/matchable').pairMatching;
 const Flag = require('./matching/matchable').Flag;
 const Mentee = require('./matching/matchable').Mentee;
 
+const suggestWorkshops = require('./interactions/suggestWorkshops').suggestWorkshops;
+
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
@@ -44,6 +46,8 @@ app.use(apiString, require("./routes/home")); //Endpoints for user's home page
 app.use(apiString, require("./routes/matching/matching")); //Endpoints for matchings
 app.use(apiString, require("./routes/mentorshipRequests")); //Endpoints for mentorship requests
 app.use(apiString, require("./routes/settings/settings")); //Endpoints for settings
+app.use(apiString, require('./routes/meetings')); //Endpoints for meetings
+app.use(apiString, require("./routes/mentorship")); //Endpoints for the mentorship page
 
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {
@@ -51,4 +55,5 @@ httpsServer.listen(5000, async () => {
     console.log("Listening on port 5000!\n");
 
     setInterval(() => available.pollMatching(), 500); //Poll matching every 0.5 seconds
+    setInterval(suggestWorkshops, 8640000); //Suggest workshops every 24 hours
 });

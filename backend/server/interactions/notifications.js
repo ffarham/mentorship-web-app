@@ -1,7 +1,7 @@
 const pool = require('../db');
 
 //Query to create a new notification
-const createNewNotificationQuery = 'INSERT INTO notifications VALUES (DEFAULT, $1, $2, NOW(), TRUE)'
+const createNewNotificationQuery = 'INSERT INTO notifications VALUES (DEFAULT, $1, $2, NOW(), FALSE)'
 
 /**
  * Nofities a given user with a given message
@@ -14,4 +14,4 @@ async function notify(userID, msg) {
     await pool.query(createNewNotificationQuery, [userID, msg]);
 }
 
-module.exports = notify;
+exports.notify = notify;

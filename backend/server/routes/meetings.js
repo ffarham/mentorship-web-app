@@ -6,10 +6,11 @@ const notifications = require('../interactions/notifications')
 router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
         //Add the new meeting to the database
-        await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, NULL, FALSE, $7, NULL, NULL, $8)', [req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
+        await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, NULL, FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
         
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -56,6 +57,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
 
         res.send('Success!');
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 
@@ -85,7 +87,8 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
         //Update the meeting table with the new times and pull the mentorID
         const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\', meetingStart = $1, meetingDuration = $2 WHERE meetingID = $3 AND menteeID = $4 RETURNING mentorID, meetingName', [req.body.meetingStart, req.body.meetingDuration, req.params.meetingID, req.userInfo.userID]);
 
-        notifications.notify(result.rows[0].mentorid, `A time has been confirmed for ${result.rows[0].meetingname}.`);
+        //Notify the user
+        notifications.notify(result.rows[0].mentorid, `A new time has been confirmed for ${result.rows[0].meetingname}.`);
         
         res.send('Success!');
     } catch (err) {
@@ -97,15 +100,79 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
 
 
 router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
+    try {
+        var affectedUsers = [];
+        var meetingName;
 
+        if (req.userInfo.userType === 'mentee' && req.params.meetingType === 'meeting') {
+            //Delete the meeting
+            const result = await pool.query('DELETE FROM meeting WHERE meetingID = $1 AND menteeID = $2 RETURNING mentorID, meetingName', [req.params.meetingID, req.userInfo.userID]);
+
+            //Record affected user info and meeting name
+            affectedUsers.push(result.rows[0].mentorid);
+            meetingName = result.rows[0].meetingname;
+
+        } else if (req.userInfo.userType === 'mentor') {
+            //Delete the records in groupMeetingAttendees
+            const affectedUsersResult = await pool.query('DELETE FROM groupMeetingAttendees USING groupMeeting WHERE groupMeeting.groupMeetingID = groupMeetingAttendees.groupMeetingID AND groupMeetingAttendees.groupMeetingID = $1 AND groupMeeting.mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+
+            //Pull affected users
+            for (var i = 0; i < affectedUsersResult.rowCount; i++) {
+                affectedUsers.push(affectedUsersResult.rows[i].menteeid);
+            }
+
+            //Delete the record in groupMeeting
+            const meetingNameResult = await pool.query('DELETE FROM groupMeeting WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+
+            //Pull the name of the meeting
+            meetingName = meetingNameResult.rows[0].meetingname;
+        }
+
+        //Push notifications
+        for (var i = 0; i < affectedUsers.length; i++) {
+            notifications.notify(affectedUsers[i], `${meetingName} has been cancelled.`);
+        }
+
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+    next();
 });
 
 router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
+    try {
+        if (req.userInfo.userType === 'mentor' && req.params.meetingType === 'meeting') {
+            //Update the meeting table
+            const menteeResult = await pool.query('UPDATE meeting SET confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $1 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
+            //Notify the mentee
+            notifications.notify(menteeResult.rows[0].menteeid, `${req.userInfo.name} has accepted your meeting request.`);
+        } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
+            //Update the groupMeetingAttendees table
+            await pool.query('UPDATE groupMeetingAttendees SET confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
+        }
+
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+    next();
 });
 
 router.post('/rejectMeeting/:groupMeetingID', checkAuth, async (req, res, next) => {
-    
+    try {
+        //Update the groupMeetingAttendees table accordingly
+        await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
+
+        res.send('Success!');
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+    next();
 });
 
 module.exports = router;
