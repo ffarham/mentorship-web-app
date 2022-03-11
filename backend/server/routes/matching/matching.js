@@ -1,16 +1,17 @@
 const router = require("express").Router();
+const checkAuth = require('../../auth/checkAuth');
 const pool = require("../../db");
-const matchingSystem = require("../../matching/matchable").pairMatching;
-const Mentee = require("../../matching/matchable").Mentee;
-const Flag = require("../../matching/matchable").Flag;
+const matchingSystem = require("../../matching/matchingSystem").pairMatching;
+const Mentee = require("../../matching/matchingSystem").Mentee;
+const Flag = require("../../matching/matchingSystem").Flag;
                      
 /**
  * Submit a mentee to the matching algorithm to match them with some mentors
  */
-router.get("/matching/:userid", async (req, res, next) => {
+router.get("/matching", checkAuth,  async (req, res, next) => {
     try{ 
 
-        const userid = req.params.userid;
+        const userid = req.userInfo.userID;
         console.log("userid: " + userid);
         
         //Flag used to to check whether the matching algorithm has finished with the mentee

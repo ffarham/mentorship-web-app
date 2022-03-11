@@ -16,11 +16,11 @@ const home = require("./routes/homepage.js");
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 const mentorshipRequests = require('./routes/mentorshipRequests');
-const { AvailablePersons } = require("./matching/matchable");
+const { AvailablePersons } = require("./matching/matchingSystem");
 
-const available = require('./matching/matchable').pairMatching;
-const Flag = require('./matching/matchable').Flag;
-const Mentee = require('./matching/matchable').Mentee;
+const available = require('./matching/matchingSystem').pairMatching;
+const Flag = require('./matching/matchingSystem').Flag;
+const Mentee = require('./matching/matchingSystem').Mentee;
 
 const suggestWorkshops = require('./interactions/suggestWorkshops').suggestWorkshops;
 

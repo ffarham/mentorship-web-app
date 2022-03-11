@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const pool = require("../db");
-const available = require('../matching/matchable').AvailablePersons;
-const Flag = require('../matching/matchable').Flag;
-const Mentee = require('../matching/matchable').Mentee;
+const available = require('../matching/matchingSystem').AvailablePersons;
+const Flag = require('../matching/matchingSystem').Flag;
+const Mentee = require('../matching/matchingSystem').Mentee;
 // ADD ROUTES HERE
 
 // e.g.
