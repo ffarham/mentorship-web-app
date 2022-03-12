@@ -105,6 +105,9 @@ router.post("/bio", checkAuth, async(req, res, next) => {
  */
 async function changeUserInfo(userid, password, field, newInfo){
     try{
+        console.log(field);
+        console.log(newInfo);
+        console.log(userid);
         if(await checkPassword(userid, password)){
             await pool.query("UPDATE users SET " + field + " = $1 WHERE userid = $2", [newInfo, userid]);
         }
@@ -119,8 +122,7 @@ async function changeUserInfo(userid, password, field, newInfo){
 /**
  * Deletes a user's profile
  */
-router.delete("/deleteProfile", checkAuth, async(req, res, next) => {
-    console.log("/deleteProfile\n" + req.body)
+router.post("/deleteProfile", checkAuth, async(req, res, next) => {
     try{
         if(await checkPassword(req.userInfo.userID, req.body.password)){
             await pool.query("DELETE FROM users WHERE userid = $1", [req.userInfo.userID]);
