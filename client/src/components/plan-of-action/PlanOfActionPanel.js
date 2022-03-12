@@ -109,7 +109,7 @@ function PlanOfActionPanel({ context, otherID }) {
                 <p>
                     {activePoA.planDescription}
                 </p>
-                <MileStonesPanel data={activePoA.milestones} completed={activePoA.completed} poaID={activePoA.id} />            
+                <MileStonesPanel data={activePoA.milestones} completed={activePoA.completed} poaID={activePoA.planID} />            
               </div>
 
               <div className="modal-footer">
