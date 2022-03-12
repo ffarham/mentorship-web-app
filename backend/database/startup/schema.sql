@@ -145,6 +145,13 @@ CREATE TABLE groupMeeting(
     CONSTRAINT legalStatus CHECK (status = 'ongoing' OR status = 'finished')
 );
 
+DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
+CREATE TABLE groupMeetingFeedback(
+    groupMeetingFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
+    feedback = VARCHAR(1000)
+);
+
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
 CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
@@ -156,14 +163,6 @@ CREATE TABLE groupMeetingAttendee(
 
     /*CONSTRAINT legalMeetingStatus CHECK (meetingStatus = 'ongoing' OR  meetingStatus = 'finished'),
     CONSTRAINT legalMenteeStatus CHECK (menteeStatus = 'pending'  OR menteeStatus = 'ongoing')*/
-);
-
-DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
-CREATE TABLE groupMeetingFeedback(
-    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
-    
-    feedback VARCHAR(1000)
 );
 
 --Plans of action:

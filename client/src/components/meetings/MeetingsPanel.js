@@ -185,15 +185,6 @@ function MeetingsPanel({ context, otherID }){
                 }
             );
         }
-        // else{
-            // api.post("/api/v1/createMeeting", data).then(
-            //     (res) => {
-            //         setCreateMeetingPopup(false);
-            //         setAlertBody("You have successfully created a meeting.");
-            //         setSuccessAlertPopup(true);
-            //     }
-            // );
-        // }
     }
 
     // users can submit feedback once a meeting is complete
@@ -202,19 +193,29 @@ function MeetingsPanel({ context, otherID }){
     const handleSubmitFeedback = () => {
         setSubmitFeedbackPopup(true);
     }
-    const handleFeedbackSubmit = async (meetingID) => {
+    const handleFeedbackSubmit = async (meetingID, meetingType) => {
         const data = {
-            meetingID: meetingID,
             feedback: feedback,
         };
-        api.post("/api/v1/submitFeedback", data).then(
-            (res) => {
-                setMeetingPopup(false);
-                setSubmitFeedbackPopup(false);
-                setAlertBody("Feedback has successfully been submitted.");
-                setSuccessAlertPopup(true);
-            }
-        );
+        if(meetingType === "meeting"){
+            api.post(`/api/v1/feedback/meeting/${meetingID}`, data).then(
+                (res) => {
+                    setMeetingPopup(false);
+                    setSubmitFeedbackPopup(false);
+                    setAlertBody("Feedback has successfully been submitted.");
+                    setSuccessAlertPopup(true);
+                }
+            );
+        }else{
+            api.post(`/api/v1/feedback/groupmeeting/${meetingID}`, data).then(
+                (res) => {
+                    setMeetingPopup(false);
+                    setSubmitFeedbackPopup(false);
+                    setAlertBody("Feedback has successfully been submitted.");
+                    setSuccessAlertPopup(true);
+                }
+            );
+        }
     }
 
     // users can view feedback
@@ -228,7 +229,14 @@ function MeetingsPanel({ context, otherID }){
                     setViewFeedback(res.data);
                     setViewFeedbackPopup(true);
                 }
-            );
+                );
+            }else{
+                api.get(`/api/v1/feedback/view/groupmeeting/${meetingID}`).then(
+                    (res) => {
+                        setViewFeedback(res.data);
+                        setViewFeedbackPopup(true);
+                }
+            );   
         }
     }
 
@@ -395,24 +403,57 @@ function MeetingsPanel({ context, otherID }){
                             && <p className="text-info mb-3">Mentor has requested a meeting reschedule</p>
                             }</>}
                         </Row>
-                        {userType === "mentor" && activeMeeting === "meeting"
-                        ? <Row>
+
+                        {activeMeeting.meetingType === "meeting"
+                        ? <Row className="mb-2">
                             <Col lg="4">
                                 <div className="text-left">
                                     <small className="text-uppercase text-muted font-weight-bold">
-                                        {activeMeeting.meetingType === "workshop"
-                                        ? "Expert"
-                                        : userType === "mentor" ? "Mentee" : "Mentor"}
+                                        {userType === "mentor" ? "Mentee" : "Mentor"}
                                     </small>
                                 </div>
                             </Col>
                             <Col lg="8">
-                                {updateMeeting
-                                ? <p className="text-muted">{userType === "mentor" ? activeMeeting.menteeName : activeMeeting.mentorName}</p>
-                                : <p>{userType === "mentor" ? activeMeeting.menteeName : activeMeeting.mentorName}</p>}
+                                {userType === "mentee" ? activeMeeting.mentorName : activeMeeting.menteeName}
                             </Col>
                         </Row>
-                        : <></>}
+                        : <>
+                        {activeMeeting.meetingType === "workshop" && userType === "mentee"
+                        ? <>
+                            <Row className="mb-2">
+                            <Col lg="4">
+                                <div className="text-left">
+                                    <small className="text-uppercase text-muted font-weight-bold">
+                                        Expert
+                                    </small>
+                                </div>
+                            </Col>
+                            <Col lg="8">
+                                {activeMeeting.mentorName}
+                            </Col>
+                        </Row>
+                        </>
+                        : <>
+                            {activeMeeting.meetingType === "group-meeting" && userType === "mentee"
+                            ? <>
+                             <Row className="mb-2">
+                            <Col lg="4">
+                                <div className="text-left">
+                                    <small className="text-uppercase text-muted font-weight-bold">
+                                        Mentor
+                                    </small>
+                                </div>
+                            </Col>
+                            <Col lg="8">
+                                {activeMeeting.mentorName}
+                            </Col>
+                        </Row>
+                            </>
+                            : <></>
+                        }
+                        </>}
+                        </>
+                        }                        
                         <Row>
                             <Col lg="4">
                                 <div className="text-left">
@@ -522,126 +563,160 @@ function MeetingsPanel({ context, otherID }){
                                     {activeMeeting.confirmed} 
                                 </p>
                             </Col>
-                                    </Row>} 
+                        </Row>} 
                     </div> 
 
                     <div className="modal-footer">
+                        {console.log(activeMeeting)}
                         
                         {activeMeeting.meetingType === "meeting"
-                        ? <>
-
-                        </>
-                        : <>
-                        
-                        </>}
-
-
-                        {/* {!activeMeeting.complete && activeMeeting.confirmed === "true" && userType === "mentor"
-                            ? <Button 
-                            color="primary" 
-                            type="button"
-                            onClick={() => handleMarkMeetingComplete(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                            Mark Complete 
-                        </Button> 
-                        : <></>}
-                        {activeMeeting.complete && !(userType === "mentor" && activeMeeting.meetingType !== "meeting")
-                            ? <Button 
-                            color="primary" 
-                            type="button"
-                            onClick={handleSubmitFeedback}>
-                            Submit Feedback 
-                        </Button>
-                        : <></> }
-                        {userType === "mentee"
-                        ? <>{updateMeeting
-                            ? <Button 
-                                    color="primary" 
-                                    type="button"
-                                    onClick={() => handleMeetingUpdate(activeMeeting.meetingID)}>
-                                    Save
-                                </Button>
+                        ? <>{userType === "mentor"
+                            ? <> {activeMeeting.status === "ongoing"
+                                ? <>
+                                    <Button 
+                                        color="warning" 
+                                        type="button"
+                                        onClick={() => setReschedulePopup(true)}>
+                                        Reschedule
+                                    </Button> 
+                                    <Button 
+                                        color="primary" 
+                                        type="button"
+                                        onClick={() => handleMarkMeetingComplete(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                        Mark Complete 
+                                    </Button> 
+                                </>
+                                : <>
+                                {activeMeeting.status === "finished"
+                                ? <></>
+                                : <>{activeMeeting.status === "reschedule"
+                                    ?<></>
+                                    : <></>
+                                    }</>
+                                }
+                                </>}
+                            </>
                             : <>
-                                {!activeMeeting.complete 
-                                && <>
-                                        {activeMeeting.meetingType === "meeting"
+                                {userType === "mentee"
+                                ? <>{activeMeeting.status === "reschedule"
+                                    ? <>{updateMeeting
                                         ? <Button 
+                                            color="primary" 
+                                            type="button"
+                                            onClick={() => handleMeetingUpdate(activeMeeting.meetingID)}>
+                                            Save
+                                        </Button>
+                                        : <Button 
+                                        color="info" 
+                                        type="button"
+                                        onClick={() => setUpdateMeeting(true)}>
+                                            Update
+                                        </Button>
+                                        }
+                                    </>
+                                    :<>
+                                    {activeMeeting.status === "ongoing"
+                                    ? <>
+                                        <Button 
                                             color="danger" 
                                             type="button"
                                             onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
                                             Cancel 
                                         </Button> 
-                                        : <Button 
+                                    </>
+                                    : <>
+                                    </>
+                                    }
+                                    </>}
+                                </>
+                                : <>
+                                
+                                </>
+                                }
+                            </>}
+                        </>
+                        : <>
+                             {userType === "mentor"
+                             ? <>
+                                {activeMeeting.status === "ongoing"
+                                ? <>
+                                     <Button 
+                                        color="primary" 
+                                        type="button"
+                                        onClick={() => handleMarkMeetingComplete(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                        Mark Complete 
+                                    </Button>
+                                    <Button 
                                             color="danger" 
                                             type="button"
                                             onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                                            Leave
-                                        </Button> }
-                                        {activeMeeting.confirmed === "reschedule"
-                                        && <Button 
-                                            color="info" 
-                                            type="button"
-                                            onClick={() => setUpdateMeeting(true)}>
-                                            Update
-                                        </Button>
-                                    }</>
-                                }</>
-                            }</>
-                        : <>
-                        {!activeMeeting.complete 
+                                            Cancel 
+                                        </Button> 
+                                </>
+                                : <> </>} 
+                             </>
+                             : <>
+                                {userType === "mentee" && activeMeeting.meetingType === "ongoing"
                                 ? <>
-                        {activeMeeting.meetingType === "meeting" 
-                        ? <Button 
-                            color="warning" 
-                            type="button"
-                            onClick={() => setReschedulePopup(true)}>
-                            Reschedule
-                        </Button> 
-                        : <>
-                        {/* todo 
-                            <Button 
-                            color="danger" 
-                            type="button"
-                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                            Cancel
-                        </Button> 
+                                    <Button 
+                                        color="danger" 
+                                        type="button"
+                                        onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                        Leave
+                                    </Button>
+                                 </>
+                                : <> </>
+                                }
+                             </> }
                         </>}
-                        </>
-                        : <></>}
 
-                         {userType === "mentor" && !activeMeeting.complete && activeMeeting.meetingType !== "meeting"
+                        {activeMeeting.status === "finished"
                         ? <>
-                         <Button 
-                            color="danger" 
-                            type="button"
-                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                            Cancel
-                        </Button> 
-                        </>
-                        : <></>} 
-
-                        </>}
-                        {userType === "mentee"
-                        ? <>{activeMeeting.complete && activeMeeting.meetingType === "meeting"
-                            ? <Button 
-                                color="primary" 
-                                type="button"
-                                onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                                View Feedback
-                            </Button> 
-                            : <></>
-                            }
+                            {userType === "mentee"
+                            ? <>
+                                <>
+                                    <Button 
+                                        color="primary" 
+                                        type="button"
+                                        onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                        View Feedback
+                                    </Button> 
+                                    <Button 
+                                        color="primary" 
+                                        type="button"
+                                        onClick={handleSubmitFeedback}>
+                                        Submit Feedback 
+                                    </Button>
+                                </>
+                            </>
+                            :<>
+                                {activeMeeting.meetingType === "meeting"
+                                ? <>
+                                <Button 
+                                    color="primary" 
+                                    type="button"
+                                    onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                    View Feedback
+                                </Button> 
+                                <Button 
+                                    color="primary" 
+                                    type="button"
+                                    onClick={handleSubmitFeedback}>
+                                    Submit Feedback 
+                                </Button>
+                            </>
+                            : <>
+                                <Button 
+                                    color="primary" 
+                                    type="button"
+                                    onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                    View Feedback
+                                </Button> 
+                            </>}
+                            </>}
                         </>
                         : <>
-                            <Button 
-                                color="primary" 
-                                type="button"
-                                onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
-                                View Feedback
-                            </Button> 
-                        </>} */}
-
-
-
+                        </>}
 
                         <Button
                         className="ml-auto"
@@ -1025,7 +1100,7 @@ function MeetingsPanel({ context, otherID }){
                         <Button 
                             color="primary" 
                             type="button"
-                            onClick={() => handleFeedbackSubmit(activeMeeting.meetingID)}>
+                            onClick={() => handleFeedbackSubmit(activeMeeting.meetingID, activeMeeting.meetingType)}>
                             Submit
                         </Button> 
                         <Button

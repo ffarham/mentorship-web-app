@@ -76,7 +76,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
             //Notify the user
             notifications.notify(attendeeID, notificationMessage, req.body.meetingType === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
             
-            //Add the user to the groupMeetingAttendees table
+            //Add the user to the groupMeetingAttendee table
             await pool.query('INSERT INTO groupMeetingAttendee VALUES ($1, $2, FALSE)', [groupMeetingID, attendeeID]);
         }
 
@@ -208,9 +208,17 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
             affectedUsers.push(result.rows[0].mentorid);
             meetingName = result.rows[0].meetingname;
 
+        }else if (req.userInfo.userType === 'mentee'){
+
+            let result = await pool.query('DELETE FROM groupMeetingAttendee WHERE groupMeetingID = $1 AND menteeid = $2 RETURNING menteeid', [req.params.meetingID, req.userInfo.userID]);
+            affectedUsers.push(result.rows[0].menteeid);
+            result = pool.query("SELECT groupMeetingName FROM groupMeeting WHERE groupMeetingID = $1", [req.params.meetingID]);
+            meetingName = result.rows[0].meetingname;
+
+
         } else if (req.userInfo.userType === 'mentor') {
-            //Delete the records in groupMeetingAttendees
-            const affectedUsersResult = await pool.query('DELETE FROM groupMeetingAttendees USING groupMeeting WHERE groupMeeting.groupMeetingID = groupMeetingAttendees.groupMeetingID AND groupMeetingAttendees.groupMeetingID = $1 AND groupMeeting.mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+            //Delete the records in groupMeetingAttendee
+            const affectedUsersResult = await pool.query('DELETE FROM groupMeetingAttendee USING groupMeeting WHERE groupMeeting.groupMeetingID = groupMeetingAttendee.groupMeetingID AND groupMeetingAttendee.groupMeetingID = $1 AND groupMeeting.mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
             //Pull affected users
             for (var i = 0; i < affectedUsersResult.rowCount; i++) {
@@ -218,10 +226,10 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
             }
 
             //Delete the record in groupMeeting
-            const meetingNameResult = await pool.query('DELETE FROM groupMeeting WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+            const meetingNameResult = await pool.query('DELETE FROM groupMeeting WHERE groupMeetingID = $1 AND mentorID = $2 RETURNING groupmeetingname', [req.params.meetingID, req.userInfo.userID]);
 
             //Pull the name of the meeting
-            meetingName = meetingNameResult.rows[0].meetingname;
+            meetingName = meetingNameResult.rows[0].groupmeetingname;
         }
 
         //Push notifications
@@ -249,7 +257,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
             notifications.notify(menteeResult.rows[0].menteeid, `${req.userInfo.name} has accepted your meeting request.`, 'Meeting Accepted');
 
         } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
-            //Update the groupMeetingAttendees table
+            //Update the groupMeetingAttendee table
             await pool.query('UPDATE groupMeetingAttendee SET menteeStatus = \'ongoing\', confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
             await pool.query("UPDATE groupMeeting SET status = 'ongoing' WHERE groupMeetingID = $1", [req.params.meetingID]);
         }
@@ -266,7 +274,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/rejectMeeting/" + req.params.meetingID + "\n" + req.body);
-        //Delete from the groupMeetingAttendees table accordingly
+        //Delete from the groupMeetingAttendee table accordingly
         await pool.query('DELETE FROM groupMeetingAttendee WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
 
         res.send('Success!');
@@ -283,8 +291,16 @@ router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (re
     try {
         if (req.params.meetingType === 'meeting') {
             await pool.query('UPDATE meeting SET status = \'finished\', attended = TRUE WHERE mentorID = $1 AND meetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+            let results = await pool.query('SELECT * from meeting WHERE meetingid = $1', [req.params.meetingID]);
+            notifications.notify(results.rows[0].menteeid, `Meeting ${results.rows[0].meetingName} complete!`, 'Meeting complete!');
         } else {
-            await pool.query('UPDATE groupMeeting SET status = \'finished\' attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+            await pool.query("UPDATE groupMeeting SET status = 'finished', attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2", [req.userInfo.userID, req.params.meetingID]);
+            await pool.query('UPDATE groupMeetingAttendee SET meetingStatus = \'finished\' WHERE groupMeetingID = $1', [req.params.meetingID]);
+
+            let results = await pool.query("SELECT * FROM groupMeeting JOIN groupMeetingAttendee ON groupMeeting.groupMeetingID = groupMeetingAttendee.groupMeetingID WHERE groupMeeting.groupMeetingID = $1", [req.params.meetingID]);
+            for(let i = 0; i < results.rowCount; ++i){
+                notifications.notify(results.rows[i].menteeid, `Meeting ${results.rows[i].groupMeetingName} complete!`,  'Group meeting complete!');
+            }
         }
 
         res.send('Success!');
@@ -324,6 +340,7 @@ router.post('/feedback/groupmeeting/:meetingID' , checkAuth, async (req, res, ne
     try{
         console.log("/feedback/groupmeeting/" + req.params.meetingID + "\n" + req.body);
         let feedback = req.body.feedback;
+        
         await pool.query("INSERT INTO groupMeetingFeedback VALUES(DEFAULT, $1, $2)", [req.params.meetingID, feedback]); 
         res.send("success");
         next();
@@ -365,7 +382,7 @@ router.get('/feedback/view/groupmeeting/:meetingID', checkAuth, async (req, res,
     try {
         console.log("/feedback/view/groupmeeting/" + req.params.meetingID + "\n" + req.body);
 
-        const results = await pool.query(getGroupMeetingFeedback, [req.params.meetingID, req.userInfo.userID]);
+        const results = await pool.query("SELECT feedback FROM groupmeetingfeedback WHERE groupmeetingid = $1", [req.params.meetingID]);
         let feedbackMessages = [];
         for(let i = 0; i < results.rowCount; ++i){
             let menteeFeedback = {

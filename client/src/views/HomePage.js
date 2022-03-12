@@ -17,10 +17,6 @@ import NotificationsPanel from "../components/NotificationsPanel.js";
 
 function HomePage() {
 
-    // TokenService.removeLocalRefreshToken();
-    // TokenService.removeLocalAccessToken();
-    // localStorage.removeItem('authState');
-
     return(
         <>
             <MainNavbar />

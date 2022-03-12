@@ -28,6 +28,7 @@ import {
 //core components
 import LandingNav from "./Navs/LandingNav";
 import LandingNavFtr from "./Navs/LandingNavFtr";
+import TokenService from "./../api/tokenService";
 
 import MainFooter from "./Navs/MainFooter";
 
@@ -40,6 +41,9 @@ class Landing extends React.Component {
   }
 
   render() {
+    TokenService.removeLocalRefreshToken();
+    TokenService.removeLocalAccessToken();
+    localStorage.removeItem('authState');
     return (
       <>
         <div className="landing-body">
