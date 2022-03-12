@@ -23,11 +23,11 @@ const matchingInterestQuery = "" +
 "(select mentees.userid, mentees.name, interest.interest, interest.ordering from " + 
 "(select userid, name FROM users join mentee on userid = menteeid) mentees " + 
     "join interest " + 
-    "on mentees.userid = interest.userid) menteeInterests " + 
+    "on mentees.userid = interest.userid and interest.kind = 'mentee') menteeInterests " + 
         "join (select mentors.userid, mentors.name, interest.interest, interest.ordering from " + 
         "(select userid, name FROM users join mentor on userid = mentorid) mentors " + 
             "join interest " + 
-            "on mentors.userid = interest.userid) mentorInterests " + 
+            "on mentors.userid = interest.userid and interest.kind = 'mentor') mentorInterests " + 
         "ON menteeInterests.interest = mentorInterests.interest";
 
 /*
