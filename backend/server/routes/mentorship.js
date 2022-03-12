@@ -231,7 +231,7 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         var poaQuery;
         if (req.userInfo.userType === 'mentee') {
             poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1 AND planOfAction.mentorID = $2';
-        } else if (req.userInfo.userType) {
+        } else if (req.userInfo.userType === 'mentor') {
             poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.menteeID = users.userID WHERE planOfAction.mentorID = $1 AND planOfAction.menteeID = $2';
         }
 
