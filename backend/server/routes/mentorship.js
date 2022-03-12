@@ -77,14 +77,14 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         var meetingsQuery;
         if (req.userInfo.userType === 'mentee') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, TO_CHAR(meeting.meetingStart), TO_CHAR(meeting.meetingDuration), meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, TO_CHAR(meeting.meetingStart) AS startString, TO_CHAR(meeting.meetingDuration) AS durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
                 WHERE meeting.menteeID = $1)
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, TO_CHAR(groupMeeting.meetingStart), TO_CHAR(groupMeeting.meetingDuration), groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS attended, groupMeeting.description, '' AS feedback, '' AS requestMessage
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, TO_CHAR(groupMeeting.meetingStart) AS startString, TO_CHAR(groupMeeting.meetingDuration) AS durationString, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS attended, groupMeeting.description, '' AS feedback, '' AS requestMessage
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
@@ -124,8 +124,8 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 meetingName : meetingResult.meetingname,
                 mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
                 menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                meetingStart : meetingResult.meetingstart,
-                meetingDuration : meetingResult.meetingduration,
+                meetingStart : meetingResult.startstring,
+                meetingDuration : meetingResult.durationstring,
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
                 complete : meetingResult.attended,
