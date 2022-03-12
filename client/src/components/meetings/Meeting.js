@@ -15,6 +15,8 @@ function Meeting({ data, from }) {
     const userID = authState.userID;
     const userType = authState.userType;
 
+    console.log(data);
+
     return(
         <>
             <div className="py-2 pb-3" >
@@ -34,7 +36,7 @@ function Meeting({ data, from }) {
                                         <p className="text-success mb-0">Attended</p>
                                     </div>
                                 </>
-                                : data.confirm === "reschedule"
+                                : data.confirmed === "reschedule"
                                 ? <>
                                     <div>
                                         <p className="text-info mb-0">Reschedule</p>

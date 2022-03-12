@@ -72,6 +72,7 @@ function MeetingRequestsPanel(){
     useEffect(() => {
         api.get("/api/v1/getMeetingRequests").then(
             (res) => {
+                console.log(res.data);
                 setRequests(res.data);
             }
         );
@@ -89,7 +90,7 @@ function MeetingRequestsPanel(){
                     <hr />
                 </div>
                 {requests.length === 0
-                ? <div className="mb-3">
+                ? <div className="mb-3 ml-3">
                     You have no requests.
                 </div>
                 :<div className="scrollView mb-3">
@@ -231,12 +232,15 @@ function MeetingRequestsPanel(){
                                     onClick={() => handleAcceptRequest(activeReq)}>
                                     Accept
                                 </Button> 
-                                <Button 
-                                    color="danger" 
-                                    type="button"
-                                    onClick={() => handleRejectRequest(activeReq)}>
+                                {userType === "mentor"
+                                ? <></>
+                                : <Button 
+                                color="danger" 
+                                type="button"
+                                onClick={() => handleRejectRequest(activeReq)}>
                                     Reject
                                 </Button>
+                                }
                             <Button
                             className="ml-auto"
                             color="link"

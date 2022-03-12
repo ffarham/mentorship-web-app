@@ -168,13 +168,32 @@ function MeetingsPanel({ context, otherID }){
             place: location,
             requestMessage: "", 
         };
-        api.post("/api/v1/createMeeting", data).then(
-            (res) => {
-                setCreateMeetingPopup(false);
-                setAlertBody("You have successfully created a meeting.");
-                setSuccessAlertPopup(true);
-            }
-        );
+        if(creatingMeetingType === "meeting"){
+            api.post("/api/v1/createMeeting", data).then(
+                (res) => {
+                    setCreateMeetingPopup(false);
+                    setAlertBody("You have successfully created a meeting.");
+                    setSuccessAlertPopup(true);
+                }
+            );
+        }else{
+            api.post("/api/v1/createGroupMeeting", data).then(
+                (res) => {
+                    setCreateMeetingPopup(false);
+                    setAlertBody("You have successfully created a meeting.");
+                    setSuccessAlertPopup(true);
+                }
+            );
+        }
+        // else{
+            // api.post("/api/v1/createMeeting", data).then(
+            //     (res) => {
+            //         setCreateMeetingPopup(false);
+            //         setAlertBody("You have successfully created a meeting.");
+            //         setSuccessAlertPopup(true);
+            //     }
+            // );
+        // }
     }
 
     // users can submit feedback once a meeting is complete
@@ -239,6 +258,8 @@ function MeetingsPanel({ context, otherID }){
         else if(context === "mentorship"){
             api.get(`/api/v1/meetings/mentorship/${otherID}`).then(
                 (res) => {
+                    console.log("=======");
+                    console.log(res.data);
                     if(res.status === 500){
                         // handle error
                         // TODO: display error in panel
@@ -349,9 +370,9 @@ function MeetingsPanel({ context, otherID }){
                     >
                     <div className="modal-header">
                         <h6 className="modal-title mt-2" id="modal-title-default">
-                        {activeMeeting.type === "meeting"
+                        {activeMeeting.meetingType === "meeting"
                         ? "Meeting"
-                        : activeMeeting.type === "group-meeting"
+                        : activeMeeting.meetingType === "group-meeting"
                         ? "Group Meeting"
                         : "Workshop"}
                         </h6>
@@ -379,7 +400,7 @@ function MeetingsPanel({ context, otherID }){
                             <Col lg="4">
                                 <div className="text-left">
                                     <small className="text-uppercase text-muted font-weight-bold">
-                                        {activeMeeting.type === "workshop"
+                                        {activeMeeting.meetingType === "workshop"
                                         ? "Expert"
                                         : userType === "mentor" ? "Mentee" : "Mentor"}
                                     </small>
@@ -429,7 +450,7 @@ function MeetingsPanel({ context, otherID }){
                                 </div>
                             </Col>
                             <Col lg="8">
-                                {updateMeeting && userType === "mentee" && activeMeeting.type === "meeting"
+                                {updateMeeting && userType === "mentee" && activeMeeting.meetingType === "meeting"
                                 ? <div><InputGroup>
                                 <InputGroupAddon addonType="prepend">
                                 <InputGroupText>
@@ -487,7 +508,7 @@ function MeetingsPanel({ context, otherID }){
                                 </p>
                             </Col>
                         </Row>
-                        {(activeMeeting.type === "workshop" || (activeMeeting.type === "group-meeting" && userType === "mentor"))
+                        {(activeMeeting.meetingType === "workshop" || (activeMeeting.meetingType === "group-meeting" && userType === "mentor"))
                         && <Row>
                             <Col lg="4">
                                 <div className="text-left">
@@ -501,46 +522,48 @@ function MeetingsPanel({ context, otherID }){
                                     {activeMeeting.confirmed} 
                                 </p>
                             </Col>
-                        </Row>}
-                    </div>
+                                    </Row>} 
+                    </div> 
 
                     <div className="modal-footer">
                         {!activeMeeting.complete && activeMeeting.confirmed === "true" && userType === "mentor"
-                            && <Button 
+                            ? <Button 
                             color="primary" 
                             type="button"
-                            onClick={() => handleMarkMeetingComplete(activeMeeting.id, activeMeeting.type)}>
+                            onClick={() => handleMarkMeetingComplete(activeMeeting.meetingID, activeMeeting.meetingType)}>
                             Mark Complete 
-                        </Button> }
-                        {activeMeeting.complete && !(userType === "mentor" && activeMeeting.type !== "meeting")
-                            && <Button 
+                        </Button> 
+                        : <></>}
+                        {activeMeeting.complete && !(userType === "mentor" && activeMeeting.meetingType !== "meeting")
+                            ? <Button 
                             color="primary" 
                             type="button"
                             onClick={handleSubmitFeedback}>
                             Submit Feedback 
-                        </Button> }
+                        </Button>
+                        : <></> }
                         {userType === "mentee"
                         ? <>{updateMeeting
                             ? <Button 
                                     color="primary" 
                                     type="button"
-                                    onClick={() => handleMeetingUpdate(activeMeeting.id)}>
+                                    onClick={() => handleMeetingUpdate(activeMeeting.meetingID)}>
                                     Save
                                 </Button>
                             : <>
                                 {!activeMeeting.complete 
                                 && <>
-                                        {activeMeeting.type === "meeting"
+                                        {activeMeeting.meetingType === "meeting"
                                         ? <Button 
                                             color="danger" 
                                             type="button"
-                                            onClick={() => handleMeetingCancel(activeMeeting.id, activeMeeting.type)}>
+                                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
                                             Cancel 
                                         </Button> 
                                         : <Button 
                                             color="danger" 
                                             type="button"
-                                            onClick={() => handleMeetingCancel(activeMeeting.id, activeMeeting.type)}>
+                                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
                                             Leave
                                         </Button> }
                                         {activeMeeting.confirmed === "reschedule"
@@ -555,8 +578,8 @@ function MeetingsPanel({ context, otherID }){
                             }</>
                         : <>
                         {!activeMeeting.complete 
-                                && <>
-                        {activeMeeting.type === "meeting" 
+                                ? <>
+                        {activeMeeting.meetingType === "meeting" 
                         ? <Button 
                             color="warning" 
                             type="button"
@@ -564,22 +587,48 @@ function MeetingsPanel({ context, otherID }){
                             Reschedule
                         </Button> 
                         : <>
+                        {/* todo */}
                             <Button 
                             color="danger" 
                             type="button"
-                            onClick={() => handleMeetingCancel(activeMeeting.id, activeMeeting.type)}>
+                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
                             Cancel
                         </Button> 
                         </>}
-                        </>}
-                        </>}
-                        {activeMeeting.complete && activeMeeting.confirmed === "true" && userType === "mentor"
-                            && <Button 
-                            color="primary" 
+                        </>
+                        : <></>}
+
+                        {/* {userType === "mentor" && !activeMeeting.complete && activeMeeting.meetingType !== "meeting"
+                        ? <>
+                         <Button 
+                            color="danger" 
                             type="button"
-                            onClick={() => handleViewFeedback(activeMeeting.id, activeMeeting.type)}>
-                            View Feedback
-                        </Button> }
+                            onClick={() => handleMeetingCancel(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                            Cancel
+                        </Button> 
+                        </>
+                        : <></>} */}
+
+                        </>}
+                        {userType === "mentee"
+                        ? <>{activeMeeting.complete && activeMeeting.meetingType === "meeting"
+                            ? <Button 
+                                color="primary" 
+                                type="button"
+                                onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                View Feedback
+                            </Button> 
+                            : <></>
+                            }
+                        </>
+                        : <>
+                            <Button 
+                                color="primary" 
+                                type="button"
+                                onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
+                                View Feedback
+                            </Button> 
+                        </>}
                         <Button
                         className="ml-auto"
                         color="link"
@@ -716,7 +765,7 @@ function MeetingsPanel({ context, otherID }){
                         <Button 
                             color="primary" 
                             type="button"
-                            onClick={() => handleMeetingReschedule(activeMeeting.id)}>
+                            onClick={() => handleMeetingReschedule(activeMeeting.meetingID)}>
                             Submit
                         </Button> 
                         <Button
@@ -962,7 +1011,7 @@ function MeetingsPanel({ context, otherID }){
                         <Button 
                             color="primary" 
                             type="button"
-                            onClick={() => handleFeedbackSubmit(activeMeeting.id)}>
+                            onClick={() => handleFeedbackSubmit(activeMeeting.meetingID)}>
                             Submit
                         </Button> 
                         <Button
