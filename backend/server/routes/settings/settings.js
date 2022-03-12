@@ -8,7 +8,7 @@ const { restart } = require("nodemon");
 const { route } = require("../homepage");
 
 
-// Recieves and stores a user's feedback on the app overall
+//Recieves and stores a user's feedback on the app overall
 //Works
 router.post("/feedback", checkAuth, async (req,res, next) => {
     console.log("/feedback\n" + req.body)
@@ -157,7 +157,7 @@ async function checkPassword(userid, password){
     return isPassCorrect;
 }
 
-//Works
+//Gets the user's settings
 router.get('/settings', checkAuth, async (req, res, next) => {
     try {
         const userInfoResult = await pool.query('SELECT * FROM users WHERE userID = $1', [req.userInfo.userID]);
