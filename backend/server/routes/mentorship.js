@@ -174,7 +174,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
-                WHERE meeting.mentorID = $1 AND meeting.menteeID = $1)
+                WHERE meeting.mentorID = $1 AND meeting.menteeID = $2)
                 
             UNION 
             

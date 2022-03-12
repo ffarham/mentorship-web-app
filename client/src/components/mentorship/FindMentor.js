@@ -36,10 +36,10 @@ function FindMentor({ setFindMentorView }){
     // handle intiation request made to the mentor
     const [resPopup, setResPopup] = useState(false);
     const handleRequest = () => {
-        api.post("/api/v1/mentorship/mentorRequest", activeMentor).then(
+        api.post(`/api/v1/requestMentor/${activeMentor.userid}`).then(
             (res) => {
                 setPopup(false);
-                setActiveMentor({specialties: []});
+                setActiveMentor({interests: []});
                 setResPopup(true);
             }
         );
@@ -77,13 +77,18 @@ function FindMentor({ setFindMentorView }){
                                 You have no recommended mentors.
                             </div>
                             : <div className="mb-3">
+                                <Col>
+                                <Row>
+
                                 {recommendedMentors.map( (mentor) => {
                                     return(
-                                        <div onClick={() => handleMentorClick(mentor)}>
+                                        <div className="mx-2" onClick={() => handleMentorClick(mentor)}>
                                             <MentorMentee mentorMentees={mentor} /> 
                                         </div>
                                     );
                                 })}
+                                </Row>
+                                </Col>
                                 
                                 <Modal
                                 className="modal-dialog-centered"
@@ -144,7 +149,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {/* {activeMentor.bio} */}
+                                                {activeMentor.bio}
                                             </p>
                                         </Col>
                                     </Row>
@@ -158,7 +163,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {activeMentor.bArea}
+                                                {activeMentor.department}
                                             </p>
                                         </Col>
                                     </Row>
@@ -171,13 +176,13 @@ function FindMentor({ setFindMentorView }){
                                             </div>
                                         </Col>
                                         <Col lg="8">
-                                                {activeMentor.interests.map( (topic) => {
-                                                    return(
-                                                        <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
-                                                            {topic.second}
-                                                        </Badge>
-                                                    );
-                                                })}   
+                                            {activeMentor.interests.map( (topic) => {
+                                                return(
+                                                    <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                        {topic.second}
+                                                    </Badge>
+                                                );
+                                            })}   
                                         </Col>
                                     </Row>
                                 </div>

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
-const notify = require('../interactions/notifications');
+const notify = require('../interactions/notifications').notify;
 const { restart } = require("nodemon");
 const { route } = require("./homepage");
 
@@ -37,7 +37,7 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
     console.log("/mentorship/requests\n" + req.body)
     try{
         let results = null;
-        let isMentor = req.userInfo.userType === 'mentor';
+        let isMentor = (req.userInfo.userType === 'mentor');
         if(isMentor){
             results = await pool.query("SELECT * FROM mentorshipRequests WHERE mentorID = $1", [req.userInfo.userID]);
         }
@@ -45,10 +45,12 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
             results = await pool.query("SELECT * FROM mentorshipRequests WHERE menteeID = $1", [req.userInfo.userID]);
         }
         let mentorShipRequests = [];
+        console.log(results.rows);
         for(let i = 0; i < results.rowCount; ++i){
             let row = results.rows[i];
-            let userid = (isMentor) ? row.menteeID : row.mentorID;
-            const userData = await pool.query("SELECT * FROM users where userid = $1", [userid]).rows[0];
+            let userid = (isMentor) ? row.menteeid : row.mentorid;
+            const result = await pool.query("SELECT * FROM users where userid = $1", [userid]);
+            const userData = result.rows[0];
             
             const userInterests = await pool.query("SELECT * FROM interest where userid = $1", [userid]);
             let interestArr = [];
@@ -94,7 +96,7 @@ router.post('/acceptMentee/:requestID', checkAuth, async (req, res, next) => {
         let mentorName = mentorResult.rows[0].name;
 
         //notify mentee that their request has been accepted
-        notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been accepted!");
+        notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been accepted!", 'Mentorship Request Accepted');
     } catch(err){
         console.log(err);
         res.status(500).json(err);
@@ -116,7 +118,7 @@ router.post('/rejectMentee/:requestID', checkAuth, async (req, res, next) => {
         
         //notify mentee that their request has been rejected
         let mentorName = req.userInfo.name;
-        notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been rejected!");
+        notify(menteeid, "Your mentoring request to mentor " + mentorName + " has been rejected!", 'Mentorship Request Rejected');
         res.send("success");
     } catch(err){
         console.log(err);
@@ -140,7 +142,7 @@ router.post('/cancelMentorship/:mentorID', checkAuth, async (req, res, next) => 
         await pool.query("DELETE FROM groupMeetingAttendee WHERE menteeid = $1", [menteeid]);
         await pool.query("DELETE FROM planOfAction WHERE mentorid = $1 AND menteeid = $2", [mentorid, menteeid]);
 
-        notify(mentorid, req.userInfo.name + " is no longer your mentee");
+        notify(mentorid, req.userInfo.name + " is no longer your mentee", 'Mentorship Cancelled');
 
     } catch(err){
         console.log(err);

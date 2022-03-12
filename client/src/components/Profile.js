@@ -16,6 +16,8 @@ import api from "../api/api";
 
 function Profile({data}) {
 
+    console.log(data);
+
     const editBio = () => {
 
         document.getElementById("bio").style.display = "none";
@@ -38,6 +40,7 @@ function Profile({data}) {
                 
             }
       );
+        document.getElementById("bio").value = data.bio;
     }
     
     return(
