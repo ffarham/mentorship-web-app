@@ -129,7 +129,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
                 complete : meetingResult.attended,
-                description : meetingResult.description,
+                meetingDescription : meetingResult.description,
                 requestMessage : meetingResult.requestMessage
             }
 
