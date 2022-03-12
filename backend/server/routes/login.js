@@ -6,6 +6,7 @@ const pool = require('../db');
 
 const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
 
+//TODO: Notify user if they log in as the wrong thing
 router.post("/login", async (req, res, next) => {
     console.log("/login\n" + req.body)
     //Pull out user info from request

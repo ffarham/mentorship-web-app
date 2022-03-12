@@ -8,6 +8,7 @@ const Flag = require("../../matching/matchingSystem").Flag;
 /**
  * Submit a mentee to the matching algorithm to match them with some mentors
  */
+//Works
 router.post("/matching", checkAuth,  async (req, res, next) => {
     console.log("/matching\n" + req.body)
     try{ 
