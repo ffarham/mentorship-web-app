@@ -101,3 +101,35 @@
       text-align: center;
       display: block;
   }
+
+  .feedbackmodal {
+    padding: 10px;
+    width: 100%;
+    height: 35vh;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+}
+
+.feedbackform {
+  padding: 10px;
+  margin: auto;
+  width: 90%;
+  height: 35vh;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
+
+.profileform {
+  padding: 10px;
+  margin: auto;
+  width: 70%;
+  height: 25vh;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}

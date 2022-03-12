@@ -24,6 +24,7 @@ const Mentee = require('./matching/matchingSystem').Mentee;
 
 const suggestWorkshops = require('./interactions/suggestWorkshops').suggestWorkshops;
 
+
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
@@ -49,6 +50,7 @@ app.use(apiString, require("./routes/settings/settings")); //Endpoints for setti
 app.use(apiString, require('./routes/meetings')); //Endpoints for meetings
 app.use(apiString, require("./routes/mentorship")); //Endpoints for the mentorship page
 
+
 // start listening on PORT 5000 
 httpsServer.listen(5000, async () => {
     console.log("Server is running...");
@@ -57,4 +59,5 @@ httpsServer.listen(5000, async () => {
     setInterval(() => available.pollMatching(), 500); //Poll matching every 0.5 seconds
     setInterval(suggestWorkshops, 8640000); //Suggest workshops every 24 hours
     setInterval(() => pool.query('DELETE FROM authToken WHERE timeCreated + timeToLive < NOW();'), 600000); //Delete old tokens every 10 minutes
+
 });
