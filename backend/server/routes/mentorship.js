@@ -88,7 +88,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
-                WHERE groupMeetingAttendee.menteeID = $1) 
+                WHERE groupMeetingAttendee.menteeID = $1 AND groupMeetingAttendee.confirmed = TRUE) 
                 
             ORDER BY meetingStart DESC
             `;
