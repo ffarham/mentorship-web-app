@@ -109,7 +109,7 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
         const result = await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND mentorID = $2 RETURNING menteeID, planName', [req.params.planID, req.userInfo.userID]);
         
         //Notify the mentee
-        notifications.notify(result.rows[0].menteeid, `${result.rows[0].planid} complete!`, 'Plan Completed');
+        notifications.notify(result.rows[0].menteeid, `${result.rows[0].planname} complete!`, 'Plan Completed');
 
         res.send('Success!');
         next();
