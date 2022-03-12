@@ -115,7 +115,7 @@ CREATE TABLE meeting (
     description VARCHAR(1000),
 
     CONSTRAINT legalConfirmed CHECK (confirmed = 'true' OR confirmed = 'false' OR confirmed = 'reschedule'),
-    CONSTRAINT legalStatus CHECK (status = 'pending' OR status = 'on going' OR status = 'reschedule' OR status = 'finished')
+    CONSTRAINT legalStatus CHECK (status = 'pending' OR status = 'ongoing' OR status = 'reschedule' OR status = 'finished')
 );
 
 --Group sessions:
@@ -149,13 +149,13 @@ DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
 CREATE TABLE groupMeetingAttendee(
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
     menteeID UUID NOT NULL REFERENCES users(userID) ON DELETE CASCADE,
-    meetingStatus VARCHAR(10) DEFAULT('ongoing'),
-    menteeStatus VARCHAR(10) DEFAULT('pending'),
+    meetingStatus VARCHAR(10), /* DEFAULT('ongoing'),*/
+    menteeStatus VARCHAR(10),/* DEFAULT('pending'),*/
 
-    confirmed BOOLEAN,
+    confirmed BOOLEAN
 
-    CONSTRAINT legalMeetingStatus CHECK (meetingStatus = 'ongoing' OR  meetingStatus = 'finished'),
-    CONSTRAINT legalMenteeStatus CHECK (menteeStatus = 'pending'  OR menteeStatus = 'ongoing')
+    /*CONSTRAINT legalMeetingStatus CHECK (meetingStatus = 'ongoing' OR  meetingStatus = 'finished'),
+    CONSTRAINT legalMenteeStatus CHECK (menteeStatus = 'pending'  OR menteeStatus = 'ongoing')*/
 );
 
 DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;

@@ -36,14 +36,17 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
 
-        console.log("/createGroupMeeting\n" + req.body);
+        console.log("/createGroupMeeting\n" + JSON.stringify(req.body));
 
         //Add the new meeting to the database
-        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7, DEFAULT) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.meetingDescription]);
-        let mentees = await pool.query("SELECT menteeid FROM mentoring WHERE userid = $1", [req.userInfo.userID]);
-
+        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, DEFAULT, $7) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.meetingDescription]);
+        let mentees = await pool.query("SELECT menteeid FROM mentoring WHERE mentorid = $1", [req.userInfo.userID]);
+        console.log("mentees");
+        console.log(mentees);
+        console.log("it is" + makeMeetingResult.rows[0]);
         for(let i = 0; i < mentees.rowCount; ++i){
-            await pool.query("INSERT INTO groupMeetingAttendee VALUES($1, $2, DEFAULT, DEFAULT)", [makeMeetingResult, mentees.rows[i].menteeid]);
+            console.log(makeMeetingResult.rows[0].groupmeetingid);
+            await pool.query("INSERT INTO groupMeetingAttendee VALUES($1, $2, 'ongoing', 'pending', FALSE)", [makeMeetingResult.rows[0].groupmeetingid, mentees.rows[i].menteeid]);
         }
         //Get the ID of the new meeting
         const groupMeetingID = makeMeetingResult.rows[0].groupmeetingid;
@@ -94,19 +97,20 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
         var query;
         if (req.userInfo.userType === 'mentee') {
             query = `
-            SELECT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.status, users.name FROM groupMeetingAttendee 
+            SELECT DISTINCT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.status, users.name FROM groupMeetingAttendee 
                 INNER JOIN groupMeeting ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
                 INNER JOIN users ON users.userID = groupMeeting.mentorID
-                WHERE groupMeetingAttendee.menteeID = $1 AND confirmed = FALSE
+                WHERE groupMeetingAttendee.menteeID = $1 AND groupMeetingAttendee.menteeStatus = 'pending';
             `;
         } else if (req.userInfo.userType === 'mentor') {
             query = `
             SELECT meeting.*, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.status, users.name FROM meeting 
-                INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed = \'false\'
+                INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.status = 'pending';
             `;
         }
 
         const result = await pool.query(query, [req.userInfo.userID]);
+
 
         //Format the response nicely
         var responseObject = [];
@@ -246,7 +250,8 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
         } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
             //Update the groupMeetingAttendees table
-            await pool.query('UPDATE groupMeetingAttendee SET status = \'ongoing\', confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+            await pool.query('UPDATE groupMeetingAttendee SET menteeStatus = \'ongoing\', confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+            await pool.query("UPDATE groupMeeting SET status = 'ongoing' WHERE groupMeetingID = $1", [req.params.meetingID]);
         }
 
         res.send('Success!');
