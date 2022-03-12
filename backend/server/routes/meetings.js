@@ -19,7 +19,7 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
         console.log([req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.meetingDescription]);
 
         //Add the new meeting to the database
-        await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, \'false\', FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.meetingDescription]);
+        await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, \'false\', DEFAULT, FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.meetingDescription]);
 
         //Notify the mentor
         notifications.notify(req.body.mentorID, `${req.userInfo.name} would like to create a meeting`, 'Meeting Request');
@@ -39,8 +39,12 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
         console.log("/createGroupMeeting\n" + req.body);
 
         //Add the new meeting to the database
-        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.meetingDescription]);
+        const makeMeetingResult = await pool.query('INSERT INTO groupMeeting VALUES (DEFAULT, $1, $2, NOW(), $3, $4, $5, $6, FALSE, $7, DEFAULT) RETURNING groupMeetingID', [req.body.meetingName, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.meetingType, req.body.place, req.body.meetingDescription]);
+        let mentees = await pool.query("SELECT menteeid FROM mentoring WHERE userid = $1", [req.userInfo.userID]);
 
+        for(let i = 0; i < mentees.rowCount; ++i){
+            await pool.query("INSERT INTO groupMeetingAttendee VALUES($1, $2, DEFAULT, DEFAULT)", [makeMeetingResult, mentees.rows[i].menteeid]);
+        }
         //Get the ID of the new meeting
         const groupMeetingID = makeMeetingResult.rows[0].groupmeetingid;
 
@@ -90,14 +94,14 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
         var query;
         if (req.userInfo.userType === 'mentee') {
             query = `
-            SELECT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, users.name FROM groupMeetingAttendee 
+            SELECT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.status, users.name FROM groupMeetingAttendee 
                 INNER JOIN groupMeeting ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
                 INNER JOIN users ON users.userID = groupMeeting.mentorID
                 WHERE groupMeetingAttendee.menteeID = $1 AND confirmed = FALSE
             `;
         } else if (req.userInfo.userType === 'mentor') {
             query = `
-            SELECT meeting.*, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, users.name FROM meeting 
+            SELECT meeting.*, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.status, users.name FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed = \'false\'
             `;
         }
@@ -118,6 +122,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     otherName : meetingResult.name,
                     meetingStart : meetingResult.startstring,
                     meetingDuration : meetingResult.durationstring,
+                    status: meetingResult.status,
                     place : meetingResult.place,
                     meetingType : meetingResult.kind
                 });
@@ -129,6 +134,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     otherName : meetingResult.name,
                     meetingStart : meetingResult.startstring,
                     meetingDuration : meetingResult.durationstring,
+                    status: meetingResult.status,
                     place : meetingResult.place,
                     meetingType : 'meeting'
                 });
@@ -148,7 +154,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
     try {
         console.log("/rescheduleMeeting\n" + req.body);
         //Update the meeting table and pull the menteeID
-        const result = await pool.query('UPDATE meeting SET confirmed = \'reschedule\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE meeting SET status = \'reschedule\', confirmed = \'reschedule\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
         const menteeID = result.rows[0].menteeid;
 
@@ -168,7 +174,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/meetingUpdate\n" + req.body);
         //Update the meeting table with the new times and pull the mentorID
-        const result = await pool.query('UPDATE meeting SET confirmed = \'true\', meetingStart = $1 WHERE meetingID = $2 AND menteeID = $3 RETURNING mentorID, meetingName', [req.body.meetingStart, req.params.meetingID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE meeting SET status = \'ongoing\', confirmed = \'true\', meetingStart = $1 WHERE meetingID = $2 AND menteeID = $3 RETURNING mentorID, meetingName', [req.body.meetingStart, req.params.meetingID, req.userInfo.userID]);
 
         //Notify the user
         notifications.notify(result.rows[0].mentorid, `A new time has been set for ${result.rows[0].meetingname}.`, 'Meeting Rescheduled');
@@ -233,14 +239,14 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
         console.log("/acceptMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
         if (req.userInfo.userType === 'mentor' && req.params.meetingType === 'meeting') {
             //Update the meeting table
-            const menteeResult = await pool.query('UPDATE meeting SET confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+            const menteeResult = await pool.query('UPDATE meeting SET status = \'ongoing\', confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
             //Notify the mentee
             notifications.notify(menteeResult.rows[0].menteeid, `${req.userInfo.name} has accepted your meeting request.`, 'Meeting Accepted');
 
         } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
             //Update the groupMeetingAttendees table
-            await pool.query('UPDATE groupMeetingAttendee SET confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+            await pool.query('UPDATE groupMeetingAttendee SET status = \'ongoing\', confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
         }
 
         res.send('Success!');
@@ -271,9 +277,9 @@ router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (re
     console.log('/markMeetingComplete\n' + req.params.meetingID + '/' + req.params.meetingType + '\n');
     try {
         if (req.params.meetingType === 'meeting') {
-            await pool.query('UPDATE meeting SET attended = TRUE WHERE mentorID = $1 AND meetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+            await pool.query('UPDATE meeting SET status = \'finished\', attended = TRUE WHERE mentorID = $1 AND meetingID = $2', [req.userInfo.userID, req.params.meetingID]);
         } else {
-            await pool.query('UPDATE groupMeeting SET attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2', [req.userInfo.userID, req.params.meetingID]);
+            await pool.query('UPDATE groupMeeting SET status = \'finished\' attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2', [req.userInfo.userID, req.params.meetingID]);
         }
 
         res.send('Success!');
