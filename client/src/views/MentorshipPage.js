@@ -35,6 +35,8 @@ function MentorshipPage(){
         // TODO: remove both parameters
         api.get(`/api/v1/mentorship`).then(
             (res) => {
+                console.log("22");
+                console.log(res.data);
                 setMentorMentees(res.data);
             }
         );
@@ -55,20 +57,20 @@ function MentorshipPage(){
                 {findMentorView 
                 ? <FindMentor setFindMentorView={setFindMentorView} />
                 : !showProfile
-                ? <Row className="mx-3">
-                    <Col lg="8">
-                        <MentorshipPanel data={mentorMentees} setProfileView={setProfileView} setFindMentorView={setFindMentorView} setShowProfile={setShowProfile}/>
-                    </Col>
+                    ? <Row className="mx-3">
+                        <Col lg="8">
+                            <MentorshipPanel data={mentorMentees} setProfileView={setProfileView} setFindMentorView={setFindMentorView} setShowProfile={setShowProfile}/>
+                        </Col>
 
-                    <Col lg="4">
-                        <Row>
-                            <Col>
-                                <MentorshipRequest />
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-                : <MentorshipProfile profileView={profileView} setProfileView={setProfileView} setShowProfile={setShowProfile} />
+                        <Col lg="4">
+                            <Row>
+                                <Col>
+                                    <MentorshipRequest />
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    : <MentorshipProfile profileView={profileView} setProfileView={setProfileView} setShowProfile={setShowProfile} />
                 }
 
             </Container>
