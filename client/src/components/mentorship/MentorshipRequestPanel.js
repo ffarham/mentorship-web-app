@@ -83,7 +83,7 @@ function MentorshipRequestPanel(){
                 </Row>
                 {/* <Row className="mx-4 my-2"> */}
                 {requests.length === 0
-                    ? <div className="mb-3">
+                    ? <div className="mb-3 ml-3">
                         You have no requests.
                     </div>
                     : <div className="scrollView mb-3">
