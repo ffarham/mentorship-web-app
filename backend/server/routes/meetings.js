@@ -72,7 +72,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
             notifications.notify(attendeeID, notificationMessage, req.body.meetingType === 'group-meeting' ? 'Group Meeting Created' : 'Workshop Created');
             
             //Add the user to the groupMeetingAttendees table
-            await pool.query('INSERT INTO groupMeetingAttendees VALUES ($1, $2, FALSE, NULL)', [groupMeetingID, attendeeID]);
+            await pool.query('INSERT INTO groupMeetingAttendee VALUES ($1, $2, FALSE)', [groupMeetingID, attendeeID]);
         }
 
         res.send('Success!');
