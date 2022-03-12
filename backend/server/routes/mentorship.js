@@ -84,7 +84,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback, '' AS requestMessage
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS attended, groupMeeting.description, '' AS feedback, '' AS requestMessage
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
@@ -101,7 +101,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, '' AS feedback, '' as requestMessage
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS attended, groupMeeting.description, '' AS feedback, '' as requestMessage
                 FROM groupMeeting 
                 WHERE groupMeeting.mentorID = $1) 
                 
