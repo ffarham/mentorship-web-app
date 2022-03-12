@@ -188,6 +188,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
 router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     try {
         console.log("/cancelMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
+        
         var affectedUsers = [];
         var meetingName;
 
