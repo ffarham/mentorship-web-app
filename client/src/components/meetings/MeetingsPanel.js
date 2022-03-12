@@ -526,7 +526,17 @@ function MeetingsPanel({ context, otherID }){
                     </div> 
 
                     <div className="modal-footer">
-                        {!activeMeeting.complete && activeMeeting.confirmed === "true" && userType === "mentor"
+                        
+                        {activeMeeting.meetingType === "meeting"
+                        ? <>
+
+                        </>
+                        : <>
+                        
+                        </>}
+
+
+                        {/* {!activeMeeting.complete && activeMeeting.confirmed === "true" && userType === "mentor"
                             ? <Button 
                             color="primary" 
                             type="button"
@@ -587,7 +597,7 @@ function MeetingsPanel({ context, otherID }){
                             Reschedule
                         </Button> 
                         : <>
-                        {/* todo */}
+                        {/* todo 
                             <Button 
                             color="danger" 
                             type="button"
@@ -598,7 +608,7 @@ function MeetingsPanel({ context, otherID }){
                         </>
                         : <></>}
 
-                        {/* {userType === "mentor" && !activeMeeting.complete && activeMeeting.meetingType !== "meeting"
+                         {userType === "mentor" && !activeMeeting.complete && activeMeeting.meetingType !== "meeting"
                         ? <>
                          <Button 
                             color="danger" 
@@ -607,7 +617,7 @@ function MeetingsPanel({ context, otherID }){
                             Cancel
                         </Button> 
                         </>
-                        : <></>} */}
+                        : <></>} 
 
                         </>}
                         {userType === "mentee"
@@ -628,7 +638,11 @@ function MeetingsPanel({ context, otherID }){
                                 onClick={() => handleViewFeedback(activeMeeting.meetingID, activeMeeting.meetingType)}>
                                 View Feedback
                             </Button> 
-                        </>}
+                        </>} */}
+
+
+
+
                         <Button
                         className="ml-auto"
                         color="link"

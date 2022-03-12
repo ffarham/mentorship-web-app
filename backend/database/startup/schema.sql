@@ -103,7 +103,7 @@ CREATE TABLE meeting (
 
     confirmed VARCHAR(10), --true, false, or reschedule
 
-    status VARCHAR(10) DEFAULT('pending') 
+    status VARCHAR(10) DEFAULT('pending'), 
 
     attended BOOLEAN,
 
@@ -152,11 +152,10 @@ CREATE TABLE groupMeetingAttendee(
     meetingStatus VARCHAR(10) DEFAULT('ongoing'),
     menteeStatus VARCHAR(10) DEFAULT('pending'),
 
-    CONSTRAINT legalMeetingStatus CHECK (meetingStatus = 'ongoing'  meetingStatus = 'finished'),
-    CONSTRAINT legalMenteeStatus CHECK (menteeStatus = 'pending'  menteeStatus = 'ongoing')
+    confirmed BOOLEAN,
 
-
-    confirmed BOOLEAN
+    CONSTRAINT legalMeetingStatus CHECK (meetingStatus = 'ongoing' OR  meetingStatus = 'finished'),
+    CONSTRAINT legalMenteeStatus CHECK (menteeStatus = 'pending'  OR menteeStatus = 'ongoing')
 );
 
 DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
