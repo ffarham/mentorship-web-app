@@ -52,7 +52,7 @@ function PlanOfActionPanel({ context, otherID }) {
     };
 
     const markComplete = () => {
-        api.post(`/api/v1/markPOAcomplete/${activePoA.id}`).then(
+        api.post(`/api/v1/markPOAcomplete/${activePoA.planID}`).then(
             (res) => {
                 setPopUp(false);
                 setAlertBody("Plan of action successfully marked as complete");

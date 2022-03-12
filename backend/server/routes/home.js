@@ -55,7 +55,7 @@ router.post("/dismissnotification/:notificationID", checkAuth, async (req, res, 
 
 //Route to pull all upcoming meetings
 router.get("/meetings", checkAuth, async (req, res, next) => {
-    console.log("/meetings\n" + req.body)
+    console.log("\n/meetings\n" + req.body)
     try {
         //Choose the correct database query
         var query;
