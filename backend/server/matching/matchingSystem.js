@@ -12,8 +12,8 @@ const mentorQuery = "" +
 
 //Get a mentee based on their userid
 const menteeQuery = "" + 
-"SELECT userid, name, businessarea, email FROM (" + 
-"SELECT userid, name, businessarea, email FROM users " +
+"SELECT userid, name, businessarea, email FROM " + 
+"(SELECT userid, name, businessarea, email FROM users " +
 "LEFT OUTER JOIN (SELECT COUNT(menteeID) num, menteeID FROM " +
     "mentoring GROUP BY menteeID HAVING COUNT(menteeID) < 10) mentees ON userid = mentees.menteeID) users WHERE userid = $1";
 

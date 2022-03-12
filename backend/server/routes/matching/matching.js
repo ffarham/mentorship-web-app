@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const checkAuth = require('../../auth/checkAuth');
-const pool = require("../../db");
 const matchingSystem = require("../../matching/matchingSystem").pairMatching;
-const Mentee = require("../../matching/matchingSystem").Mentee;
 const Flag = require("../../matching/matchingSystem").Flag;
                      
 /**
