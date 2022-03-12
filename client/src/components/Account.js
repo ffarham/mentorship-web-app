@@ -98,6 +98,7 @@ function Account({data}) {
                             document.getElementById("emailpassword").value = "";
                         } else {
                             setEditEmail(false);
+                            document.getElementById("emailInput").value = document.getElementById("newemail").value;
                         }      
                     }
                 );
@@ -154,7 +155,7 @@ function Account({data}) {
         if (dep === data.department) {
             setNoChange(true);
         } else {
-            const data = {password: document.getElementById("departmentPass").value, newdeparment: dep};
+            const data = {password: document.getElementById("departmentPass").value, newdepartment: dep};
                 api.post(`/api/v1/department`, data).then(
                     (res) => {
 
@@ -163,6 +164,7 @@ function Account({data}) {
 
                         } else {
                             setChangeDeparment(false);
+                            document.getElementById("depInput").value = dep;
                         }
                         
                     }
@@ -175,12 +177,11 @@ function Account({data}) {
   const delAccount = () => {
     const pass = document.getElementById("delpassword").value;  
     const confpass = document.getElementById("confdelpassword").value;
+    if (pass === confpass) {
 
-    if (pass == confpass) {
-
-        const data = {password: document.getElementById("delpassword").value};
+        const data = {password: pass};
         api.post(`/api/v1/deleteProfile`, data).then(
-            (res) => {
+            (res) => {       
 
                 if (res.status === 500) {
                     setIncorrectPassword(true);
@@ -188,7 +189,7 @@ function Account({data}) {
                     document.getElementById("confdelpassword").value = "";
 
                 } else {
-                    setDeleteAccount(false);
+                    window.location.href = "/";
                 }
                 
             }
@@ -226,17 +227,11 @@ function Account({data}) {
                                 <i className="ni ni-email-83" />
                             </InputGroupText>
                             </InputGroupAddon>
-                            {editEmail
-                            ? <Input 
+                            <Input 
+                                id = "emailInput"
                                 placeholder={"  " + data.email}
                                 type="email"
                                 onChange={ () => {}}/>
-                            : <Input 
-                                disabled
-                                placeholder={"  " + data.email}
-                                type="email"
-                                onChange={ () => {}}/>
-                            }
                         </InputGroup>
                     </Col>
                     <Col md="2"></Col>
@@ -266,17 +261,11 @@ function Account({data}) {
                                 <i className="ni ni-email-83" />
                             </InputGroupText>
                             </InputGroupAddon>
-                            {editEmail
-                            ? <Input 
+                            <Input 
+                                id = "depInput"
                                 placeholder={"  " + data.department}
                                 type="email"
                                 onChange={ () => {}}/>
-                            : <Input 
-                                disabled
-                                placeholder={"  " + data.department}
-                                type="email"
-                                onChange={ () => {}}/>
-                            }
                         </InputGroup>
                     </Col>
                     <Col md="2"></Col>

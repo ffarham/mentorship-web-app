@@ -40,7 +40,7 @@ function Profile({data}) {
                 
             }
       );
-        document.getElementById("bio").value = data.bio;
+        document.getElementById("biodata").innerHTML = document.getElementById("textbox").value;
     }
     
     return(
@@ -79,7 +79,7 @@ function Profile({data}) {
                 <div className="mt-5 py-5 border-top text-center"  id="bio">
                     <Row className="justify-content-center">
                       <Col lg="9">
-                        <p>
+                        <p id="biodata">
                             {data.bio}
                         </p>
                         <a href="#pablo" onClick={() => editBio()}>
