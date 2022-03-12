@@ -79,6 +79,7 @@ async function decodeRefreshToken(token) {
     //Decode the token
     var decoded;
     try {
+        console.log(token);
         decoded = jwt.verify(token, TOKEN_SECRET).data;
     } catch(err) {
         console.log(err);

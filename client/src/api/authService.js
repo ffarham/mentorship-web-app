@@ -28,7 +28,7 @@ const login = (data) => {
 // authenticate register call
 const register = (data) => {
     return api
-        .post("/api/v1/register", data)
+        .post("/api/v1/registeruser", data)
         .then( (res) => {   
             return res;
         });

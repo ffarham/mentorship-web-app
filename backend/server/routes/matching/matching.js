@@ -65,9 +65,10 @@ async function pollFlag(flag, res){
 async function makeJSONList(mentorList){
     let JSONString = "[";
     let i = 0;
-    for(i; i < mentorList.length; ++i){
+    for(i; i < mentorList.length-1; ++i){
         JSONString += mentorList[i].toJSON() + ",";
     }
+    JSONString += mentorList[i].toJSON() + "]";
     return JSONString;
 }
 

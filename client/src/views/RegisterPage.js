@@ -60,9 +60,11 @@ function RegisterPage () {
          else{
              api.get("/api/v1/register").then(
                  (res) => {
-                     console.log(res.data);
-                     setDepartments(res.data.departments);  
-                     setTopics(res.data.topics);    
+                     console.log(res);
+                     if(res.data){
+                        setDepartments(res.data.departments);  
+                        setTopics(res.data.topics);    
+                    }
                  }
                  );
          }
