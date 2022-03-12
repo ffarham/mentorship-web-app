@@ -92,14 +92,14 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
         var query;
         if (req.userInfo.userType === 'mentee') {
             query = `
-            SELECT groupMeeting.*, users.name FROM groupMeetingAttendee 
+            SELECT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, users.name FROM groupMeetingAttendee 
                 INNER JOIN groupMeeting ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
                 INNER JOIN users ON users.userID = groupMeeting.mentorID
                 WHERE groupMeetingAttendee.menteeID = $1 AND confirmed IS NULL
             `;
         } else if (req.userInfo.userType === 'mentor') {
             query = `
-            SELECT meeting.*, users.name FROM meeting 
+            SELECT meeting.*, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, users.name FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed = \'false\'
             `;
         }
@@ -118,8 +118,8 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     meetingName : meetingResult.kind === 'workshop' ? meetingResult.groupmeetingname : meetingResult.name,
                     meetingDescription : meetingResult.description,
                     otherName : meetingResult.name,
-                    meetingStart : meetingResult.meetingstart,
-                    meetingDuration : meetingResult.meetingduration,
+                    meetingStart : meetingResult.startstring,
+                    meetingDuration : meetingResult.durationstring,
                     place : meetingResult.place,
                     meetingType : meetingResult.kind
                 });
@@ -129,8 +129,8 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
                     meetingName : meetingResult.meetingname,
                     meetingDescription : meetingResult.description,
                     otherName : meetingResult.name,
-                    meetingStart : meetingResult.meetingstart,
-                    meetingDuration : meetingResult.meetingduration,
+                    meetingStart : meetingResult.startstring,
+                    meetingDuration : meetingResult.durationstring,
                     place : meetingResult.place,
                     meetingType : 'meeting'
                 });
