@@ -115,7 +115,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         //Format the results
         var responseObject = [];
         var meetingResult;
-        for (var i = 0; i < meetingResult.rowCount; i++) {
+        for (var i = 0; i < meetingsResult.rowCount; i++) {
             meetingResult = meetingsResult.rows[i];
 
             meeting = {
