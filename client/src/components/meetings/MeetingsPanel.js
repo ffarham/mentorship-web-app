@@ -116,10 +116,10 @@ function MeetingsPanel({ context, otherID }){
     const [createMeetingPopup, setCreateMeetingPopup] = useState(false);
     const [creatingMeetingType, setCreatingMeetingType] = useState("");
     const [mentors, setMentors] = useState([]);
-    const [mentor, setMentor] = useState("");
+    const [mentorID, setMentorID] = useState("");
     // handle mentor pick
     const handleMentor = (event) => {
-        setMentor(event.target.value);
+        setMentorID(event.target.value);
     }
     const [meetingName, setMeetingName] = useState("");
     const [meetingDescription, setMeetingDescription] = useState("");
@@ -160,14 +160,13 @@ function MeetingsPanel({ context, otherID }){
     const handleCreateMeetingSubmit = async () => {
         const data = {
             meetingType: creatingMeetingType,
-            mentorID: mentor,
+            mentorID: mentorID,
             meetingName: meetingName,
             meetingDescription: meetingDescription,
             meetingStart: startTime,
             meetingDuration: duration,
             place: location,
             requestMessage: "", 
-            description: "",
         };
         api.post("/api/v1/createMeeting", data).then(
             (res) => {
@@ -766,7 +765,7 @@ function MeetingsPanel({ context, otherID }){
                                   </option>
                                   {mentors.map( (value) => {
                                       return(
-                                          <option value={value.id}>{value.name}</option>
+                                          <option value={value.otherID}>{value.name}</option>
                                       );
                                   })}
                               </select>
