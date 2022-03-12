@@ -95,7 +95,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
             SELECT groupMeeting.*, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, users.name FROM groupMeetingAttendee 
                 INNER JOIN groupMeeting ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
                 INNER JOIN users ON users.userID = groupMeeting.mentorID
-                WHERE groupMeetingAttendee.menteeID = $1 AND confirmed IS NULL
+                WHERE groupMeetingAttendee.menteeID = $1 AND confirmed = FALSE
             `;
         } else if (req.userInfo.userType === 'mentor') {
             query = `
