@@ -77,13 +77,18 @@ function FindMentor({ setFindMentorView }){
                                 You have no recommended mentors.
                             </div>
                             : <div className="mb-3">
+                                <Col>
+                                <Row>
+
                                 {recommendedMentors.map( (mentor) => {
                                     return(
-                                        <div onClick={() => handleMentorClick(mentor)}>
+                                        <div className="mx-2" onClick={() => handleMentorClick(mentor)}>
                                             <MentorMentee mentorMentees={mentor} /> 
                                         </div>
                                     );
                                 })}
+                                </Row>
+                                </Col>
                                 
                                 <Modal
                                 className="modal-dialog-centered"
@@ -171,13 +176,13 @@ function FindMentor({ setFindMentorView }){
                                             </div>
                                         </Col>
                                         <Col lg="8">
-                                                {activeMentor.interests.map( (topic) => {
-                                                    return(
-                                                        <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
-                                                            {topic.second}
-                                                        </Badge>
-                                                    );
-                                                })}   
+                                            {activeMentor.interests.map( (topic) => {
+                                                return(
+                                                    <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                        {topic.second}
+                                                    </Badge>
+                                                );
+                                            })}   
                                         </Col>
                                     </Row>
                                 </div>
