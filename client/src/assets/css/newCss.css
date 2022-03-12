@@ -1,0 +1,135 @@
+.landing-body {
+    /* position: relative;  */
+   /* width: 1440px; */
+    /* height: 3665px;   */
+  /* Backgrounds/Red-Blue */
+  background-color: conic-gradient(from 243.55deg at 89.03% -16.07%, #AF3148 0deg, #E06565 41.62deg, #449AC6 292.87deg, #6EDBEB 360deg);
+} 
+
+.meeting {
+    background: #ffffff;
+    /* margin: 5px; */
+    /* padding: 50px 50px; */
+    padding-right: 10rem !important; 
+    padding-left: 10rem !important;
+    /* padding-top: 3rem !important;  */
+    cursor: pointer;    
+    margin-left: auto;
+    margin-right: auto;
+ 
+  }
+  
+.meeting h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* .btn {
+    display: inline-block;
+    background: blue;
+    color: #fff;
+    border: none;
+    padding: 20px 20px;
+    margin: 5px;
+    border-radius: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    font-family: inherit;
+  } */
+
+  /* 3 bottom buttons */
+  .btn.popReq {
+    display: inline-block;
+    /* background: white; */
+    /* border-left: 5px solid green; */
+    /* color: black;  */
+    border: none;
+    padding: 20px 10px; 
+    margin: 5px;
+    /* margin-right: 15px; */
+    /* margin-left: 10px;   */
+    height: 100px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    font-family: inherit;
+  } 
+
+/* Meeting request Buttons */
+  .btn.pop {
+    display: inline-block;
+    /* background: pink; */
+    color: #fff;
+    border: none;
+    padding: 7px 2px;
+    margin: 15px;
+    /* margin-right: 25px; */
+    /* margin-left:10px; */
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  
+  .btn:focus {
+    outline: none;
+  }
+  
+  .btn:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-block {
+    display: block;
+    width: 100%;
+  }
+
+  .scrolling {
+      overflow-y: scroll;
+      height: 300px;
+      /* white-space: nowrap; */
+      /* html {
+          scroll-behaviour: smooth;
+      } */
+  }
+
+  .img-container {
+      text-align: center;
+      display: block;
+  }
+
+  .feedbackmodal {
+    padding: 10px;
+    width: 100%;
+    height: 35vh;
+    line-height: 1.5;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #999;
+}
+
+.feedbackform {
+  padding: 10px;
+  margin: auto;
+  width: 90%;
+  height: 35vh;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
+
+.profileform {
+  padding: 10px;
+  margin: auto;
+  width: 70%;
+  height: 25vh;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}

@@ -7,7 +7,7 @@ const pool = require('../db');
 
 
 //Query to add user to users table and returns randomly-generated userID
-const registerUserQuery = 'INSERT INTO users VALUES (DEFAULT, $1, FALSE, $2, $3, $4, $5, $6) RETURNING userID';
+const registerUserQuery = 'INSERT INTO users VALUES (DEFAULT, $1, FALSE, $2, $3, $4, $5, $6, $7) RETURNING userID';
 
 //Queries to add mentee/mentor to mentee/mentor table
 const registerMenteeQuery = 'INSERT INTO mentee VALUES ($1)';
@@ -24,20 +24,22 @@ const registerMentorQuery = 'INSERT INTO mentor VALUES ($1)';
  * @param {string} profilePicReference Directory to user's profile picture
  * @param {boolean} emailsAllowed True if user gives us permission to send them emails, false otherwise
  * 
+ * @returns {string} The userID of the user just generated.
+ * 
  * @throws {EmailAlreadyUsedError} Fails if email is already associated with another account 
  */
-async function registerUser(email, name, password, businessArea, userType, profilePicReference, emailsAllowed) {    
+async function registerUser(email, name, password, businessArea, userType, profilePicReference, emailsAllowed, bio) {    
     //Generate password hash
     const hash = await bcrypt.hash(password, saltRounds)
 
     //Execute query that adds user to users table
     var result;
     try {
-        result = await pool.query(registerUserQuery, [email, name, hash, businessArea, profilePicReference, emailsAllowed]);
+        result = await pool.query(registerUserQuery, [email, name, hash, businessArea, profilePicReference, emailsAllowed, bio]);
     } catch (err) {
         //Throw appropriate error if email is already used
         if ((err.code === '23505') && (err.constraint === 'users_email_key'))
-            throw {name: 'EmailAlreadyUsedError', message: `${email} is already linked to another account!`};
+            throw {name: 'EmailAlreadyUsedError', message: `${email} is already linked to another account`};
 
         else
             throw err;
@@ -98,7 +100,7 @@ function convertUserInfo(databaseRecord) {
 }
 
 //Query to find a user's information given their email
-const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1 AND (type = $2 OR type = \'both\')';
+const findUserFromEmailQuery = 'SELECT * FROM users WHERE email = $1';
 
 /**
  * Returns all user information of user with a given email as an object.
@@ -120,7 +122,7 @@ async function getUserInfoFromEmail(email, loggedInAs) {
 }
 
 //Query to register an interest for a user
-const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3)';
+const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3, $4)';
 
 /**
  * Registers a new interest for a given user
@@ -129,15 +131,15 @@ const registerInterestQuery = 'INSERT INTO interest VALUES ($1, $2, $3)';
  * @param {string} interest Interest to be registered
  * @param {string} type Either 'mentor', 'mentee' or 'both'
  */
-async function registerInterest(userID, interest, type) {
+async function registerInterest(userID, interest, type, order) {
     try {
         //Register the interest
         if (type === 'both') {
             //Run query twice to register an interest twice
-            await pool.query(registerInterestQuery, [userID, interest, 'mentee']);
-            await pool.query(registerInterestQuery, [userID, interest, 'mentor']);
+            await pool.query(registerInterestQuery, [userID, interest, 'mentee', order]);
+            await pool.query(registerInterestQuery, [userID, interest, 'mentor', order]);
         } else {
-            await pool.query(registerInterestQuery, [userID, interest, type]);
+            await pool.query(registerInterestQuery, [userID, interest, type, order]);
         }
     } catch (err) {
         //Handle any errors
@@ -240,6 +242,7 @@ async function getUserFromRefreshToken(token) {
 
 
 //Module exports:
+exports.saltRounds = saltRounds;
 exports.registerUser = registerUser;
 exports.checkEmailAndPassword = checkEmailAndPassword;
 exports.getUserInfoFromEmail = getUserInfoFromEmail;
@@ -247,11 +250,3 @@ exports.registerInterest = registerInterest;
 exports.registerToken = registerToken;
 exports.getUserFromAccessToken = getUserFromAccessToken;
 exports.getUserFromRefreshToken = getUserFromRefreshToken;
-
-//Informal Testing:
-async function main() {
-    //await registerUser('bobjim@gmail.com', 'Bob Jimson', 'password', 'area51', 'both', 'pfpic', false);
-    registerToken('f74e80fe-148b-40ff-bb8a-c927e33f6c39', '5m');
-}
-
-//main();

@@ -8,6 +8,9 @@ import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
 // css
 import "assets/css/mentorship.css";
+import "assets/css/newCss.css";
+import "assets/css/landingPage.css";
+import "assets/scss/arrow.scss";
 
 // Argon pages, use these pages as an example
 import Index from "views/examples/Argon.js";
@@ -26,6 +29,7 @@ import MentorshipPage from "views/MentorshipPage.js";
 // import MentorMentee from "views/MentorMentee.js";
 import PlanOfActionsPage from "views/PlanOfActionsPage.js";
 import SettingsPage from "views/SettingsPage.js";
+import FeedbackPage from "views/FeedbackPage.js";
 
 function App() {
     
@@ -54,6 +58,7 @@ function App() {
                     <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
                     {/* <Route path="/mentor-mentee" exact render={props => <MentorMentee {...props} />} /> */}
                     <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
+                    <Route path="/feedback" exact render={props => <FeedbackPage {...props} />} />
 
                     <Redirect to="/" />
                 </Switch>

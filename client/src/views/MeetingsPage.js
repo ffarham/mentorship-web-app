@@ -1,9 +1,11 @@
 import React from "react";
+import { useHistory } from 'react-router-dom';
+
 import { 
     Container, 
     Row, 
     Col, 
-    // Card 
+    Button
 } from "reactstrap";
 
 import MainNavbar from "../components/Navs/MainNavbar.js";
@@ -29,5 +31,6 @@ function MeetingsPage(){
         </>
     );
 }
+
 
 export default MeetingsPage;

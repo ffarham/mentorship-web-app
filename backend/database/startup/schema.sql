@@ -17,13 +17,15 @@ CREATE TABLE users (
 
     profilePicReference VARCHAR(200),
 
-    emailsAllowed BOOLEAN NOT NULL
+    emailsAllowed BOOLEAN NOT NULL,
+
+    bio VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS authToken CASCADE;
 CREATE TABLE authToken(
     token UUID PRIMARY KEY,
-    userID UUID NOT NULL REFERENCES users(userID),
+    userID UUID NOT NULL REFERENCES users(userID) ON DELETE CASCADE,
     
     timeCreated TIMESTAMP NOT NULL,
     timeToLive INTERVAL NOT NULL,
@@ -42,18 +44,27 @@ CREATE TABLE authToken(
 
 DROP TABLE IF EXISTS mentee CASCADE;
 CREATE TABLE mentee (
-    menteeID UUID PRIMARY KEY REFERENCES users(userID)
+    menteeID UUID PRIMARY KEY REFERENCES users(userID) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS mentor CASCADE;
 CREATE TABLE mentor (
-    mentorID UUID PRIMARY KEY REFERENCES users(userID)
+    mentorID UUID PRIMARY KEY REFERENCES users(userID) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS mentorshipRequests CASCADE;
+CREATE TABLE mentorshipRequests (
+    requestID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
+    status VARCHAR(10) DEFAULT 'pending' --accepted, rejected or pending
 );
 
 DROP TABLE IF EXISTS mentoring CASCADE;
 CREATE TABLE mentoring (
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID)
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
+    PRIMARY KEY (mentorID, menteeID)
 );
 
 --Interests:
@@ -65,9 +76,10 @@ CREATE TABLE interestType (
 
 DROP TABLE IF EXISTS interest CASCADE;
 CREATE TABLE interest (
-    userID UUID NOT NULL REFERENCES users(userID),
-    interest VARCHAR(100) NOT NULL REFERENCES interestType(interest),
-    kind CHAR(6), --Either 'mentee' or 'mentor'
+    userID UUID NOT NULL REFERENCES users(userID) ON DELETE CASCADE,
+    interest VARCHAR(100) NOT NULL REFERENCES interestType(interest) ON DELETE CASCADE,
+    kind CHAR(6), --Either 'mentee' or 'mentor',
+    ordering INTEGER NOT NULL,
 
     CONSTRAINT legalKind CHECK (kind = 'mentee' OR kind = 'mentor')
 );
@@ -78,8 +90,10 @@ DROP TABLE IF EXISTS meeting CASCADE;
 CREATE TABLE meeting (
     meetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    meetingName VARCHAR(100),
+
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
 
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
@@ -87,12 +101,18 @@ CREATE TABLE meeting (
     
     place VARCHAR(100),
 
-    confirmed BOOLEAN,
+    confirmed VARCHAR(10), --true, false, or reschedule
 
     attended BOOLEAN,
 
     requestMessage VARCHAR(1000),
-    feedback VARCHAR(1000)
+
+    menteeFeedback VARCHAR(1000),
+    mentorFeedback VARCHAR(1000),
+
+    description VARCHAR(1000),
+
+    CONSTRAINT legalConfirmed CHECK (confirmed = 'true' OR confirmed = 'false' OR confirmed = 'reschedule')
 );
 
 --Group sessions:
@@ -101,42 +121,37 @@ DROP TABLE IF EXISTS groupMeeting CASCADE;
 CREATE TABLE groupMeeting(
     groupMeetingID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
+    groupMeetingName VARCHAR(100),
+
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
 
     timeCreated TIMESTAMP NOT NULL,
     meetingStart TIMESTAMP,
     meetingDuration INTERVAL,
+
+    kind VARCHAR(30), --'group-meeting' or 'workshop'
     
-    place VARCHAR(100)
+    place VARCHAR(100),
+
+    attended BOOLEAN,
+
+    description VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
 CREATE TABLE groupMeetingAttendee(
-    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
+    menteeID UUID NOT NULL REFERENCES users(userID) ON DELETE CASCADE,
 
-    accepted BOOLEAN,
-    attended BOOLEAN
+    confirmed BOOLEAN
 );
 
---Workshops:
-
-DROP TABLE IF EXISTS workshop CASCADE;
-CREATE TABLE workshop(
-    workshopID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    leaderID UUID NOT NULL REFERENCES mentor(mentorID),
-
-    timeCreated TIMESTAMP NOT NULL,
-
-    workshopStart TIMESTAMP,
-    workshopEnd TIMESTAMP
-);
-
-DROP TABLE IF EXISTS workshopTopics CASCADE;
-CREATE TABLE workshopTopics(
-    workshopID UUID NOT NULL REFERENCES workshop(workshopID),
-    topic VARCHAR(100) NOT NULL --Should exist in interests table somewhere
+DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
+CREATE TABLE groupMeetingFeedback(
+    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID) ON DELETE CASCADE,
+    
+    feedback VARCHAR(1000)
 );
 
 --Plans of action:
@@ -145,83 +160,69 @@ DROP TABLE IF EXISTS planOfAction CASCADE;
 CREATE TABLE planOfAction(
     planID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
+    mentorID UUID NOT NULL REFERENCES mentor(mentorID) ON DELETE CASCADE,
+    menteeID UUID NOT NULL REFERENCES mentee(menteeID) ON DELETE CASCADE,
 
     planName VARCHAR(100),
     planDescription VARCHAR(1000),
 
-    completed BOOLEAN,
-    completionMessage VARCHAR(1000)
+    completed BOOLEAN
+    --completionMessage VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS milestones CASCADE;
 CREATE TABLE milestones(
     milestoneID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    planID UUID NOT NULL REFERENCES planOfAction(planID),
+    planID UUID NOT NULL REFERENCES planOfAction(planID) ON DELETE CASCADE,
 
     ordering INTEGER NOT NULL,
 
     milestoneName VARCHAR(100),
     milestoneDescription VARCHAR(1000),
 
-    completed BOOLEAN,
-    completionMessage VARCHAR(1000)
+    completed BOOLEAN
+    --completionMessage VARCHAR(1000)
 ); 
-
---Feedback:
-
-DROP TABLE IF EXISTS mentorToMenteeFeedback CASCADE;
-CREATE TABLE mentorToMenteeFeedback(
-    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
-
-    meetingID UUID REFERENCES meeting(meetingID),
-    groupMeetingID UUID REFERENCES groupMeeting(groupMeetingID),
-
-    feedback VARCHAR(1000)
-);
-
-DROP TABLE IF EXISTS menteeToMentorFeedback CASCADE;
-CREATE TABLE menteeToMentorFeedback(
-    feedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    mentorID UUID NOT NULL REFERENCES mentor(mentorID),
-    menteeID UUID NOT NULL REFERENCES mentee(menteeID),
-
-    feedback VARCHAR(1000)
-);
-
-DROP TABLE IF EXISTS prosAndCons CASCADE;
-CREATE TABLe prosAndCons(
-    feedbackID UUID NOT NULL REFERENCES menteeToMentorFeedback(feedbackID),
-
-    kind CHAR(3), --Either 'pro' or 'con'
-
-    content VARCHAR(100),
-
-    CONSTRAINT legalKind CHECK (kind = 'pro' OR kind = 'con')
-);
-
-DROP TABLE IF EXISTS workshopFeedback CASCADE;
-CREATE TABLE workshopFeedback(
-    workshopFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    workshopID UUID NOT NULL REFERENCES workshop(workshopID),
-
-    feedback VARCHAR(1000)
-);
 
 --Notifications:
 
 DROP TABLE IF EXISTS notifications CASCADE;
 CREATE TABLE notifications (
     notificationID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userID UUID REFERENCES users(userID),
+    userID UUID REFERENCES users(userID) ON DELETE CASCADE,
     msg VARCHAR(1000) NOT NULL,
 
-    meetingID UUID REFERENCES meeting(meetingID)
+    timeCreated TIMESTAMP NOT NULL,
+
+    kind VARCHAR(50),
+
+    dismissed BOOLEAN NOT NULL
+
+    --meetingID UUID REFERENCES meeting(meetingID)
 );
+
+--App feedback
+DROP TABLE IF EXISTS appFeedback CASCADE;
+CREATE TABLE appFeedback (
+    appFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    rating INTEGER,
+    feedback VARCHAR(1000)
+);
+
+--Functions:
+CREATE OR REPLACE FUNCTION countAttendees(gmID UUID)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+    attendees INTEGER;
+BEGIN
+    SELECT COUNT(*) FROM groupMeetingAttendee
+        WHERE confirmed AND groupMeetingID = gmID
+        INTO attendees;
+
+    RETURN attendees;
+END;
+$$;
