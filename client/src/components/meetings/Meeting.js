@@ -7,6 +7,9 @@ import {
 
 function Meeting({ data, from }) {
 
+    // mentors can cancel group meetings
+    // for group meetings and workshops, wont have the list of mentees
+
     // get userID and userType
     const authState = JSON.parse(localStorage.getItem('authState'));
     const userID = authState.userID;
@@ -25,10 +28,16 @@ function Meeting({ data, from }) {
                                 </div>
                             </Col>
                             <Col className="text-lg-right align-self-lg-center" lg="6">
-                                {data.attended === true
+                                {data.complete === true
                                 ? <>
                                     <div>
                                         <p className="text-success mb-0">Attended</p>
+                                    </div>
+                                </>
+                                : data.confirm === "reschedule"
+                                ? <>
+                                    <div>
+                                        <p className="text-info mb-0">Reschedule</p>
                                     </div>
                                 </>
                                 : <>

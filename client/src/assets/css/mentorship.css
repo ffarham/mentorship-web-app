@@ -1,0 +1,41 @@
+.mentorshipItem{
+    height: 10rem;
+    width: 10rem;
+    background-color: #EEEEEE !important; 
+    overflow: hidden;
+  }
+
+  .mento-mentee-image{
+    height: 6rem;
+    width: 6rem;
+  }
+
+  .profileCard{
+    height: 25rem;
+    width: 100%;
+    background-color: #EEEEEE !important; 
+    overflow: hidden;
+  }
+
+  .scrollView{
+    overflow-y: scroll;
+    height: 50vh;
+    padding-left:2rem;
+    padding-right:2rem;
+  }
+
+  .not-clickable{
+    pointer-events: none;
+  }
+
+  .rescheduleInput{
+    width: 100%;
+    height: 25vh;
+  }
+
+  .textArea{
+    padding: 10px;
+    width: 100%;
+    height: 25vh;
+  }
+

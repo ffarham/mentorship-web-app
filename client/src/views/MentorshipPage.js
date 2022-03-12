@@ -8,7 +8,7 @@ import {
 import MainNavbar from "../components/Navs/MainNavbar.js";
 import MainFooter from "../components/Navs/MainFooter.js";
 import MentorshipPanel from "../components/mentorship/MentorshipPanel";
-import MentorshipRequest from "../components/mentorship/MentorshipRequest";
+import MentorshipRequest from "../components/mentorship/MentorshipRequestPanel";
 import MentorshipProfile from "../components/mentorship/MentorshipProfile.js";
 import FindMentor from "../components/mentorship/FindMentor.js";
 import api from "../api/api";
@@ -21,7 +21,8 @@ function MentorshipPage(){
     const userType = authState.userType;
 
     // kepp track of whether the user has clicked a profile
-    const [profileView, setProfileView] = useState({});
+    const [showProfile, setShowProfile] = useState(false);
+    const [profileView, setProfileView] = useState({interests: []});
 
     // keep track of whether the user is finding new mentors
     const [findMentorView, setFindMentorView] = useState(false);
@@ -31,7 +32,8 @@ function MentorshipPage(){
 
     // get users mentor-mentees
     useEffect(() => {
-        api.get(`/api/v1/mentorship/${userID}/${userType}`).then(
+        // TODO: remove both parameters
+        api.get(`/api/v1/mentorship`).then(
             (res) => {
                 setMentorMentees(res.data);
             }
@@ -52,10 +54,10 @@ function MentorshipPage(){
             <Container fluid="xl" >
                 {findMentorView 
                 ? <FindMentor setFindMentorView={setFindMentorView} />
-                : Object.keys(profileView).length === 0
+                : !showProfile
                 ? <Row className="mx-3">
                     <Col lg="8">
-                        <MentorshipPanel data={mentorMentees} setProfileView={setProfileView} setFindMentorView={setFindMentorView}/>
+                        <MentorshipPanel data={mentorMentees} setProfileView={setProfileView} setFindMentorView={setFindMentorView} setShowProfile={setShowProfile}/>
                     </Col>
 
                     <Col lg="4">
@@ -66,7 +68,7 @@ function MentorshipPage(){
                         </Row>
                     </Col>
                 </Row>
-                : <MentorshipProfile profileView={profileView} setProfileView={setProfileView} />
+                : <MentorshipProfile profileView={profileView} setProfileView={setProfileView} setShowProfile={setShowProfile} />
                 }
 
             </Container>

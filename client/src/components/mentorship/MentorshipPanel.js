@@ -7,11 +7,9 @@ import {
     Button,
     Modal
 } from 'reactstrap';
-import { Redirect } from 'react-router-dom';
 import MentorMentee from "./MentorMentee";
-import MentorMenteeProfile from "../../views/MentorMenteeProfile";
 
-function MentorshipPanel({ data, setProfileView, setFindMentorView }){
+function MentorshipPanel({ data, setProfileView, setFindMentorView, setShowProfile }){
 
     // get userID and userType
     const authState = JSON.parse(localStorage.getItem('authState'));
@@ -23,6 +21,7 @@ function MentorshipPanel({ data, setProfileView, setFindMentorView }){
 
     const handleMentorMenteeClick = (value) => {
         setProfileView(value);
+        setShowProfile(true);
     }
 
     const [maxPopup, setMaxPopup] = useState(false);
@@ -59,18 +58,21 @@ function MentorshipPanel({ data, setProfileView, setFindMentorView }){
                             </div>
                         </Col>
                     </Row>
-                    <Row className="m-2 mx-3 mb-3">
+                  
+                    <Row className="scrollView mr-0 mt-4">
+
                         {data.length === 0
                         ? <p>{emptyMsg}</p>
-                        : data.map( (value) => {
+                        : <>
+                        {data.map( (value) => {
                             return(
-                                <div className="m-2">
-                                    <a href="#group38" onClick={() => handleMentorMenteeClick(value)}>
+                                <div className="m-2"  onClick={() => handleMentorMenteeClick(value)}>
                                         <MentorMentee mentorMentees={value} /> 
-                                    </a>
-                                </div>
-                            );
-                        })}
+                                    </div>
+                                );
+                            })}
+                            </>
+                        } 
                     </Row>
                     
                    

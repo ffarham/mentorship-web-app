@@ -6,6 +6,8 @@ import "assets/vendor/nucleo/css/nucleo.css";
 import "assets/vendor/font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
+// css
+import "assets/css/mentorship.css";
 
 // Argon pages, use these pages as an example
 import Index from "views/examples/Argon.js";
@@ -21,6 +23,7 @@ import RegisterPage from "views/RegisterPage.js";
 import HomePage from "views/HomePage.js";
 import MeetingsPage from "views/MeetingsPage.js";
 import MentorshipPage from "views/MentorshipPage.js"; 
+// import MentorMentee from "views/MentorMentee.js";
 import PlanOfActionsPage from "views/PlanOfActionsPage.js";
 import SettingsPage from "views/SettingsPage.js";
 
@@ -45,12 +48,11 @@ function App() {
                     <Route path="/login" exact render={props => <LoginPage {...props}  />} />
                     <Route path="/register" exact render={props => <RegisterPage {...props}  />} />
 
-                    {/* <Redirect to="/" /> */}
-
                     <Route path="/home" exact render={props => <HomePage {...props} />} />
+                    <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
                     <Route path="/meetings" exact render={props => <MeetingsPage {...props} />} />
                     <Route path="/mentorship" exact render={props => <MentorshipPage {...props} />} />
-                    <Route path="/plan-of-action" exact render={props => <PlanOfActionsPage {...props} />} />
+                    {/* <Route path="/mentor-mentee" exact render={props => <MentorMentee {...props} />} /> */}
                     <Route path="/settings" exact render={props => <SettingsPage {...props} />} />
 
                     <Redirect to="/" />

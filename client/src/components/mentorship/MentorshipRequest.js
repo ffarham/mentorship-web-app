@@ -1,27 +1,36 @@
 import React from 'react';
 import {
-    Card,
-    Container,
-    Row
+    Col,
+    Row,
+    Card
 } from 'reactstrap';
 
-function MentorshipRequest(){
+function MentorshipRequest({ request }){
+
+    // get userID and userType
+    const authState = JSON.parse(localStorage.getItem('authState'));
+    const userType = authState.userType;
+
+    console.log("in request: " + JSON.stringify(request));
+
     return(
-        <>
-            <Container fluid="xl">
-                <Card className="bg-secondary shadow border-0">
-                    <Row className="mx-3 mt-3">
-                        <div>
-                            <h4 className="display-4 mb-0">Requests</h4>
-                        </div>
-                    </Row>
-                    <Row className="mx-3 my-2 mt-2">
-                        <p>hi</p>
-                    </Row>
-                </Card>
-            </Container>
+        <>  
+            <Card className="bg-secondary shadow border-0 my-2  p-2 mb-3">
+                <Row className="my-2">
+                    <Col className="" sm="6">
+                        <span>{request.user.name}</span>
+                    </Col>
+                    <Col className="" sm="6">
+                        <Row className="float-right mr-2">
+                            {userType === "mentee"
+                            ? <p className="text-warning mb-0">pending</p>
+                            : <></>}
+                        </Row>
+                    </Col>
+                </Row>
+            </Card>
         </>
     );
-}
+}   
 
 export default MentorshipRequest;

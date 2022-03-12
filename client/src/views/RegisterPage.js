@@ -16,7 +16,8 @@ import {
     UncontrolledPopover,
     PopoverHeader,
     PopoverBody,
-    Badge
+    Badge,
+    Progress
   } from "reactstrap";
 import {
     Redirect
@@ -34,6 +35,7 @@ function RegisterPage () {
     // keep track of user inputs
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [bio, setBio] = useState("");
     const [accountType, setAccountType] = useState("");
     const [activeDepartment, setActiveDepartment] = useState("");
     const [activeInterests, setActiveInterests] = useState([]);
@@ -169,6 +171,7 @@ function RegisterPage () {
     // keep track of any errors
     const [nameErrorMsg, setNameErrorMsg] = useState("");
     const [emailErrorMsg, setEmailErrorMsg] = useState("");
+    const [bioErrorMsg, setBioErrorMsg] = useState("");
     const [accountErrorMsg, setAccountErrorMsg] = useState("");
     const [departmentErrorMsg, setDepartmentErrorMsg] = useState("");
     const [interestsErrorMsg, setInterestsErrorMsg] = useState("");
@@ -258,10 +261,14 @@ function RegisterPage () {
                                             }else{
                                                 setConfirmPassErrorMsg("");
 
+                                                // set default bio
+                                                const tempBio = bio === "" ? "Empty bio" : bio;
+
                                                 // send register request to backend
                                                 const data = {
                                                     'name': name,
                                                     'email': email,
+                                                    'bio': tempBio,
                                                     'userType': accountType,
                                                     'department': activeDepartment,
                                                     'interests': activeInterests,
@@ -391,6 +398,22 @@ function RegisterPage () {
                         }
 
                         <hr/>
+                        <div className="mb-2">
+                            <small className="text-uppercase text-muted font-weight-bold mb">Tell us about youreself</small>
+                        </div>
+                        <FormGroup className="mb-3">
+                            <InputGroup className="input-group-alternative">
+                                <Input 
+                                    placeholder="Enter bio" 
+                                    type="textarea" 
+                                    onChange={ (event) => {
+                                        setBio(event.target.value);
+                                    }}
+                                    />
+                            </InputGroup>
+                        </FormGroup>
+
+                       <hr/>
 
                         <Row className="justify-content-center">
                                 <Col sm="4">
@@ -711,7 +734,15 @@ function RegisterPage () {
                         {passStrength === ""
                         ? <></>
                         : <div>
-                            <p>{passStrength}</p>    
+                                <div className="progress-percentage">
+                                    {passStrength === "weak"
+                                    ? <span className="text-danger">Weak</span>
+                                    : passStrength === "good"
+                                    ? <span className="text-warning">Good</span>
+                                    : <span className="text-success">Strong</span>
+                                    }               
+                                </div>
+                                <Progress max="100" value={passStrength === "weak" ? "33" : passStrength === "good" ? "66" : "100"} color={passStrength === "weak" ? "danger" : passStrength === "good" ? "warning" : "success"} />
                         </div>}
 
                         <FormGroup className="mb-3">

@@ -4,55 +4,66 @@ import {
     Col, 
     Button,
     Modal, 
-    Card
+    Card,
+    InputGroup,
+    FormGroup,
+    Input,
+    Badge
 } from 'reactstrap';
 
-import MileStonesPanel from "../milestones/MileStonesPanel";
-import PlanOfAction from "../plan-of-action/PlanOfAction";
-import Meeting from "./Meeting";
+import PlanOfActionPanel from "../plan-of-action/PlanOfActionPanel";
+import MeetingsPanel from "../meetings/MeetingsPanel";
 import api from "../../api/api";
 
-function MentorshipProfile({ profileView, setProfileView }){
+function MentorshipProfile({ profileView, setProfileView, setShowProfile }){
+
+    console.log(profileView);
 
     // get userID and userType
     const authState = JSON.parse(localStorage.getItem('authState'));
     const userID = authState.userID;
     const userType = authState.userType;
 
-     // keep track of plan of action pop up
-     const [activePoA, setActivePoA] = useState({});
-     const [popUp, setPopUp] = useState(false);
-     const handlePlanOfActionClick = (planOfAction) => {
-         setActivePoA(planOfAction);
-         setPopUp(true);
-     };
- 
-     // keep track of active meeting
-     const [activeMeeting, setActiveMeeting] = useState([]);
-     const [meetingPopup, setMeetingPopup] = useState(false);
-     const handleMeetingClick = (meeting) => {
-         setActiveMeeting(meeting);
-         setMeetingPopup(true);
-     }
+    // alert pop ups
+    const [successAlertPopup, setSuccessAlertPopup] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
 
-     // endpoint to mark a plan of action as complete
-    const markComplete = () => {
-        api.post(`/api/v1/markPOAcomplete/${activePoA.id}`).then(
+    // mentor can create a plan-of-action
+    const [planName, setPlanName] = useState("");
+    const [planDescription, setPlanDescription] = useState("");
+    const [createPOA, setCreatePOA] = useState(false);
+    const handleCreatePOA = async (menteeID) => {
+        // validate user input
+        if(planName === ""){
+            // TODO: notify user
+            return;
+        }
+        const data = {
+            planName: planName, 
+            planDescription: planDescription
+        };
+        api.post(`/api/v1/createPOA/${menteeID}`, data).then(
             (res) => {
-                
+                // remove popup
+                setCreatePOA(false);
+                setAlertBody("Plan of action successfully created.");
+                setSuccessAlertPopup(true);
             }
         );
     }
 
-    // if a mentee cancels a meeting
-    const handleMeetingCancel = () => {
-
+    // mentees have the option to remove mentors
+    const handleMentorRemove = (otherID) => {
+        api.post(`/api/v1/removeMentor/${otherID}`).then(
+            (res) => {
+                // take the user back to their mentorship page
+                // TODO: notify the user, however issue with popup and changing view
+                setProfileView({interests: []});
+                setShowProfile(false);
+            }
+        );
     }
 
-    // if a mentor reschedules a meeting
-    const handleMeetingReschedule = () => {
-
-    }
 
     return(
         <>
@@ -63,7 +74,7 @@ function MentorshipProfile({ profileView, setProfileView }){
                     <Button 
                         color="primary" 
                         type="button"
-                        onClick={() => setProfileView({})}>
+                        onClick={() => setProfileView({interests: []})}>
                         Return
                     </Button>
                 </Col>
@@ -103,7 +114,19 @@ function MentorshipProfile({ profileView, setProfileView }){
                                         </div>
                                     </Row>
                                 </Col>
-                                <Col lg="10">
+                                <Col lg="8">
+                                    <Row>
+                                        <Col lg="4">
+                                            <small className="text-uppercase text-muted font-weight-bold">
+                                                Email
+                                            </small>
+                                        </Col>
+                                        <Col lg="8">
+                                            <div>
+                                                <p>{profileView.email}</p>
+                                            </div>
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col lg="4">
                                             <small className="text-uppercase text-muted font-weight-bold">
@@ -128,6 +151,127 @@ function MentorshipProfile({ profileView, setProfileView }){
                                             </div>
                                         </Col>
                                     </Row>
+                                    <Row className="mb-2">
+                                        <Col lg="4">
+                                            <small className="text-uppercase text-muted font-weight-bold">
+                                                {userType === "mentor"
+                                                ? "Interests"
+                                                : "Specialties"}
+                                            </small>
+                                        </Col>
+                                        <Col lg="8">
+                                            {profileView.interests.map( (topic) => {
+                                                return(
+                                                    <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                        {topic}
+                                                    </Badge>
+                                                );
+                                            })}  
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col lg="2">
+                                    {userType === "mentee"
+                                        && <Row className="float-right">
+                                            <Button 
+                                                color="danger" 
+                                                type="button"
+                                                onClick={() => handleMentorRemove(profileView.otherID)}>
+                                                Remove
+                                            </Button>
+                                        </Row>
+                                    }
+                                    {userType === "mentor"
+                                    && <Row className="float-right mt-2">
+                                            <Button
+                                            color="info" 
+                                            type="button"
+                                            onClick={() => setCreatePOA(true)}>
+                                                Create Plan 
+                                            </Button>
+                                        </Row>
+                                    }
+                                    {/* create plan of action popup */}
+                                    <Modal 
+                                        className="modal-dialog-centered"
+                                        isOpen={createPOA}
+                                        toggle={() => setCreatePOA(false)}
+                                        >
+                                        <div className="modal-header">
+                                            <h6 className="modal-title mt-2" id="modal-title-default">
+                                            Create a Plan of Action
+                                            </h6>
+                                            <button
+                                            aria-label="Close"
+                                            className="close"
+                                            data-dismiss="modal"
+                                            type="button"
+                                            onClick={() => setCreatePOA(false)}
+                                            >
+                                            <span aria-hidden={true}>×</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="modal-body">
+                                            <Row className="mb-2">
+                                                <Col lg="4">
+                                                    <div className="mt-2">
+                                                        <small className="text-uppercase text-muted font-weight-bold">
+                                                            Name
+                                                        </small>
+                                                    </div>
+                                                </Col>
+                                                <Col lg="8">
+                                                    <Input
+                                                    className="form-control-alternative"
+                                                    placeholder="Enter Plan Name"
+                                                    type="text"
+                                                    onChange={ (event) => {
+                                                        setPlanName(event.target.value);
+                                                    }}
+                                                    />
+                                                </Col>
+                                            </Row>        
+                                            <Row>
+                                                <Col lg="4">
+                                                    <small className="text-uppercase text-muted font-weight-bold">
+                                                        Description
+                                                    </small>
+                                                </Col>
+                                                <Col lg="8">
+                                                    <FormGroup className="mb-3">
+                                                        <InputGroup className="input-group-alternative">
+                                                            <Input 
+                                                                placeholder="Enter bio" 
+                                                                type="textarea" 
+                                                                onChange={ (event) => {
+                                                                    setPlanDescription(event.target.value);
+                                                                }}
+                                                                />
+                                                        </InputGroup>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                        </div>
+
+                                        <div className="modal-footer">
+                                            <Button 
+                                                color="primary" 
+                                                type="button"
+                                                onClick={() => handleCreatePOA(profileView.otherID)}>
+                                                Submit
+                                            </Button> 
+                                            <Button
+                                            className="ml-auto"
+                                            color="link"
+                                            data-dismiss="modal"
+                                            type="button"
+                                            onClick={() => setCreatePOA(false)}
+                                            >
+                                            Close
+                                            </Button>
+                                        </div>
+                                    </Modal>
                                 </Col>
                             </Row>
                         </div>
@@ -141,253 +285,54 @@ function MentorshipProfile({ profileView, setProfileView }){
             <div className="mx-9">
                 <hr/>
             </div>
-
             <Row>
                 <Col lg="1"></Col>
                 <Col lg="5">
-                    <Card className="bg-secondary shadow border-0">
-                        <div className="text-center mt-4">
-                            <h4 className="display-4 mb-0">Meetings</h4>
-                        </div>
-                        <div className="mx-4">
-                            <hr/>
-                        </div>
-                        {profileView.meetings.length === 0
-                        ? <div className="ml-4">
-                            <p>Empty</p>
-                        </div>
-                        : <div className="scrollView">
-                                {profileView.meetings.map( (meeting) => {
-                                return(
-                                    <div onClick={() => handleMeetingClick(meeting)}>
-                                        <Meeting data={meeting} from="mentorship"/>
-                                    </div>
-                                );
-                            })}
-                        </div>}
-
-                        <Modal
-                            className="modal-dialog-centered"
-                            isOpen={meetingPopup}
-                            toggle={() => setMeetingPopup(false)}
-                            >
-                            <div className="modal-header">
-                                <h6 className="modal-title mt-2" id="modal-title-default">
-                                {activeMeeting.type === "meeting"
-                                ? "Meeting"
-                                : activeMeeting.type === "group-meeting"
-                                ? "Group Meeting"
-                                : "Workshop"}
-                                </h6>
-                                <button
-                                aria-label="Close"
-                                className="close"
-                                data-dismiss="modal"
-                                type="button"
-                                onClick={() => setMeetingPopup(false)}
-                                >
-                                <span aria-hidden={true}>×</span>
-                                </button>
-                            </div>
-
-                            <div className="modal-body">
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                {activeMeeting.type === "workshop"
-                                                ? "Expert"
-                                                : userType === "mentor" ? "Mentee" : "Mentor"}
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {userType === "mentor" ? activeMeeting.mentee : activeMeeting.mentor}
-                                        </p>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                Name
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {activeMeeting.meetingName}
-                                        </p>
-                                    </Col>
-                                </Row>
-                                {activeMeeting.type === "workshop"
-                                && <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                Description
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {activeMeeting.description}
-                                        </p>
-                                    </Col>
-                                </Row>
-                                }
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                Start 
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {activeMeeting.meetingStart}
-                                        </p>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                Duaration 
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {activeMeeting.duaration}
-                                        </p>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="text-left">
-                                            <small className="text-uppercase text-muted font-weight-bold">
-                                                Location 
-                                            </small>
-                                        </div>
-                                    </Col>
-                                    <Col lg="8">
-                                        <p>
-                                            {activeMeeting.place}
-                                        </p>
-                                    </Col>
-                                </Row>
-                            </div>
-
-                            <div className="modal-footer">
-                                {!activeMeeting.attended 
-                                ? userType === "mentee"
-                                ? <Button 
-                                    color="danger" 
-                                    type="button"
-                                    onClick={handleMeetingCancel}>
-                                    Cancel 
-                                </Button> 
-                                : <Button 
-                                    color="warning" 
-                                    type="button"
-                                    onClick={handleMeetingReschedule}>
-                                    Reschedule
-                                </Button> 
-                                : <></>
-                                }
-                                <Button
-                                className="ml-auto"
-                                color="link"
-                                data-dismiss="modal"
-                                type="button"
-                                onClick={() => setMeetingPopup(false)}
-                                >
-                                Close
-                                </Button>
-                            </div>
-                            </Modal>
-
-                    </Card>
+                    <MeetingsPanel context="mentorship" otherID={profileView.otherID}/>
                 </Col>
-
                 <Col lg="5">
-                    <Card className="bg-secondary shadow border-0">
-                        <div className="text-center mt-4">
-                            <h4 className="display-4 mb-0">Plan of Actions</h4>
-                        </div>
-                        <div className="mx-4">
-                            <hr/>
-                        </div>
-                        {profileView.planOfActions.length === 0
-                            ? <div className="ml-4">
-                                <p>Empty</p>
-                            </div>
-                            : <div className="scrollView">
-                                {profileView.planOfActions.map( (planOfAction) => {
-                                    return(
-                                        <div onClick={() => handlePlanOfActionClick(planOfAction)}>
-                                            <PlanOfAction data={planOfAction} from="mentorship"/>
-                                        </div>
-                                    );
-                                })}
-                            </div>}
-
-                            <Modal
-                            className="modal-dialog-centered"
-                            isOpen={popUp}
-                            toggle={() => setPopUp(false)}
-                            >
-                            <div className="modal-header">
-                                <h6 className="modal-title mt-2" id="modal-title-default">
-                                {activePoA.planName}
-                                </h6>
-                                <button
-                                aria-label="Close"
-                                className="close"
-                                data-dismiss="modal"
-                                type="button"
-                                onClick={() => setPopUp(false)}
-                                >
-                                <span aria-hidden={true}>×</span>
-                                </button>
-                            </div>
-
-                            <div className="modal-body">
-                                <p>
-                                    {activePoA.planDescription}
-                                </p>
-                                <MileStonesPanel data={activePoA.milestones}/>            
-                            </div>
-
-                            <div className="modal-footer">
-                                {userType === "mentee" 
-                                ? <></>
-                                : <Button 
-                                        color="primary" 
-                                        type="button"
-                                        onClick={markComplete}>
-                                        Mark as Complete
-                                    </Button> 
-                                }
-                                <Button
-                                className="ml-auto"
-                                color="link"
-                                data-dismiss="modal"
-                                type="button"
-                                onClick={() => setPopUp(false)}
-                                >
-                                Close
-                                </Button>
-                            </div>
-                            </Modal>
-                    </Card>
+                    <PlanOfActionPanel context="mentorship" otherID={profileView.otherID}/>
                 </Col>
-
                 <Col lg="1"></Col>
             </Row>
+
+              {/* success alert popup */}
+              <Modal
+                    className="modal-dialog-centered"
+                    isOpen={successAlertPopup}
+                    toggle={() => setSuccessAlertPopup(false)}
+                    >
+                    <div className="modal-header">
+                        <h6 className="modal-title mt-2 text-success" id="modal-title-default">
+                            Success
+                        </h6>
+                        <button
+                        aria-label="Close"
+                        className="close"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setSuccessAlertPopup(false)}
+                        >
+                        <span aria-hidden={true}>×</span>
+                        </button>
+                    </div>
+
+                    <div className="modal-body">
+                        <p>{alertBody}</p>
+                    </div>
+
+                    <div className="modal-footer">
+                        <Button
+                        className="ml-auto"
+                        color="link"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setSuccessAlertPopup(false)}
+                        >
+                        Close
+                        </Button>
+                    </div>
+                </Modal>
         </>
     );
 }

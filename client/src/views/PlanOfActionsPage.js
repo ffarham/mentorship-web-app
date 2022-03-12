@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-    
+    Row, 
+    Col
 } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
 
@@ -42,13 +43,13 @@ function PlanOfActionsPage() {
 
             <MainNavbar activeView="plan-of-action"/>
 
-            <div className="text-center mt-4">
-                <h3 className="display-3 mb-0">Plan of Action</h3>
-            </div>
-            <div className="mx-4">
-                <hr/>
-            </div>
-            <PlanOfActionPanel />
+            <Row>
+                <Col lg="1"></Col>
+                <Col className="mt-4" lg="10">
+                    <PlanOfActionPanel context="plan-of-action" />
+                </Col>
+                <Col lg="1"></Col>
+            </Row>
 
             <MainFooter />
         </>

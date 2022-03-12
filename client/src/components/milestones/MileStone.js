@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Row,
     Col,
-    Button
+    Button,
+    Modal
 } from "reactstrap";
 
 import api from "../../api/api";
@@ -13,11 +14,16 @@ function MileStone({ data }) {
     const authState = JSON.parse(localStorage.getItem('authState'));
     const userType = authState.userType;
 
+    // alert pop ups
+    const [successAlertPopup, setSuccessAlertPopup] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+
     // function to handle mark milestone as complete requests
     const markComplete = () =>{
         api.post(`/api/v1/markMilestoneComplete/${data.milestoneID}`,).then(
             (res) => {
-
+                setAlertBody("The milestone has successfully been marked as complete");
+                setSuccessAlertPopup(true);
             }
         );
     }
@@ -60,6 +66,43 @@ function MileStone({ data }) {
                     </Col>
                 </Row>
             </div>
+            {/* success alert popup */}
+            <Modal
+                    className="modal-dialog-centered"
+                    isOpen={successAlertPopup}
+                    toggle={() => setSuccessAlertPopup(false)}
+                    >
+                    <div className="modal-header">
+                        <h6 className="modal-title mt-2 text-success" id="modal-title-default">
+                            Success
+                        </h6>
+                        <button
+                        aria-label="Close"
+                        className="close"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setSuccessAlertPopup(false)}
+                        >
+                        <span aria-hidden={true}>×</span>
+                        </button>
+                    </div>
+
+                    <div className="modal-body">
+                        <p>{alertBody}</p>
+                    </div>
+
+                    <div className="modal-footer">
+                        <Button
+                        className="ml-auto"
+                        color="link"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setSuccessAlertPopup(false)}
+                        >
+                        Close
+                        </Button>
+                    </div>
+                </Modal>
         </>
     );
 }

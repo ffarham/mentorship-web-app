@@ -4,7 +4,8 @@ import {
     Col,
     Card,
     Button,
-    Modal
+    Modal,
+    Badge
 } from 'reactstrap';
 
 import  api from "../../api/api";
@@ -21,10 +22,9 @@ function FindMentor({ setFindMentorView }){
             }
         );
     }, []);
-    console.log(recommendedMentors);
 
     // handle user selecting a new mentor
-    const [activeMentor, setActiveMentor] = useState({});
+    const [activeMentor, setActiveMentor] = useState({specialties: []});
     const [popup, setPopup] = useState(false);
     const handleMentorClick = (mentor) => {
         setActiveMentor(mentor);
@@ -34,11 +34,10 @@ function FindMentor({ setFindMentorView }){
     // handle intiation request made to the mentor
     const [resPopup, setResPopup] = useState(false);
     const handleRequest = () => {
-        console.log("handling");
-        api.post("api/v1/mentorshipRequest", activeMentor).then(
+        api.post("/api/v1/mentorship/mentorRequest", activeMentor).then(
             (res) => {
                 setPopup(false);
-                setActiveMentor({});
+                setActiveMentor({specialties: []});
                 setResPopup(true);
             }
         );
@@ -139,6 +138,20 @@ function FindMentor({ setFindMentorView }){
                                         <Col lg="4">
                                             <div className="text-left">
                                                 <small className="text-uppercase text-muted font-weight-bold">
+                                                    Bio 
+                                                </small>
+                                            </div>
+                                        </Col>
+                                        <Col lg="8">
+                                            <p>
+                                                {activeMentor.bio}
+                                            </p>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col lg="4">
+                                            <div className="text-left">
+                                                <small className="text-uppercase text-muted font-weight-bold">
                                                     Department 
                                                 </small>
                                             </div>
@@ -153,14 +166,18 @@ function FindMentor({ setFindMentorView }){
                                         <Col lg="4">
                                             <div className="text-left">
                                                 <small className="text-uppercase text-muted font-weight-bold">
-                                                    Bio 
+                                                    Specialties 
                                                 </small>
                                             </div>
                                         </Col>
                                         <Col lg="8">
-                                            <p>
-                                                {activeMentor.bio}
-                                            </p>
+                                                {activeMentor.specialties.map( (topic) => {
+                                                    return(
+                                                        <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                            {topic}
+                                                        </Badge>
+                                                    );
+                                                })}   
                                         </Col>
                                     </Row>
                                 </div>
@@ -190,7 +207,7 @@ function FindMentor({ setFindMentorView }){
                                 toggle={() => setResPopup(false)}
                                 >
                                 <div className="modal-header">
-                                    <h6 className="modal-title mt-2" id="modal-title-default">
+                                    <h6 className="modal-title mt-2 text-success" id="modal-title-default">
                                         Success
                                     </h6>
                                     <button
