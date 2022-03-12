@@ -133,6 +133,9 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 requestMessage : meetingResult.requestMessage
             }
 
+            console.log(meeting.meetingStart);
+            console.log(meeting.meetingDuration);
+
             //Add meeting to user info
             responseObject.push(meeting);
         }
