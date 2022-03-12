@@ -28,7 +28,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
                 name : otherUserResult.name,
                 bio : otherUserResult.bio,
                 email : otherUserResult.email,
-                department : otherUserResult.department,
+                department : otherUserResult.businessarea,
                 interests : []
             };
 
@@ -39,7 +39,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
             for (var j = 0; j < interestsResult.rowCount; j++) {
                 otherUser.interests.push(interestsResult.rows[j].interest);
             }
-
+            console.log(otherUser);
             //Add user to the response
             responseObject.push(otherUser);
         }

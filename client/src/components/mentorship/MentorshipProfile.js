@@ -17,6 +17,7 @@ import api from "../../api/api";
 
 function MentorshipProfile({ profileView, setProfileView, setShowProfile }){
 
+    console.log("profile view");
     console.log(profileView);
 
     // get userID and userType
@@ -74,7 +75,11 @@ function MentorshipProfile({ profileView, setProfileView, setShowProfile }){
                     <Button 
                         color="primary" 
                         type="button"
-                        onClick={() => setProfileView({interests: []})}>
+                        onClick={() => (
+                                setProfileView({interests: []}),
+                                setShowProfile(false)
+                        )
+                        }>
                         Return
                     </Button>
                 </Col>
@@ -91,7 +96,7 @@ function MentorshipProfile({ profileView, setProfileView, setShowProfile }){
                             <Row>
                                 <Col lg="2">
                                     <Row>
-                                        {profileView.userType === "mentee"
+                                        {userType === "mentor"
                                         ? <div className="card-profile-image mb-2">
                                             <img
                                             alt="..."
