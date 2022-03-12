@@ -15,6 +15,9 @@ const getGroupMeetingFeedback =
 router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
         console.log("/createmeeting \n" + req.body);
+
+        console.log([req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
+
         //Add the new meeting to the database
         await pool.query('INSERT INTO meeting VALUES (DEFAULT, $1, $2, $3, NOW(), $4, $5, $6, NULL, FALSE, $7, NULL, NULL, $8)', [req.body.meetingName, req.body.mentorID, req.userInfo.userID, req.body.meetingStart, req.body.meetingDuration, req.body.place, req.body.requestMessage, req.body.description]);
 
