@@ -234,10 +234,11 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
         console.log("/acceptMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
         if (req.userInfo.userType === 'mentor' && req.params.meetingType === 'meeting') {
             //Update the meeting table
-            const menteeResult = await pool.query('UPDATE meeting SET confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $1 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
+            const menteeResult = await pool.query('UPDATE meeting SET confirmed = \'true\' WHERE meetingID = $1 AND mentorID = $2 RETURNING menteeID', [req.params.meetingID, req.userInfo.userID]);
 
             //Notify the mentee
             notifications.notify(menteeResult.rows[0].menteeid, `${req.userInfo.name} has accepted your meeting request.`, 'Meeting Accepted');
+
         } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
             //Update the groupMeetingAttendees table
             await pool.query('UPDATE groupMeetingAttendees SET confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
