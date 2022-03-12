@@ -10,7 +10,9 @@ const instance = axios.create({
 instance.interceptors.request.use(
     (config) => {
         // get access token stored in local browser storage
+        console.log("accessToken: ");
         const accessToken = TokenService.getLocalAccessToken();
+        console.log(accessToken);
         if (accessToken) {
             // add token to the request header
             config.headers["x-auth-token"] = accessToken;
@@ -50,7 +52,9 @@ instance.interceptors.response.use(
 
                     // update new access token
                     TokenService.setLocalAccessToken(newAccessToken);
-                    TokenService.setRefreshToken(newRefreshToken);
+                    TokenService.setLocalRefreshToken(newRefreshToken);
+
+                    console.log("resending request after updating access tokens");
                     
                     return instance(originalConfig);
 

@@ -788,8 +788,20 @@ function MeetingsPanel({ context, otherID }){
                                 
                             </Col>
                             <Col sm="8">
-                                {creatingMeetingType === "group-meeting"
-                                ? <FormGroup className="mb-3">
+                                {creatingMeetingType === "workshop"
+                                ? <>
+                                <select onChange={handleTopic}>
+                                   <option className="text-muted" disable >
+                                           Select the workshop's topic
+                                   </option>
+                                   {specialties.map( (value) => {
+                                       return(
+                                           <option value={value}>{value}</option>
+                                       );
+                                   })}
+                               </select>                           
+                           </> 
+                           : <FormGroup className="mb-3">
                                     <InputGroup className="input-group-alternative">
                                         <Input 
                                             placeholder="Enter meeting name" 
@@ -800,18 +812,7 @@ function MeetingsPanel({ context, otherID }){
                                             />
                                     </InputGroup>
                                 </FormGroup>
-                                : <>
-                                     <select onChange={handleTopic}>
-                                        <option className="text-muted" disable >
-                                                Select the workshop's topic
-                                        </option>
-                                        {specialties.map( (value) => {
-                                            return(
-                                                <option value={value}>{value}</option>
-                                            );
-                                        })}
-                                    </select>                           
-                                </>}
+}
                             </Col>
                         </Row>
                         <hr/>
