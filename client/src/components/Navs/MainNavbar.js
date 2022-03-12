@@ -21,7 +21,7 @@ function MainNavbar({ activeView }) {
     let history = useHistory();
 
     // get user type logged in
-    const userType = "mentee";//JSON.parse(localStorage.getItem('authState')).userType;
+    const userType = JSON.parse(localStorage.getItem('authState')).userType;
     
     // logout handler function
     const handleLogout = async () => {
