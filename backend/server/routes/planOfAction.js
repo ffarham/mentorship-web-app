@@ -106,7 +106,7 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
     console.log("/markPOAcomplete/" + req.params.planID+ "\n" + req.body)
     try {
         //Mark the POA as complete
-        const result = await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND (menteeID = $2 OR mentorID = $2) RETURNING menteeID, planName', [req.params.planID, req.userInfo.userID]);
+        const result = await pool.query('UPDATE planOfAction SET completed = TRUE WHERE planID = $1 AND mentorID = $2 RETURNING menteeID, planName', [req.params.planID, req.userInfo.userID]);
         
         //Notify the mentee
         notifications.notify(result.rows[0].menteeid, `${result.rows[0].planid} complete!`, 'Plan Completed');
@@ -125,7 +125,7 @@ router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, n
     console.log("/markMilestoneComplete/" + req.params.milestoneID + "\n" + req.body)
     try {        
         //Mark the milestone as complete
-        await pool.query('UPDATE milestones SET completed = TRUE WHERE milestoneID = (SELECT milestones.milestoneID FROM milestones INNER JOIN planOfAction ON milestones.planID = planOfAction.planID WHERE milestones.milestoneID = $1 AND (planOfAction.menteeID = $2 or planOfAction.mentorID = $2))', [req.params.milestoneID, req.userInfo.userID]);
+        await pool.query('UPDATE milestones SET completed = TRUE WHERE milestoneID = (SELECT milestones.milestoneID FROM milestones INNER JOIN planOfAction ON milestones.planID = planOfAction.planID WHERE milestones.milestoneID = $1 AND planOfAction.mentorID = $2)', [req.params.milestoneID, req.userInfo.userID]);
 
         res.send('Success!');
         next();
