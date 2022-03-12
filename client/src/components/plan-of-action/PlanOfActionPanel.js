@@ -28,10 +28,13 @@ function PlanOfActionPanel({ context, otherID }) {
           (res) => {
             setPlanOfActions(res.data);
           }        
-        );
-      }else if(context === "mentorship"){
+          );
+        }else if(context === "mentorship"){
+        console.log("getting POAs in mentorship");
+        console.log(otherID);
         api.get(`/api/v1/mentorship/plan-of-actions/${otherID}`).then(
           (res) => {
+            console.log(res.data);
             setPlanOfActions(res.data);
           }
         );
@@ -106,7 +109,7 @@ function PlanOfActionPanel({ context, otherID }) {
                 <p>
                     {activePoA.planDescription}
                 </p>
-                <MileStonesPanel data={activePoA.milestones} completed={activePoA.completed} poaID={activePoA.id} />            
+                <MileStonesPanel data={activePoA.milestones} completed={activePoA.completed} poaID={activePoA.planID} />            
               </div>
 
               <div className="modal-footer">

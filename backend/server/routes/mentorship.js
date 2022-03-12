@@ -28,7 +28,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
                 name : otherUserResult.name,
                 bio : otherUserResult.bio,
                 email : otherUserResult.email,
-                department : otherUserResult.department,
+                department : otherUserResult.businessarea,
                 interests : []
             };
 
@@ -39,7 +39,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
             for (var j = 0; j < interestsResult.rowCount; j++) {
                 otherUser.interests.push(interestsResult.rows[j].interest);
             }
-
+            console.log(otherUser);
             //Add user to the response
             responseObject.push(otherUser);
         }
@@ -231,11 +231,12 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         var poaQuery;
         if (req.userInfo.userType === 'mentee') {
             poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.mentorID = users.userID WHERE planOfAction.menteeID = $1 AND planOfAction.mentorID = $2';
-        } else if (req.userInfo.userType) {
+        } else if (req.userInfo.userType === 'mentor') {
             poaQuery = 'SELECT * FROM planOfAction INNER JOIN users ON planOfAction.menteeID = users.userID WHERE planOfAction.mentorID = $1 AND planOfAction.menteeID = $2';
         }
 
         const planResult = await pool.query(poaQuery, [req.userInfo.userID, req.params.otherID]);
+        console.log(planResult);
 
         //Format plan information and attach milestones
         var planRow;
@@ -247,7 +248,7 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
             planOfAction = {
                 planID: planRow.planid,
                 mentorName: req.userInfo.userType === 'mentor' ? req.userInfo.name : planRow.name,
-                menteeName: req.userInfo.userType === 'mentee' ? req.userInfo.name : planR.name,
+                menteeName: req.userInfo.userType === 'mentee' ? req.userInfo.name : planRow.name,
                 planName: planRow.planname,
                 planDescription: planRow.plandescription,
                 completed: planRow.completed,
@@ -256,10 +257,11 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
 
             //Pull all associated milestones from the database
             const milestoneResult = await pool.query('SELECT * FROM milestones WHERE planID = $1 ORDER BY ordering', [planRow.planid]);
+            console.log(milestoneResult);
 
             //Format milestones appropriately
             var milestoneRow;
-            for (var k = 0; k < planResult.rowCount; k++) {
+            for (var k = 0; k < milestoneResult.rowCount; k++) {
                 milestoneRow = milestoneResult.rows[k];
 
                 //Format appropriately
