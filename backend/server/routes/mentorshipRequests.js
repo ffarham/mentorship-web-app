@@ -58,10 +58,11 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
             let mentorShipRequest = {
                 id: row.requestid,
                 user : {id: userid,
+                email: userData.email,
                 name: userData.name,
                 department: userData.businessarea,
                 bio: userData.bio,
-                interests: JSON.stringify(interestArr)
+                interests: interestArr
                 }
             }
             mentorShipRequests.push(mentorShipRequest);
