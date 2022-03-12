@@ -134,7 +134,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             }
 
             //Add meeting to user info
-            responseObject.push(meetingResult);
+            responseObject.push(meeting);
         }
 
         //Send the response
