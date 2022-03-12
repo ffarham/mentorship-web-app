@@ -220,6 +220,7 @@ function MeetingsPanel({ context, otherID }){
         if (context === "meetings"){
             api.get("/api/v1/meetings/meetings").then(
                 (res) => {
+                    console.log(res.data);
                     if(res.status === 500){
                         // handle error
                         // TODO: display error in panel
@@ -340,6 +341,7 @@ function MeetingsPanel({ context, otherID }){
                 </div>}
                 
                 {/* meeting popup */}
+                {console.log(activeMeeting)}
                 <Modal
                     className="modal-dialog-centered"
                     isOpen={meetingPopup}
@@ -385,8 +387,8 @@ function MeetingsPanel({ context, otherID }){
                             </Col>
                             <Col lg="8">
                                 {updateMeeting
-                                ? <p className="text-muted">{userType === "mentor" ? activeMeeting.mentee : activeMeeting.mentor}</p>
-                                : <p>{userType === "mentor" ? activeMeeting.mentee : activeMeeting.mentor}</p>}
+                                ? <p className="text-muted">{userType === "mentor" ? activeMeeting.menteeName : activeMeeting.mentorName}</p>
+                                : <p>{userType === "mentor" ? activeMeeting.menteeName : activeMeeting.mentorName}</p>}
                             </Col>
                         </Row>
                         : <></>}
@@ -415,7 +417,7 @@ function MeetingsPanel({ context, otherID }){
                             <Col lg="8">
                                 {updateMeeting
                                 ? <p className="text-muted">{activeMeeting.description}</p>
-                                : <p>{activeMeeting.description}</p>}
+                                : <p>{activeMeeting.meetingDescription}</p>}
                             </Col>
                         </Row>
                         <Row className="mb-2">
@@ -467,7 +469,7 @@ function MeetingsPanel({ context, otherID }){
                             </Col>
                             <Col lg="8">
                                 <p>
-                                    {activeMeeting.duration}
+                                    {activeMeeting.meetingDuration}
                                 </p>
                             </Col>
                         </Row>
@@ -496,7 +498,7 @@ function MeetingsPanel({ context, otherID }){
                             </Col>
                             <Col lg="8">
                                 <p>
-                                    {activeMeeting.confirmed} {' '} out of {' '} {activeMeeting.total}
+                                    {activeMeeting.confirmed} 
                                 </p>
                             </Col>
                         </Row>}
