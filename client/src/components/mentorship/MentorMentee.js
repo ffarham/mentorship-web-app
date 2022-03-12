@@ -17,7 +17,7 @@ function MentorMentee({ mentorMentees }){
     return(
         <>
             <Card className="mentorshipItem text-center p-3">
-                {mentorMentees.userType === "mentor" 
+                {userType === "mentee" 
                 ? <div className="card-profile-image mb-2">
                     <img
                     alt="..."

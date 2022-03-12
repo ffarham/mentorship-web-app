@@ -55,7 +55,7 @@ function MentorshipProfile({ profileView, setProfileView, setShowProfile }){
 
     // mentees have the option to remove mentors
     const handleMentorRemove = (otherID) => {
-        api.post(`/api/v1/removeMentor/${otherID}`).then(
+        api.post(`/api/v1/cancelMentorship/${otherID}`).then(
             (res) => {
                 // take the user back to their mentorship page
                 // TODO: notify the user, however issue with popup and changing view
