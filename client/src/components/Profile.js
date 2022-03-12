@@ -38,6 +38,7 @@ function Profile({data}) {
                 
             }
       );
+        document.getElementById("bio").value = data.bio;
     }
     
     return(

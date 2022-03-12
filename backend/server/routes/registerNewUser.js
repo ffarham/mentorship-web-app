@@ -2,13 +2,37 @@ const router = require("express").Router();
 const userInteractions = require('../interactions/users')
 const tokens = require('../auth/tokens');
 
-//Works
+router.get('/register', async (req, res, next) => {
+    const vals = [
+        'Research',
+        'Risk',
+        'Marketing',
+        'Sales',
+        'Equity',
+        'M&A',
+        'Stocks',
+        'Bonds',
+        'Value',
+        'MutualFund',
+        'IPO',
+        'Mortgage',
+        'HFT',
+        'Quant',
+        'Analysis',
+        'MarketMaking'
+    ];
+    res.json({
+        departments : vals,
+        topics : vals
+    });
+});
+
 router.post('/registeruser', async (req, res, next) => {
     console.log("/registeruser\n" + req.body)
     //Register the user and pull their userID
     var userID;
     try {
-        userID = await userInteractions.registerUser(req.body.email, req.body.name, req.body.password, req.body.department, req.body.userType, 'pfp', req.body.emailsAllowed, req.body.bio);
+        userID = await userInteractions.registerUser(req.body.email, req.body.name, req.body.password, req.body.department, req.body.userType, 'pfp', false, req.body.bio);
     } catch (err) {
         res.status(500).json(err);
         return;

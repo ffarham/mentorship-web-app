@@ -1,11 +1,18 @@
 // returns the user objects 'accessToken' attribute from 'user' in local storage 
 const getLocalAccessToken = () => {
-    return JSON.parse(localStorage.getItem("dicipulo-accessToken"));
+    const token = localStorage.getItem("dicipulo-accessToken");
+    if(token !== "undefined"){
+        return JSON.parse(token);
+    }
+    console.log("access token is undefined");
 };
 
 // returns the user objects 'refreshToken' attribute from 'user' in local storage
 const getLocalRefreshToken = () => {
-    return JSON.parse(localStorage.getItem("dicipulo-refreshToken"));
+    const token = localStorage.getItem("dicipulo-refreshToken");
+    if(token !== "undefined"){
+        return JSON.parse(token);
+    }
 };
 
 // store access token in local storage

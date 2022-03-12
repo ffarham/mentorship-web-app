@@ -45,8 +45,8 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
             results = await pool.query("SELECT * FROM mentorshipRequests WHERE menteeID = $1", [req.userInfo.userID]);
         }
         let mentorShipRequests = [];
-        for(let i = 0; i < result.rowCount; ++i){
-            let row = result.rows[i];
+        for(let i = 0; i < results.rowCount; ++i){
+            let row = results.rows[i];
             let userid = (isMentor) ? row.menteeID : row.mentorID;
             const userData = await pool.query("SELECT * FROM users where userid = $1", [userid]).rows[0];
             

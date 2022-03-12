@@ -4,8 +4,8 @@ const pool = require('../db');
 
 //Get all available mentors
 const mentorQuery = "" +
-"SELECT userid, name, businessarea, email, menteeNum FROM " + 
-"(SELECT userid, name, CASE WHEN menteeNum is null THEN 0 ELSE menteeNum END, businessarea, email FROM users " + 
+"SELECT userid, name, businessarea, email, bio, menteeNum FROM " + 
+"(SELECT userid, name, CASE WHEN menteeNum is null THEN 0 ELSE menteeNum END, businessarea, email, bio FROM users " + 
         "LEFT JOIN (SELECT COUNT(mentorid) menteeNum,  mentorid FROM mentoring GROUP BY mentorid) mentors " + 
         "ON userid = mentors.mentorid) mentoringCount " + 
             "JOIN mentor ON mentor.mentorid = mentoringCount.userid WHERE menteeNum < 5";
@@ -134,11 +134,12 @@ The interestMap attribute is used to quickly retrieve an interest when
 checking for common interests between a mentee and mentor, e.g. to check whether.
 */
 class User {
-    constructor(userid, name, bArea, email, interests){
+    constructor(userid, name, department, email, bio, interests){
         this.userid = userid;
         this.name = name;
-        this.bArea = bArea;
+        this.department = department;
         this.email = email;
+        this.bio = bio;
         this.interests = interests;
         this.interestMap = new Map();
         if(interests != null){
@@ -156,7 +157,7 @@ class User {
             }
         }
         str += "]";
-        return "[" + this.userid + ", " + this.name + ", " + this.bArea + ", " + this.email + ", " +  "," + str + "]";
+        return "[" + this.userid + ", " + this.name + ", " + this.department + ", " + this.email + ", " + this.bio + ", " + str + "]";
     }
     toJSON(){
         let keys = Object.keys(this);
@@ -182,15 +183,15 @@ class User {
 
 
 class Mentee extends User{
-   constructor(userid, name, bArea, email, interests){
-       super(userid, name, bArea, email, interests);
+   constructor(userid, name, department, email, bio, interests){
+       super(userid, name, department, email, bio, interests);
        this.consideredMentors = new Map(); //Mentors already considered for this mentee by the algorithm
    }
 }
 
 class Mentor extends User{
-    constructor(userid, name, bArea, email, interests, menteeNum){
-        super(userid, name, bArea, email, interests);
+    constructor(userid, name, department, email, bio, interests, menteeNum){
+        super(userid, name, department, email, bio, interests);
         this.menteeNum = menteeNum; //The number of mentees a mentor is already tutoring
     }
 }
@@ -244,7 +245,7 @@ async function createMenteeObj(menteeID){
     } catch(err){
         throw(err);
     }
-    let mentee = new Mentee(menteeID, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], interests);
+    let mentee = new Mentee(menteeID, rows[0]["name"], rows[0]["businessarea"], rows[0]["email"], rows[0]["bio"], interests);
     return mentee;
 }
 
@@ -273,7 +274,7 @@ async function getAvailableMentors(){
         } catch(err){
             throw(err);
         }
-        mentors.push(new Mentor(rows[i]["userid"], rows[i]["name"], rows[i]["businessarea"], rows[i]["email"], interests, rows[i]["menteenum"])); 
+        mentors.push(new Mentor(rows[i]["userid"], rows[i]["name"], rows[i]["businessarea"], rows[i]["email"], rows[i]["bio"], interests, rows[i]["menteenum"])); 
     }
     return mentors;
 }
@@ -483,7 +484,7 @@ async createMatches(flagList){
                 let mentee_T = menteeArray[j]; //Tuple of a mentee and a list of tuples of mentors currently matched to them 
                                                //during the algorithms runtime and a calculated ranking for the match
                 console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor.name);
-                console.log("mentee's bArea: " + mentee_T.first.bArea, " mentor's: " + mentor.bArea);
+                console.log("mentee's department: " + mentee_T.first.department, " mentor's: " + mentor.department);
                 console.log("number of common interests: " + 
                 await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));
                   
@@ -493,7 +494,7 @@ async createMatches(flagList){
                     continue;
                 }
                 //Do not attempt to match mentees and mentors with the same business area
-                if(mentee_T.first.bArea === mentor.bArea || mentee_T.first.userid === mentor.userid){
+                if(mentee_T.first.department === mentor.department || mentee_T.first.userid === mentor.userid){
                     mentee_T.first.consideredMentors.set(mentor, null);
                     ++assignedMentors;
                     continue;    

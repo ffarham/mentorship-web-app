@@ -6,6 +6,8 @@ import {
     // Card 
 } from "reactstrap";
 
+import TokenService from 'api/tokenService.js';
+
 import { Redirect } from 'react-router-dom';
 
 import MainNavbar from "../components/Navs/MainNavbar.js";
@@ -14,6 +16,11 @@ import MeetingsPanel from "../components/meetings/MeetingsPanel.js";
 import NotificationsPanel from "../components/home/NotificationsPanel.js";
 
 function HomePage() {
+
+    // TokenService.removeLocalRefreshToken();
+    // TokenService.removeLocalAccessToken();
+    // localStorage.removeItem('authState');
+
     return(
         <>
             <MainNavbar />

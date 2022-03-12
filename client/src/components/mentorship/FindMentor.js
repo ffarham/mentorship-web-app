@@ -16,15 +16,17 @@ function FindMentor({ setFindMentorView }){
     // get users recommended mentors
     const [recommendedMentors, setRecommendedMentors] = useState([]);
     useEffect(() => {
-        api.get("api/v1/matching").then(
+        api.post("api/v1/matching").then(
             (res) => {
+                console.log("data");
+                console.log(res.data);
                 setRecommendedMentors(res.data);
             }
         );
     }, []);
 
     // handle user selecting a new mentor
-    const [activeMentor, setActiveMentor] = useState({specialties: []});
+    const [activeMentor, setActiveMentor] = useState({interests: []});
     const [popup, setPopup] = useState(false);
     const handleMentorClick = (mentor) => {
         setActiveMentor(mentor);
@@ -75,15 +77,18 @@ function FindMentor({ setFindMentorView }){
                                 You have no recommended mentors.
                             </div>
                             : <div className="mb-3">
+                                <Col>
+                                <Row>
+
                                 {recommendedMentors.map( (mentor) => {
-                                return(
-                                    <div>
-                                        <a href="#group38" onClick={() => handleMentorClick(mentor)}>
-                                            <MentorMentee mentorMentees={mentor} />
-                                        </a>
-                                    </div>
-                                );})
-                                }
+                                    return(
+                                        <div className="mx-2" onClick={() => handleMentorClick(mentor)}>
+                                            <MentorMentee mentorMentees={mentor} /> 
+                                        </div>
+                                    );
+                                })}
+                                </Row>
+                                </Col>
                                 
                                 <Modal
                                 className="modal-dialog-centered"
@@ -144,7 +149,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {activeMentor.bio}
+                                                {/* {activeMentor.bio} */}
                                             </p>
                                         </Col>
                                     </Row>
@@ -158,7 +163,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {activeMentor.department}
+                                                {activeMentor.bArea}
                                             </p>
                                         </Col>
                                     </Row>
@@ -171,13 +176,13 @@ function FindMentor({ setFindMentorView }){
                                             </div>
                                         </Col>
                                         <Col lg="8">
-                                                {activeMentor.specialties.map( (topic) => {
-                                                    return(
-                                                        <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
-                                                            {topic}
-                                                        </Badge>
-                                                    );
-                                                })}   
+                                            {activeMentor.interests.map( (topic) => {
+                                                return(
+                                                    <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>
+                                                        {topic.second}
+                                                    </Badge>
+                                                );
+                                            })}   
                                         </Col>
                                     </Row>
                                 </div>
