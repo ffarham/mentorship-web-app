@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userInteractions = require('../interactions/users')
 const tokens = require('../auth/tokens');
 
+//Works
 router.post('/registeruser', async (req, res, next) => {
     console.log("/registeruser\n" + req.body)
     //Register the user and pull their userID
