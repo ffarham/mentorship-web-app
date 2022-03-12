@@ -241,7 +241,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
 
         } else if (req.userInfo.userType === 'mentee' && (req.params.meetingType === 'group-meeting' || req.params.meetingType === 'workshop')) {
             //Update the groupMeetingAttendees table
-            await pool.query('UPDATE groupMeetingAttendees SET confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $1', [req.params.meetingID, req.userInfo.userID]);
+            await pool.query('UPDATE groupMeetingAttendees SET confirmed = TRUE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
         }
 
         res.send('Success!');
@@ -257,7 +257,7 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/rejectMeeting/" + req.params.meetingID + "\n" + req.body);
         //Update the groupMeetingAttendees table accordingly
-        await pool.query('UPDATE groupMeetingAttendees SET confirmed = FALSE WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
+        await pool.query('UPDATE groupMeetingAttendees SET confirmed =\'false\' WHERE groupMeetingID = $1 AND menteeID = $2', [req.params.meetingID, req.userInfo.userID]);
 
         res.send('Success!');
     } catch (err) {

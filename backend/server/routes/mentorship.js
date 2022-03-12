@@ -80,7 +80,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
-                WHERE meeting.menteeID = $1)
+                WHERE meeting.menteeID = $1 AND meeting.confirmed = \'true\')
                 
             UNION 
             
