@@ -80,7 +80,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
-                WHERE meeting.menteeID = $1 AND meeting.confirmed = \'true\')
+                WHERE meeting.menteeID = $1 AND meeting.confirmed != \'false\')
                 
             UNION 
             
@@ -88,7 +88,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
-                WHERE groupMeetingAttendee.menteeID = $1) 
+                WHERE groupMeetingAttendee.menteeID = $1 AND groupMeetingAttendee.confirmed = TRUE) 
                 
             ORDER BY meetingStart DESC
             `;
@@ -97,7 +97,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
-                WHERE meeting.mentorID = $1 AND meeting.confirmed = \'true'\)
+                WHERE meeting.mentorID = $1 AND meeting.confirmed != \'false'\)
                 
             UNION 
             
@@ -160,7 +160,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
-                WHERE meeting.menteeID = $1 AND meeting.mentorID = $2)
+                WHERE meeting.menteeID = $1 AND meeting.mentorID = $2 AND meeting.confirmed = \'true\')
                 
             UNION 
             
@@ -177,7 +177,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
-                WHERE meeting.mentorID = $1 AND meeting.menteeID = $2)
+                WHERE meeting.mentorID = $1 AND meeting.menteeID = $2 AND meeting.confirmed = \'true\')
                 
             UNION 
             
