@@ -34,7 +34,7 @@ router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
         const ordering = result.rowCount === 0 ? 0 : result.rows[0].max + 1;
 
         //Insert the new milestone into the database
-        await pool.query('INSERT INTO milestones VALUES (DEFAULT, $1, $2, $3, $4, FALSE', [req.params.planID, ordering, req.body.name, req.body.description]);
+        await pool.query('INSERT INTO milestones VALUES (DEFAULT, $1, $2, $3, $4, FALSE)', [req.params.planID, ordering, req.body.name, req.body.description]);
 
         res.send('Success!');
     } catch (err) {
