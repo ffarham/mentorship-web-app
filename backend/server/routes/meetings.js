@@ -100,7 +100,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
         } else if (req.userInfo.userType === 'mentor') {
             query = `
             SELECT meeting.*, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, users.name FROM meeting 
-                INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed = \'false\'
+                INNER JOIN users ON meeting.menteeID = users.userID WHERE meeting.mentorID = $1 AND meeting.confirmed != \'true\'
             `;
         }
 
