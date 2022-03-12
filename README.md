@@ -49,7 +49,7 @@ Start and build the docker instance with a compose file not named 'docker-compos
 
 ### Database connection  
 Run:  
-`docker exec -it backend-db-1 psql -U postgres`  
+`docker exec -it backend-db-1 psql -U postgres -d discipulo`  
 
 You can connect to the server with https://localhost:5000 as usual  
 

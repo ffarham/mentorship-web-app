@@ -13,11 +13,11 @@ INSERT INTO users VALUES (DEFAULT, 'sasee@gmail.com', FALSE, 'Sassy the Sasquatc
 INSERT INTO mentee SELECT userID from users;
 
 INSERT INTO users VALUES (DEFAULT, 'mentor1@gmail.com', FALSE, 'Alex', 'password1', 'three', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'mentor2@gmail.com', FALSE, 'Anne', 'password2', 'three', 'qwerty', TRUE, 'a');
+INSERT INTO users VALUES (DEFAULT, 'mentor2@gmail.com', FALSE, 'Anne', 'password2', 'three', 'qwerty', TRUE, 'long bio');
 INSERT INTO users VALUES (DEFAULT, 'mentor3@gmail.com', FALSE, 'Astolfo', 'password3', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor4@gmail.com', FALSE, 'Brian', 'password4', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor5@gmail.com', FALSE, 'James', 'password5', 'three', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'mentor6@gmail.com', FALSE, 'Hajime', 'password6', 'three', 'qwerty', TRUE, 'a');
+INSERT INTO users VALUES (DEFAULT, 'mentor6@gmail.com', FALSE, 'Hajime', 'password6', 'three', 'qwerty', TRUE, 'short bio');
 INSERT INTO users VALUES (DEFAULT, 'mentor7@gmail.com', FALSE, 'Cerulea', 'password7', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor8@gmail.com', FALSE, 'Peter', 'password8', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor9@gmail.com', FALSE, 'Mahito', 'password9', 'three', 'qwerty', TRUE, 'a');
