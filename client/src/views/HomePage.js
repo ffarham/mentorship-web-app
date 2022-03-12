@@ -13,7 +13,7 @@ import { Redirect } from 'react-router-dom';
 import MainNavbar from "../components/Navs/MainNavbar.js";
 import MainFooter from "../components/Navs/MainFooter.js";
 import MeetingsPanel from "../components/meetings/MeetingsPanel.js";
-import NotificationsPanel from "../components/home/NotificationsPanel.js";
+import NotificationsPanel from "../components/NotificationsPanel.js";
 
 function HomePage() {
 

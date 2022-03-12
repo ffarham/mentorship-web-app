@@ -8,7 +8,7 @@ import {
 } from 'reactstrap';
 import api from "../api/api";
 
-function Notification({ notification }){
+function Notification({ notification, parentCallback }){
 
     // get userID and userType
     const authState = JSON.parse(localStorage.getItem('authState'));
@@ -18,9 +18,9 @@ function Notification({ notification }){
 
     const setEnlarge = (flag) => {
         if (flag === true) {
-            document.getElementById("dissmiss").style.color = "red";
+            document.getElementById(notification.notificationID).style.color = "red";
         } else {
-            document.getElementById("dissmiss").style.color = "black";
+            document.getElementById(notification.notificationID).style.color = "black";
         }
     }
 
@@ -32,19 +32,22 @@ function Notification({ notification }){
 
             }
         );
-
+        document.getElementById("notification" + notification.notificationID).remove();
+        parentCallback();
     }
+
+
 
     return(
         <>  
-            <Card className="bg-secondary shadow border-0 my-2  p-2 mb-3">
+            <Card id={"notification" + notification.notificationID} className="bg-secondary shadow border-0 my-2  p-2 mb-3">
                 <Row className="my-2">
                     <Col className="" sm="10" onClick={() => setModal(true)}>
                         <i class="ni ni-bell-55"></i>{"  " + notification.type}
                     </Col>
 
                     <Col className="" sm="2">
-                        <i id="dissmiss" class="fa fa-times" aria-hidden="true" onMouseEnter={() => setEnlarge(true)}
+                        <i id={notification.notificationID} class="fa fa-times" aria-hidden="true" onMouseEnter={() => setEnlarge(true)}
                             onMouseLeave={() => setEnlarge(false)} onClick = {() => dismissNotification()}></i>
                     </Col>
                 </Row>
