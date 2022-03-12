@@ -14,20 +14,24 @@ import MainFooter from "../components/Navs/MainFooter.js";
 import Profile from "../components/Profile";
 import Account from "../components/Account";
 import api from "../api/api";
+import Feedback from "components/Feedback.js";
 
 function SettingsPage() {
 
     // keep track of active tab
     const [activeTab, setActiveTab] = useState("profile");
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState({
+        name: "",
+        email: "",
+        department: "",
+        interests: []
+    });
 
     // get user data 
-    const userID = 1;//JSON.parse(localStorage.getItem("authState")).userID;
     useEffect(() => {   
-        api.get(`/api/v1/settings/${userID}`).then(
+        api.get(`/api/v1/settings`).then(
             (res) => {
                 if(res.data){
-                    console.log(res.data);
                     setUserData(res.data);
                 }
             }, 
@@ -112,7 +116,7 @@ function SettingsPage() {
                             : activeTab === "account"
                             ? <Account data={userData}/>
                             : activeTab === "form"
-                            ? <p>3</p>
+                            ? <Feedback />
                             : <></>}
                         </Card>
                     </Col>     

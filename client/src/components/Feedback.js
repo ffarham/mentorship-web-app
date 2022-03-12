@@ -1,35 +1,190 @@
-import React from 'react'
-
+import React, {useState} from 'react';
 import {
-  Col
-} from 'reactstrap'
+    Card,
+    Row,
+    Col,
+    Button,
+    Input,
+    InputGroup,
+    InputGroupText,
+    InputGroupAddon,
+    Pagination,
+    PaginationLink,
+    PaginationItem,
+    Modal
+} from 'reactstrap';
+import api from "../api/api";
 
-import ModalsFeedback from './ModalsFeedback'
 
-// Mentor's feedback from his/her mentees
-const feedback = [
-  {
-      id: 1,
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus feugiat tortor nec elit molestie accumsan. Donec interdum ante ut ex sagittis, at porttitor augue molestie. Integer eget pulvinar arcu. Vestibulum sit amet sagittis orci. Nulla aliquet risus ex, sit amet sollicitudin erat pellentesque et. Suspendisse vitae sem nec eros cursus congue ac in odio. Praesent dapibus quis magna eget placerat. Ut quis ipsum a massa auctor tincidunt id a dolor. Quisque dignissim magna a ornare lacinia. Nunc elementum, nulla vel tristique tincidunt, purus orci laoreet ipsum, sed facilisis nulla nibh eu massa. Ut sed diam euismod, gravida massa ut, bibendum dolor. Quisque id lorem cursus, pellentesque ligula eu, faucibus erat.'
-  },
-  {
-      id: 2,
-      text: 'Phasellus condimentum sapien lectus, sed commodo tellus gravida ac. Proin pellentesque pulvinar massa, ac gravida orci eleifend tempus. Morbi maximus lorem eu elementum pellentesque. In quis elit ac nisl ultrices ultrices in eu lorem. Fusce quis tempor elit. Ut non sapien quis dolor fringilla tempor id ut enim'
-  }
-]
 
-const Feedback = ()  => {
+function Feedback() {
+
+  const [active, setAcive] = useState(0);
+
+  const [alertPopup, setAlertPopup] = useState(false);
+
+  const userID = 1;
+
+  const submitFeedback = () => { 
+
+    const data = {rating: active, feedback: document.getElementById("textbox").value};
+    api.post(`/api/v1/feedback`, data).then(
+        (res) => {
+            
+        }
+  );
+  document.getElementById("textbox").value = "";
+  setAcive(0);
+  setAlertPopup(true);
+}
+
   return (
     <>
-    {feedback.map( (fb) => (
-                    <Col>
-                        <ModalsFeedback {...fb} title="Feedback Description" key={fb.id} info={fb.text} />
-                        <br></br>
-                    </Col>
-        ))}
-    </>
+      <div className="m-2">
+        <Row className="mb-4">
+          <Col>
+              <div className="">
+                  <h4 className="display-4 mb-0">Feedback</h4>
+              </div>
+          </Col>
+        </Row>
+        <hr />
+        <Row className="ml-2">
+          <p>How would you rate this product out of 5?</p>
+        </Row>
 
-  )
+        <Row className="ml-2">
+        <Pagination>
+              { active === 1 ? 
+              <PaginationItem className="active">
+                <PaginationLink onClick={() => setAcive(1)}>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+                :
+              <PaginationItem >
+                <PaginationLink  onClick={() => setAcive(1)}>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+              }
+
+              { active === 2 ?
+              <PaginationItem className="active">
+                <PaginationLink href="#pablo" onClick={() => setAcive(2)}>
+                  2
+                </PaginationLink>
+              </PaginationItem>
+                :  
+              <PaginationItem >
+                <PaginationLink href="#pablo" onClick={() => setAcive(2)}>
+                  2
+                </PaginationLink>
+              </PaginationItem>
+              }
+
+              {active === 3 ?
+              <PaginationItem className="active">
+                <PaginationLink href="#pablo" onClick={() => setAcive(3)}>
+                  3
+                </PaginationLink>
+              </PaginationItem>
+                :
+              <PaginationItem>
+                <PaginationLink href="#pablo" onClick={() => setAcive(3)}>
+                  3
+                </PaginationLink>
+              </PaginationItem>
+              }
+
+              {active === 4 ?
+              <PaginationItem className="active">
+                <PaginationLink href="#pablo" onClick={() => setAcive(4)}>
+                  4
+                </PaginationLink>
+              </PaginationItem>
+                :
+              <PaginationItem>
+                <PaginationLink href="#pablo" onClick={() => setAcive(4)}>
+                  4
+                </PaginationLink>
+              </PaginationItem>
+              }
+
+              {active === 5 ?
+              <PaginationItem className="active">
+                <PaginationLink href="#pablo" onClick={() => setAcive(5)}>
+                  5
+                </PaginationLink>
+              </PaginationItem>
+                  :
+              <PaginationItem>
+                <PaginationLink href="#pablo" onClick={() => setAcive(5)}>
+                  5
+                </PaginationLink>
+              </PaginationItem>
+              }
+            </Pagination>  
+        </Row>
+
+        <Row className="ml-2">
+          <p>Explain your score:</p>
+        </Row>
+
+        <Row className="mb-4">
+            <textarea id="textbox" className="feedbackform">
+                
+            </textarea>
+        </Row>
+        <Row className="mx-4 float-right">
+          <Button
+          className="btn-1" 
+          color="primary"
+          onClick={() => submitFeedback()}>
+            Submit
+          </Button>
+        </Row>
+
+        <Modal
+          className="modal-dialog-centered"
+          isOpen={alertPopup}
+          toggle={() => setAlertPopup(false)}
+          >
+          <div className="modal-header">
+              <h6 className="modal-title mt-2 text-success" id="modal-title-default">
+                  Success
+              </h6>
+              <button
+              aria-label="Close"
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => setAlertPopup(false)}
+              >
+              <span aria-hidden={true}>×</span>
+              </button>
+          </div>
+
+          <div className="modal-body">
+              <p>Submitted feedback successfully</p>
+          </div>
+
+          <div className="modal-footer">
+              <Button
+              className="ml-auto"
+              color="link"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => setAlertPopup(false)}
+              >
+              Close
+              </Button>
+          </div>
+          </Modal>
+      </div>
+  </>
+  );
 }
+
 
 export default Feedback;

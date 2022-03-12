@@ -11,12 +11,25 @@ import {
   Row,
   Col,
   Button,
-  Modal,
-  Input
+  Modal
 } from "reactstrap";
+import api from "../../api/api";
 
 function MainFooter() {
   const [modal, toggleModal] = useState(false);
+
+  const userID = 1;
+
+      const submitFeedback = () => { 
+
+        const data = {rating: 3, feedback: document.getElementById("textbox").value};
+        api.post(`/api/v1/feedback`, data).then(
+            (res) => {
+                
+            }
+      );
+      toggleModal(false);
+  }
 
   return (
     <>
@@ -86,15 +99,16 @@ function MainFooter() {
                 </button>
               </div>
               <div className="modal-body">
+
+                <p>Please let us know any feedback that you have:</p>
                 
-              <textarea id="story" name="story"
-              rows="5" cols="33">
-              It was a dark and stormy night...
-              </textarea>
+                <textarea id="textbox" className="feedbackmodal">
+            
+                </textarea>
 
               </div>
               <div className="modal-footer">
-              <Button color="primary" type="button">
+              <Button color="primary" type="button" onClick={() => submitFeedback()}>
                   Submit
                 </Button>
                 <Button
