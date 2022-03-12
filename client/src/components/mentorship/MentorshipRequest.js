@@ -11,7 +11,8 @@ function MentorshipRequest({ request }){
     const authState = JSON.parse(localStorage.getItem('authState'));
     const userType = authState.userType;
 
-    console.log("in request: " + JSON.stringify(request));
+    console.log("in request: ");
+    console.log(request);
 
     return(
         <>  

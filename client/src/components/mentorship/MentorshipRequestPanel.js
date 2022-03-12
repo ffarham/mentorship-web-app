@@ -37,13 +37,15 @@ function MentorshipRequestPanel(){
         if(userType === "mentee"){
             return;
         }
+        console.log("=====================");
+        console.log(request);
         setActiveReq(request);
         setRequestPopup(true);
     }
     // handle accept request by mentor
     const handleAcceptRequest = (request) => {
         const requestID = request.id;
-        api.post(`/api/v1/acceptMentorshipRequest/${requestID}`).then(
+        api.post(`/api/v1/acceptMentee/${requestID}`).then(
             (res) => {
                 setRequestPopup(false);
                 setAlertBody("Request has successfully been accepted.");
@@ -54,7 +56,7 @@ function MentorshipRequestPanel(){
     // handle reject request by mentor
     const handleRejectRequest = (request) => {
         const requestID = request.id;
-        api.post(`/api/v1/rejectMentorshipRequest/${requestID}`).then(
+        api.post(`/api/v1/rejectMentee/${requestID}`).then(
             (res) => {
                 setRequestPopup(false);
                 setAlertBody("Request has successfully been rejected.");
@@ -182,6 +184,8 @@ function MentorshipRequestPanel(){
                                 </Col>
                                 <Col lg="8">
                                     <p>
+                                        {console.log("checking active req")}
+                                        {console.log(activeReq)}
                                         {activeReq.user.interests.map( (topic) => {
                                             return(
                                                 <Badge className="text-uppercase mr-2 mb-1 px-2" color="primary" pill>

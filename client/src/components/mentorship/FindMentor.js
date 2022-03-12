@@ -36,10 +36,10 @@ function FindMentor({ setFindMentorView }){
     // handle intiation request made to the mentor
     const [resPopup, setResPopup] = useState(false);
     const handleRequest = () => {
-        api.post("/api/v1/mentorship/mentorRequest", activeMentor).then(
+        api.post(`/api/v1/requestMentor/${activeMentor.userid}`).then(
             (res) => {
                 setPopup(false);
-                setActiveMentor({specialties: []});
+                setActiveMentor({interests: []});
                 setResPopup(true);
             }
         );
@@ -149,7 +149,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {/* {activeMentor.bio} */}
+                                                {activeMentor.bio}
                                             </p>
                                         </Col>
                                     </Row>
@@ -163,7 +163,7 @@ function FindMentor({ setFindMentorView }){
                                         </Col>
                                         <Col lg="8">
                                             <p>
-                                                {activeMentor.bArea}
+                                                {activeMentor.department}
                                             </p>
                                         </Col>
                                     </Row>

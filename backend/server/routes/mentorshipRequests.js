@@ -37,7 +37,7 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
     console.log("/mentorship/requests\n" + req.body)
     try{
         let results = null;
-        let isMentor = req.userInfo.userType === 'mentor';
+        let isMentor = (req.userInfo.userType === 'mentor');
         if(isMentor){
             results = await pool.query("SELECT * FROM mentorshipRequests WHERE mentorID = $1", [req.userInfo.userID]);
         }
@@ -45,10 +45,12 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
             results = await pool.query("SELECT * FROM mentorshipRequests WHERE menteeID = $1", [req.userInfo.userID]);
         }
         let mentorShipRequests = [];
+        console.log(results.rows);
         for(let i = 0; i < results.rowCount; ++i){
             let row = results.rows[i];
-            let userid = (isMentor) ? row.menteeID : row.mentorID;
-            const userData = await pool.query("SELECT * FROM users where userid = $1", [userid]).rows[0];
+            let userid = (isMentor) ? row.menteeid : row.mentorid;
+            const result = await pool.query("SELECT * FROM users where userid = $1", [userid]);
+            const userData = result.rows[0];
             
             const userInterests = await pool.query("SELECT * FROM interest where userid = $1", [userid]);
             let interestArr = [];
@@ -58,10 +60,11 @@ router.get('/mentorship/requests', checkAuth, async (req, res, next) => {
             let mentorShipRequest = {
                 id: row.requestid,
                 user : {id: userid,
+                email: userData.email,
                 name: userData.name,
                 department: userData.businessarea,
                 bio: userData.bio,
-                interests: JSON.stringify(interestArr)
+                interests: interestArr
                 }
             }
             mentorShipRequests.push(mentorShipRequest);
