@@ -8,6 +8,16 @@ INSERT INTO users VALUES (DEFAULT, 'scott_tenorman@gmail.com', FALSE, 'Scott Ten
 INSERT INTO users VALUES (DEFAULT, 'chemiscool@gmail.com', FALSE, 'Walter White', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xdae5f4174b80dcf0', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'sasee@gmail.com', FALSE, 'Sassy the Sasquatch', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x67cf6db69bcd78e0', 'qwerty', TRUE, 'a');
 
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Research', 'mentee', 1 from users where users.name = 'Bobothy Jimson';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentee', 1 from users where users.name = 'Lez';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Marketing', 'mentee', 1 from users where users.name = 'Lord Farquaad';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentee', 1 from users where users.name = 'Amogus Susson';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Bonds', 'mentee', 1 from users where users.name = 'Scott Tenorman';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'MutualFund', 'mentee', 1 from users where users.name = 'Walter White';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentee', 1 from users where users.name = 'Sassy the Sasquatch';
+
+
+
 INSERT INTO mentee SELECT userID from users;
 
 INSERT INTO users VALUES (DEFAULT, 'mentor1@gmail.com', FALSE, 'Alex', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');

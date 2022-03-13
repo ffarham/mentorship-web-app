@@ -149,7 +149,7 @@ DROP TABLE IF EXISTS groupMeetingFeedback CASCADE;
 CREATE TABLE groupMeetingFeedback(
     groupMeetingFeedbackID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     groupMeetingID UUID NOT NULL REFERENCES groupMeeting(groupMeetingID),
-    feedback = VARCHAR(1000)
+    feedback VARCHAR(1000)
 );
 
 DROP TABLE IF EXISTS groupMeetingAttendee CASCADE;
