@@ -1,13 +1,11 @@
 INSERT INTO users VALUES (DEFAULT, 'jimbob@gmail.com', FALSE, 'Jimothy Bobson', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'one', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'bobjim@gmail.com', FALSE, 'Bobothy Jimson', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xb8cc4e102073baaf', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'biglez@gmail.com', FALSE, 'Big Lez', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x3b70ffbe4908bc99', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'xX_eric_cartman_Xx@gmail.com', FALSE, 'Eric Cartman', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xbc33175c54dbf5d9', 'qwerty', TRUE, 'a');
+INSERT INTO users VALUES (DEFAULT, 'lez@gmail.com', FALSE, 'Lez', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x3b70ffbe4908bc99', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'farquaad@gmail.com', FALSE, 'Lord Farquaad', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x3b70ffbe4908bc99', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'amogus@gmail.com', FALSE, 'Amogus Susson', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xb7bf09524d06d973', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'ur_da@gmail.com', FALSE, 'Your Father', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'two', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'scott_tenorman@gmail.com', FALSE, 'Scott Tenorman', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x47fedeb585799d7b', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'totally_not_a_meth_dealer@gmail.com', FALSE, 'Walter White', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xdae5f4174b80dcf0', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'xXsupreme_edgelordXx@gmail.com', FALSE, 'The King of Edge', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x4c56e14db5a41cc2', 'qwerty', TRUE, 'a');
+INSERT INTO users VALUES (DEFAULT, 'chemiscool@gmail.com', FALSE, 'Walter White', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'xdae5f4174b80dcf0', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'sasee@gmail.com', FALSE, 'Sassy the Sasquatch', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'x67cf6db69bcd78e0', 'qwerty', TRUE, 'a');
 
 INSERT INTO mentee SELECT userID from users;
