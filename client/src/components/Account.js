@@ -26,7 +26,6 @@ function Account({data}) {
     //checks if the email is in the deutch bank format
     const [noDeutschBank, setNoDeutschBank] = useState(false);
 
-
     // keep track of whether user wants to change password
     const [changePassword, setChangePassword] = useState(false);
 
@@ -44,24 +43,17 @@ function Account({data}) {
     const [deleteAccount, setDeleteAccount] = useState(false);
 
     useEffect( () => {
-        /*const authState = localStorage.getItem('authState'); MUST CHANGE THIS LATER!!!!!
-        // if user is already logged in
-        if (authState) {
-            setIsLoggedIn(true);
-        }*/
+        const authState = localStorage.getItem('authState');
 
         // if user is not already logged in
-        //else{
-        /*api.get("/api/v1/register").then(
+        api.get("/api/v1/register").then(
             (res) => {
                 setDepartments(res.data.departments);  
             }
-            );*/
-        //}
-            setDepartments(['legal', 'investment', 'tech', 'quant', 'trading', 'risk', 'consulting', 'management', 'DCS']);
-            setActiveDepartment(data.department);
-        }, []);
-    
+            );
+        setActiveDepartment(data.department);
+    }, []);
+
     const handleDepartmentChange = (e) => {
         const input = e.target.value;
         // if user input is empty, show all
