@@ -181,7 +181,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
                 
             UNION
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingStart::VARCHAR AS startString groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.place, 'true' AS confirmed, groupMeeting.attended, groupMeeting.description, groupMeeting.status, '' AS feedback
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.place, 'true' AS confirmed, groupMeeting.attended, groupMeeting.description, groupMeeting.status, '' AS feedback
                 FROM groupMeeting 
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID
                 WHERE groupMeeting.mentorID = $1 AND groupMeetingAttendee.menteeID = $2) 
