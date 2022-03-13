@@ -19,12 +19,33 @@ https://docs.docker.com/desktop/windows/install/
 
 
 ## Start-up
+## Frontend
 - Run `npm install --global yarn` to install Yarn. Check Yarn is installed by running `yarn -v`.
 - (Front-End) Run `yarn install` in client directory to install dependencies.
 - (Back-end) Run `yarn install` in server directory to install dependencies.
 
 ## Server
+
 In the /backend directory:
+
+The easy way:
+If not using powershell, alter the .ps1 extension of buildd.ps1, removed.ps1, startd.ps1 and stopd.ps1 to the extension required by your shell.
+In powershell, you must run:
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
+Build:
+Run the `buildd.ps1` script
+Start/Restart:
+Run the `startd.ps1` script
+Stop:
+Run the `stopd.ps1` script. This will preserve database changes. If you want to stop quickly, ignore this script and stop the `startd.ps1`.
+Remove:
+Run the `removed.ps1` script. This will remove the containers. Database changes will not be preserved. Ignore any error message; part of the script is used to check that there are no dangling volumes or images.
+
+Docker containers can be removed seperately of one another using `docker rm CONTAINER_ID`. The container ID may be found by running `docker container ls`.
+
+
+
+The hard way(s)
 Build:
 Run `docker-compose build`
 

@@ -210,9 +210,9 @@ async function getInterests(userid, kind){
     } catch(err){
         throw err;
     }
-    /*if(interests.rowCount === 0){
+    if(interests.rowCount === 0){
         throw {name: "InterestsNotFoundError", message: "Could not find user's interests"};
-    }*/
+    }
     let interestArray = new Array();
     for(let j = 0; j < interests.rowCount; ++j){
         interestArray.push(new Tuple(interests.rows[j]["ordering"], interests.rows[j]["interest"]));
@@ -254,16 +254,15 @@ async function createMenteeObj(menteeID){
  */
 async function getAvailableMentors(){
     let mentors = [];
-
     let mentorResults = null
     try{
         mentorResults = await pool.query(mentorQuery);
     } catch(err){
         throw(err);
     }
-    /*if(mentorResults.rowCount === 0){
+    if(mentorResults.rowCount === 0){
         throw {name: 'NoAvailableMentorsError', message: 'No mentors available!'}
-    }*/
+    }
     let rows = mentorResults.rows;
     for(let i = 0; i < mentorResults.rowCount; ++i){
         let interests = null 
@@ -418,7 +417,6 @@ async addMentee(flag){
  * or if 1.5 seconds have passed since the last round of matching.
  */                  
 async pollMatching(){
-    //console.log("pollCount: " + pollCount + " queue length:" + flagQueue.length);
     ++pollCount;      
     if((flagQueue.length >= poolLimit || pollCount === pollLimit) && flagQueue.length > 0){
         pollCount = 0;
@@ -477,10 +475,10 @@ async createMatches(flagList){
 
                 let mentee_T = menteeArray[j]; //Tuple of a mentee and a list of tuples of mentors currently matched to them 
                                                //during the algorithms runtime and a calculated ranking for the match
-                console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor.name);
+                /*console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor.name);
                 console.log("mentee's department: " + mentee_T.first.department, " mentor's: " + mentor.department);
                 console.log("number of common interests: " + 
-                await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));
+                await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));*/
                   
                 //If the mentor-mentee pair has already been considered, do not do so again
                 if(mentee_T.first.consideredMentors.has(mentor.userid)){
@@ -523,7 +521,7 @@ async createMatches(flagList){
             //Attempt to assign the mentor to the mentee which the mentor ranked the highest
             if(topMentee.second != null){
                 mentee_T = menteeArray[topMentee.second]; //Mentee which ranked the highest for the mentor
-                console.log("Try to assign mentor: " + mentor.name + " to: " + mentee_T.first.name);
+                //console.log("Try to assign mentor: " + mentor.name + " to: " + mentee_T.first.name);
                 mentee_T.first.consideredMentors.set(mentor, null); //Record that the matching has been considered so it will not be again
                 ++assignedMentors;
                 //Calculate  the ranking that the mentee gives the mentor
@@ -534,7 +532,7 @@ async createMatches(flagList){
                 //If the mentee has less than 5 mentors assigned to them, add the new mentor
                 if(mentee_T.second.length < 5) {
                     mentee_T.second.push(new Tuple(rank, mentor));
-                    console.log("Assigned");
+                    //console.log("Assigned");
                 }
                 //Otherwise, check if the new mentor is better ranked than one of 
                 //the existing assignments and if so, replace the old assignment
