@@ -1,9 +1,9 @@
 {
   "short_name": "Argon Design System React",
-  "name": "Argon Design System React by Creative Tim",
+  "name": "Discipulo",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "../src/assets/img/LandingPage/Logo/logo.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }

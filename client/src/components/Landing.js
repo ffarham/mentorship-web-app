@@ -56,7 +56,7 @@ class Landing extends React.Component {
                 <div className="dcpRec">
                     <div className="center">
                             <img
-                                className="sz anim"
+                                className="sz "
                                 alt="Discipulo Logo"
                                 src={require("assets/img/LandingPage/Logo/text_logo.png")}
                             />

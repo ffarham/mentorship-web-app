@@ -76,30 +76,28 @@ function Notification({ notification, parentCallback }){
           <div className="modal-body">
 
           <Row className="mb-4">
-                    <Col className="mt-1" lg="2">
+                    <Col className="mt-1" lg="4">
                         <small className="text-uppercase text-muted font-weight-bold">
                             Time
                         </small>
                     </Col>
-                    <Col md="6">
-                    </Col>
-                    <Col md="2">
+                    <Col lg="8">
                     <small className="text-uppercase text-muted font-weight-bold">
                             {notification.timeCreated}
                         </small>
                     </Col>
-                    <Col md="2"></Col>
                 </Row>
 
                 <Row className="mb-4">
-                    <Col className="">
-                    <hr />
+                <Col className="mt-1" lg="4">
                         <small className="text-uppercase text-muted font-weight-bold">
                             Message
                         </small>
-
-                        <p>{notification.msg}</p>
-                        
+                    </Col>
+                    <Col lg="8">
+                    <small className="">
+                            {notification.msg}
+                        </small>
                     </Col>
                 </Row>
 

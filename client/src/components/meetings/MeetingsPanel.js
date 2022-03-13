@@ -554,7 +554,7 @@ function MeetingsPanel({ context, otherID }){
                                 </p>
                             </Col>
                         </Row>
-                        {(activeMeeting.meetingType === "workshop" || (activeMeeting.meetingType === "group-meeting" && userType === "mentor"))
+                        {activeMeeting.meetingType !== "meeting" && userType === "mentor"
                         && <Row>
                             <Col lg="4">
                                 <div className="text-left">
@@ -565,8 +565,8 @@ function MeetingsPanel({ context, otherID }){
                             </Col>
                             <Col lg="8">
                                 <p>
-                                    {activeMeeting.confirmed} 
-                                </p>
+                                    {activeMeeting.complete / 2} 
+                                </p> 
                             </Col>
                         </Row>} 
                     </div> 

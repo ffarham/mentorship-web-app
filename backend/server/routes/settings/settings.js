@@ -72,8 +72,11 @@ router.post("/department", checkAuth, async(req, res, next) => {
         let mentorResults = await pool.query("SELECT * FROM users WHERE userid = $1", [req.userInfo.userID]);
         let businessArea = mentorResults.rows[0].businessarea;
         let results = await pool.query("SELECT * FROM mentoring JOIN users ON users.userid = mentoring.menteeid WHERE mentorid = $1", [req.userInfo.userID]);
+        console.log("asdads")
         for(let i = 0; i < results.rowCount; ++i){
+            console.log(results.rows[i].businessarea + " " + businessArea);
             if(results.rows[i].businessarea === businessArea){
+                console.log("notifying");
                 notifications.notify(results.rows[i].userid, `Mentor ${mentorResults.rows[0].name} has changed their business area to match yours`, `Department Conflict!`);
             }
         }

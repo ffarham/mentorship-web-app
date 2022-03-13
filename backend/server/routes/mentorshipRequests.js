@@ -24,7 +24,8 @@ router.post('/requestMentor/:mentorID', checkAuth, async (req, res, next) => {
         res.status(500).json(err);
         next();
     }
-
+    let nameResults = await pool.query("SELECT * from users WHERE userid = $1", [req.userInfo.userID]);
+    notify(mentorID, `You have a mentorship request from ${nameResults.rows[0].name}!`, "Mentorship Request!");
     res.send("success");
     next(); 
 });

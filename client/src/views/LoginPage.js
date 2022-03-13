@@ -117,7 +117,7 @@ function LoginPage() {
                     <Card className="bg-secondary shadow border-0">
                         <CardHeader className="bg-white pb-2">
                         <div className="btn-wrapper text-center">
-                            <h1>Login</h1>
+                            <h1>LOGIN</h1>
                         </div>
                         </CardHeader>
                         <CardBody className="px-lg-5 py-lg-5">

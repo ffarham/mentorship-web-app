@@ -72,6 +72,7 @@ function MainNavbar({ activeView }) {
                         </Col>
                     </Row>
                     </div>
+
                     <Nav className="ml-lg-auto" navbar>
                     <NavItem>
                         <NavLink href="" onClick={() => {history.push("/home")}}>

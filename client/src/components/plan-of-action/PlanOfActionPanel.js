@@ -73,7 +73,7 @@ function PlanOfActionPanel({ context, otherID }) {
                 </div>
                 {planOfActions.length === 0
                     ? <div className="ml-4">
-                        <p>Empty</p>
+                        <p>There are no plans of action.</p>
                     </div>
                     : <div className="scrollView">
                         {planOfActions.map( (planOfAction) => {
