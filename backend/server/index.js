@@ -11,8 +11,6 @@ const httpsServer = https.createServer({key: privateKey, cert: certificate}, app
 
 const pool = require("./db");
 
-const home = require("./routes/homepage.js");
-
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 const mentorshipRequests = require('./routes/mentorshipRequests');
