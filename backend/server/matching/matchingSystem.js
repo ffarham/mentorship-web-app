@@ -213,7 +213,6 @@ async function getInterests(userid, kind){
     /*if(interests.rowCount === 0){
         throw {name: "InterestsNotFoundError", message: "Could not find user's interests"};
     }*/
-
     let interestArray = new Array();
     for(let j = 0; j < interests.rowCount; ++j){
         interestArray.push(new Tuple(interests.rows[j]["ordering"], interests.rows[j]["interest"]));
