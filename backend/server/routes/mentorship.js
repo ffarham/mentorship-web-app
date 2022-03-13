@@ -161,7 +161,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
         var meetingsQuery;
         if (req.userInfo.userType === 'mentee') {
             meetingsQuery = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetinStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback, meeting.status AS feedback
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended, meeting.description, meeting.mentorFeedback, meeting.status AS feedback
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
                 WHERE meeting.menteeID = $1 AND meeting.mentorID = $2)
