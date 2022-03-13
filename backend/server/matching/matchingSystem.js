@@ -232,10 +232,7 @@ async function createMenteeObj(menteeID){
     } catch(err) {
         throw err;
     }
-    if(menteeResults.rowCount === 0){
-        throw {name: 'MenteeNotFoundError', message: 'Mentee unavailable!'};
-    }
-
+    
     let rows = menteeResults.rows;
     let interests = null;
     try{
@@ -260,16 +257,17 @@ async function getAvailableMentors(){
     } catch(err){
         throw(err);
     }
-    if(mentorResults.rowCount === 0){
-        throw {name: 'NoAvailableMentorsError', message: 'No mentors available!'}
-    }
+    
     let rows = mentorResults.rows;
     for(let i = 0; i < mentorResults.rowCount; ++i){
         let interests = null 
         try{
             interests = await getInterests(rows[i]["userid"], "mentor");
         } catch(err){
-            throw(err);
+            if(err.name === "InterestsNotFoundError"){
+                continue;
+            }
+            else {throw(err);}
         }
         mentors.push(new Mentor(rows[i]["userid"], rows[i]["name"], rows[i]["businessarea"], rows[i]["email"], rows[i]["bio"], interests, rows[i]["menteenum"])); 
     }
