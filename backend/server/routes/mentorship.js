@@ -216,6 +216,8 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             });
         }
 
+        console.log(responseObject);
+
         //Send the response
         res.json(responseObject);
     } catch (err) {
