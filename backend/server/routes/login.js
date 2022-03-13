@@ -7,7 +7,7 @@ const checkAuth = require('../auth/checkAuth');
 
 const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
 
-//TODO: Notify user if they log in as the wrong thing
+//Log a user in
 router.post("/login", async (req, res, next) => {
     console.log("/login\n" + req.body)
     //Pull out user info from request
@@ -68,6 +68,7 @@ router.post("/login", async (req, res, next) => {
     } finally { next(); }
 });
 
+//Log a user out
 router.post("/logout", checkAuth, async (req, res, next) => {
     console.log("/logout\n" + req.body)
     try {
