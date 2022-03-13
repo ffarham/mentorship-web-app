@@ -61,14 +61,14 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
         var query;
         if (req.userInfo.userType === 'mentee') {
             query = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage, meeting.status
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR as durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.mentorFeedback AS feedback, meeting.requestMessage, meeting.status
                 FROM meeting 
                 INNER JOIN users ON meeting.mentorID = users.userID 
                 WHERE meeting.menteeID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()AND meeting.confirmed != \'false\' AND meeting.status = 'ongoing')
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, groupMeeting.status, '' AS feedback, '' AS requestMessage
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, users.name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, groupMeeting.status, '' AS feedback, '' AS requestMessage
                 FROM groupMeeting 
                 INNER JOIN users ON groupMeeting.mentorID = users.userID
                 INNER JOIN groupMeetingAttendee ON groupMeetingAttendee.groupMeetingID = groupMeeting.groupMeetingID 
@@ -78,14 +78,14 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
             `;
         } else if (req.userInfo.userType === 'mentor') {
             query = `
-            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.status, meeting.menteeFeedback AS feedback, meeting.requestMessage
+            (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingStart::VARCHAR AS startString, meeting.meetingDuration::VARCHAR AS durationString, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.status, meeting.menteeFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
                 WHERE meeting.mentorID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()AND meeting.confirmed != \'false\' AND meeting.status = 'ongoing')
                 
             UNION 
             
-            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingDuration, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, groupMeeting.status, '' AS feedback, '' AS requestMessage
+            (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS confirmed, groupMeeting.description, groupMeeting.status, '' AS feedback, '' AS requestMessage
                 FROM groupMeeting 
                 WHERE groupMeeting.mentorID = $1 AND groupMeeting.meetingStart + groupMeeting.meetingDuration > NOW() AND groupMeeting.status = 'ongoing') 
                 
@@ -108,8 +108,8 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
                 meetingName : meetingResult.meetingname,
                 mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
                 menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                meetingStart : meetingResult.meetingstart,
-                meetingDuration : meetingResult.meetingduration,
+                meetingStart : meetingResult.startString,
+                meetingDuration : meetingResult.durationString,
                 place : meetingResult.place,
                 confirmed : meetingResult.confirmed,
                 status: meetingResult.status,
