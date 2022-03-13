@@ -102,22 +102,22 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
         for (var i = 0; i < result.rowCount; i++) {
             meetingResult = result.rows[i];
 
-            meeting = {
-                "meetingID" : meetingResult.meetingid,
-                "meetingType" : meetingResult.meetingtype,
-                "meetingName" : meetingResult.meetingname,
-                "mentorName" : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
-                "menteeName" : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                "meetingStart" : meetingResult.meetingstart,
-                "meetingDuration" : meetingResult.meetingduration,
-                "place" : meetingResult.place,
-                "confirmed" : meetingResult.confirmed,
-                "status": meetingResult.status,
-                "complete" : meetingResult.attended,
-                "meetingDescription" : meetingResult.description
+            let meeting = {
+                meetingID : meetingResult.meetingid,
+                meetingType : meetingResult.meetingtype,
+                meetingName : meetingResult.meetingname,
+                mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
+                menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
+                meetingStart : meetingResult.meetingstart,
+                meetingDuration : meetingResult.meetingduration,
+                place : meetingResult.place,
+                confirmed : meetingResult.confirmed,
+                status: meetingResult.status,
+                complete : meetingResult.attended,
+                meetingDescription : meetingResult.description
             }
 
-            responseObject.push(meetingResult);
+            responseObject.push(meeting);
         }
 
         //Send the response
