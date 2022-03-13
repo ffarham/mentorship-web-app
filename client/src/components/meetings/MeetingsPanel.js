@@ -273,6 +273,8 @@ function MeetingsPanel({ context, otherID }){
                         // TODO: display error in panel
 
                     }else if (res.status === 200){
+                        console.log("data");
+                        console.log(res.data);
                         // on success
                         setMeetings(res.data);
                     }else{
@@ -282,6 +284,7 @@ function MeetingsPanel({ context, otherID }){
                 }
             );
         }else if(context === "home"){
+            console.log("in meeting");
             api.get("/api/v1/meetings").then(
                 (res) => {
                     if(res.status === 500){
@@ -289,6 +292,8 @@ function MeetingsPanel({ context, otherID }){
                         // TODO: display error in panel
 
                     }else if (res.status === 200){
+                        console.log("setting meetings");
+                        console.log(res.data);
                         // on success
                         setMeetings(res.data);
                     }else{
@@ -309,12 +314,12 @@ function MeetingsPanel({ context, otherID }){
                     {context === "meetings"
                     ? <Col>
                         <div className="ml-4 mt-4">
-                            <h4 className="display-4 mb-0">Meetings</h4>
+                            <h4 className="display-4 mb-0">MEETINGS</h4>
                         </div>
                     </Col>
                     : <Col >
                         <div className=" text-center  ml-4 mt-4">
-                            <h4 className="display-4 mb-0">Meetings</h4>
+                            <h4 className="display-4 mb-0">MEETINGS</h4>
                         </div>
                     </Col>
                     }
@@ -363,7 +368,7 @@ function MeetingsPanel({ context, otherID }){
                     {meetings.map( (meeting) => {
                         return(
                             <div onClick={() => handleMeetingClick(meeting)}>
-                                <Meeting data={meeting} from="mentorship"/>
+                                <Meeting data={meeting}/>
                             </div>
                         );
                     })}

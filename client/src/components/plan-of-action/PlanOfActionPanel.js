@@ -66,7 +66,7 @@ function PlanOfActionPanel({ context, otherID }) {
         <> 
             <Card className="bg-secondary shadow border-0">
                 <div className="text-center mt-4">
-                    <h4 className="display-4 mb-0">Plan of Actions</h4>
+                    <h4 className="display-4 mb-0">PLANS OF ACTION</h4>
                 </div>
                 <div className="mx-4">
                     <hr/>

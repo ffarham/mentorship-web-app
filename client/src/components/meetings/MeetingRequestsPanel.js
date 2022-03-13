@@ -83,7 +83,7 @@ function MeetingRequestsPanel(){
             <Card className="bg-secondary shadow border-0">
                 <Row className="mx-4 mt-2"> 
                     <div className="mt-2 mb-2">
-                        <h4 className="display-4 mb-0">Requests</h4>
+                        <h4 className="display-4 mb-0">REQUESTS</h4>
                     </div>
                 </Row>
                 <div className="mx-4">
