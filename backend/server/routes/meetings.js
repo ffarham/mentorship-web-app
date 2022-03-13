@@ -299,7 +299,7 @@ router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (re
 
             let results = await pool.query("SELECT * FROM groupMeeting JOIN groupMeetingAttendee ON groupMeeting.groupMeetingID = groupMeetingAttendee.groupMeetingID WHERE groupMeeting.groupMeetingID = $1", [req.params.meetingID]);
             for(let i = 0; i < results.rowCount; ++i){
-                notifications.notify(results.rows[i].menteeid, `Meeting ${results.rows[i].groupMeetingName} complete!`,  'Group meeting complete!');
+                notifications.notify(results.rows[i].menteeid, `Meeting ${results.rows[i].groupMeetingName} complete!`,  'Group Meeting Complete!');
             }
         }
 
