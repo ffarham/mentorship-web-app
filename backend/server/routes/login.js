@@ -77,6 +77,8 @@ router.post("/logout", checkAuth, async (req, res, next) => {
         res.status(500).json(err);
         console.log(err);
     }
+
+    next();
 })
 
 module.exports = router;
