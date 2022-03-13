@@ -96,6 +96,6 @@ The stack being used is:
 - If Powershell doesn't want to run yarn because it doesn't like scripts, open powershell as an administrator and run `Set-ExecutionPolicy Unrestricted`. 
 - If Postman is not getting a response and isn't saying why, turn off `SSL Certificate Verification` in settings.
 
-
+Adding my name to the repository :D
 
 
