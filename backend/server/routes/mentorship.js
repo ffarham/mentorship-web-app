@@ -102,7 +102,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
             UNION 
             
             (SELECT groupMeeting.groupMeetingID AS meetingID, groupMeeting.kind AS meetingType, 'Several' AS name, groupMeeting.groupMeetingName AS meetingName, groupMeeting.meetingStart, groupMeeting.meetingStart::VARCHAR AS startString, groupMeeting.meetingDuration::VARCHAR AS durationString, groupMeeting.place, 'true' AS confirmed, countAttendees(groupMeeting.groupMeetingID) AS attended, groupMeeting.description, '' AS feedback, '' as requestMessage, groupMeeting.status
-                FROM groupMeeting 
+                FROM groupMeeting
                 WHERE groupMeeting.mentorID = $1) 
                 
             ORDER BY meetingStart DESC
@@ -117,8 +117,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
         var meetingResult;
         for (var i = 0; i < meetingsResult.rowCount; i++) {
             meetingResult = meetingsResult.rows[i];
-
-            meeting = {
+            let meeting = {
                 meetingID : meetingResult.meetingid,
                 meetingType : meetingResult.meetingtype,
                 meetingName : meetingResult.meetingname,
@@ -200,7 +199,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
         for (var i = 0; i < meetingsResult.rowCount; i++) {
             meetingResult = meetingsResult.rows[i];
 
-            meeting = {
+            let meeting = {
                 meetingID : meetingResult.meetingID,
                 meetingType : meetingResult.meetingType,
                 meetingName : meetingResult.meetingName,
@@ -216,7 +215,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
             }
 
             //Add meeting to user info
-            responseObject.push(meetingResult);
+            responseObject.push(meeting);
         }
 
         //Send the response
