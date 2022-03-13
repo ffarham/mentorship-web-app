@@ -6,13 +6,11 @@ const Flag = require("../../matching/matchingSystem").Flag;
 /**
  * Submit a mentee to the matching algorithm to match them with some mentors
  */
-//Works
 router.post("/matching", checkAuth,  async (req, res, next) => {
     console.log("/matching\n" + req.body)
     try{ 
 
         const userid = req.userInfo.userID;
-        console.log("userid: " + userid);
         
         //Flag used to to check whether the matching algorithm has finished with the mentee
         //See /backend/server/matching/matchable.js for the class definition
@@ -21,7 +19,6 @@ router.post("/matching", checkAuth,  async (req, res, next) => {
         //Wait for the matching algorithm
         await pollFlag(flag, res);
     }catch(err){
-        console.log(err);
         res.status(500).send(err.message);
     }
 
@@ -44,13 +41,11 @@ async function pollFlag(flag, res){
             //If the matching was successful then send JSON data on the mentors the system
             //has found for the mentee
             let JSONString = await makeJSONList(flag.getMentorList());
-            console.log("Final JSON string: " + JSONString);
             res.send(JSONString);
         }
         else{
             //Send an error message
             let err = flag.getError();
-            console.log("flag error: " + err);
             res.status(500).send(err.message);
         }
     }

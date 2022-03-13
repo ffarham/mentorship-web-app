@@ -2,8 +2,6 @@ const router = require("express").Router();
 const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 const notify = require('../interactions/notifications').notify;
-const { restart } = require("nodemon");
-const { route } = require("./homepage");
 
 const insertRequest = "" +
 "INSERT INTO mentorshipRequests VALUES (DEFAULT, $1, $2, DEFAULT)";
