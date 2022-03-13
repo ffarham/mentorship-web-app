@@ -40,6 +40,7 @@ router.post("/login", async (req, res, next) => {
             //Throw an error if the query didn't find anything
             if (result.rowCount === 0) {
                 res.status(500).json({name: 'LoginFailureError', message: `User is not a ${userType}`});
+                console.log({name: 'LoginFailureError', message: `User is not a ${userType}`});
             }
 
             //Format and send response
@@ -54,15 +55,15 @@ router.post("/login", async (req, res, next) => {
         } else {
             //Throw an error if the password doesn't match
             res.status(500).json({name: 'LoginFailureError', message: 'Email and password do not match'});
-            console.log(err);
+            console.log({name: 'LoginFailureError', message: 'Email and password do not match'});
         }
     } catch (err) {
         //Throw an error if the user doesn't exist in the database
         if (err.name === 'UserNotFoundError') {
             res.status(500).json({name: 'LoginFailureError', message: `${userEmail} not found`});
-            console.log(err);
+            console.log({name: 'LoginFailureError', message: `${userEmail} not found`});
         } else {
-            console.log(err);
+            console.log({name: 'LoginFailureError', message: `${userEmail} not found`});
         }
     } finally { next(); }
 });
