@@ -446,7 +446,6 @@ async createMatches(flagList){
         mentors =  await getAvailableMentors(); 
         currentPairs = await getCurrentPairs(); 
     } catch(err){
-        console.log(err.message);
         throw(err);
     }
     
@@ -473,11 +472,7 @@ async createMatches(flagList){
 
                 let mentee_T = menteeArray[j]; //Tuple of a mentee and a list of tuples of mentors currently matched to them 
                                                //during the algorithms runtime and a calculated ranking for the match
-                /*console.log("considering mentee: " + mentee_T.first.name + " and mentor: " + mentor.name);
-                console.log("mentee's department: " + mentee_T.first.department, " mentor's: " + mentor.department);
-                console.log("number of common interests: " + 
-                await menteeMentorMap.get(mentee_T.first.userid).get(mentor.userid));*/
-                  
+              
                 //If the mentor-mentee pair has already been considered, do not do so again
                 if(mentee_T.first.consideredMentors.has(mentor.userid)){
                     continue;
@@ -519,7 +514,6 @@ async createMatches(flagList){
             //Attempt to assign the mentor to the mentee which the mentor ranked the highest
             if(topMentee.second != null){
                 mentee_T = menteeArray[topMentee.second]; //Mentee which ranked the highest for the mentor
-                //console.log("Try to assign mentor: " + mentor.name + " to: " + mentee_T.first.name);
                 mentee_T.first.consideredMentors.set(mentor, null); //Record that the matching has been considered so it will not be again
                 ++assignedMentors;
                 //Calculate  the ranking that the mentee gives the mentor
@@ -530,7 +524,6 @@ async createMatches(flagList){
                 //If the mentee has less than 5 mentors assigned to them, add the new mentor
                 if(mentee_T.second.length < 5) {
                     mentee_T.second.push(new Tuple(rank, mentor));
-                    //console.log("Assigned");
                 }
                 //Otherwise, check if the new mentor is better ranked than one of 
                 //the existing assignments and if so, replace the old assignment

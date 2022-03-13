@@ -81,7 +81,7 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
             (SELECT meeting.meetingID, 'meeting' AS meetingType, users.name, meeting.meetingName, meeting.meetingStart, meeting.meetingDuration, meeting.place, meeting.confirmed, meeting.attended::INTEGER, meeting.description, meeting.status, meeting.menteeFeedback AS feedback, meeting.requestMessage
                 FROM meeting 
                 INNER JOIN users ON meeting.menteeID = users.userID 
-                WHERE meeting.mentorID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW()AND meeting.confirmed != \'false\' AND meeting.status = 'ongoing')
+                WHERE meeting.mentorID = $1 AND meeting.meetingStart + meeting.meetingDuration > NOW() AND meeting.confirmed != \'false\' AND meeting.status = 'ongoing')
                 
             UNION 
             
@@ -103,18 +103,18 @@ router.get("/meetings", checkAuth, async (req, res, next) => {
             meetingResult = result.rows[i];
 
             meeting = {
-                meetingID : meetingResult.meetingid,
-                meetingType : meetingResult.meetingtype,
-                meetingName : meetingResult.meetingname,
-                mentorName : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
-                menteeName : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
-                meetingStart : meetingResult.meetingstart,
-                meetingDuration : meetingResult.meetingduration,
-                place : meetingResult.place,
-                confirmed : meetingResult.confirmed,
-                status: meetingResult.status,
-                complete : meetingResult.attended,
-                meetingDescription : meetingResult.description
+                "meetingID" : meetingResult.meetingid,
+                "meetingType" : meetingResult.meetingtype,
+                "meetingName" : meetingResult.meetingname,
+                "mentorName" : req.userInfo.userType === 'mentor' ? req.userInfo.name : meetingResult.name,
+                "menteeName" : req.userInfo.userType === 'mentee' ? req.userInfo.name : meetingResult.name,
+                "meetingStart" : meetingResult.meetingstart,
+                "meetingDuration" : meetingResult.meetingduration,
+                "place" : meetingResult.place,
+                "confirmed" : meetingResult.confirmed,
+                "status": meetingResult.status,
+                "complete" : meetingResult.attended,
+                "meetingDescription" : meetingResult.description
             }
 
             responseObject.push(meetingResult);
