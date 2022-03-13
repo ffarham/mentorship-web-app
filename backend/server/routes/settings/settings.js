@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const pool = require('../../db');
 const userInteractions = require('../../interactions/users');
 const checkAuth = require('../../auth/checkAuth');
-const notify = require('../../interactions/notifications');
+const notifications = require('../../interactions/notifications');
 
 
 //Recieves and stores a user's feedback on the app overall
@@ -68,6 +68,16 @@ router.post("/department", checkAuth, async(req, res, next) => {
     console.log("/department\n" + req.body)
     try{
         await changeUserInfo(req.userInfo.userID, req.body.password, "businessarea",  req.body.newdepartment);
+
+        let mentorResults = await pool.query("SELECT * FROM users WHERE userid = $1", [req.userInfo.userID]);
+        let businessArea = mentorResults.rows[0].businessarea;
+        let results = await pool.query("SELECT * FROM mentoring JOIN users ON users.userid = mentoring.menteeid WHERE mentorid = $1", [req.userInfo.userID]);
+        for(let i = 0; i < results.rowCount; ++i){
+            if(results.rows[i].businessarea === businessArea){
+                notifications.notify(results.rows[i].userid, `Mentor ${mentorResults.rows[0].name} has changed their business area to match yours`, `Department Conflict!`);
+            }
+        }
+
         res.send("success");
     }catch(err){
         console.log(err);
