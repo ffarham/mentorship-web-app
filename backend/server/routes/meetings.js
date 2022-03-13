@@ -295,7 +295,7 @@ router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (re
             notifications.notify(results.rows[0].menteeid, `Meeting ${results.rows[0].meetingName} complete!`, 'Meeting complete!');
         } else {
             await pool.query("UPDATE groupMeeting SET status = 'finished', attended = TRUE WHERE mentorID = $1 AND groupMeetingID = $2", [req.userInfo.userID, req.params.meetingID]);
-            await pool.query('UPDATE groupMeetingAttendee SET meetingStatus = \'finished\' WHERE groupMeetingID = $1', [req.params.meetingID]);
+            await pool.query('UPDATE groupMeetingAttendee SET meetingStatus = \'finished\', confirmed = TRUE WHERE groupMeetingID = $1', [req.params.meetingID]);
 
             let results = await pool.query("SELECT * FROM groupMeeting JOIN groupMeetingAttendee ON groupMeeting.groupMeetingID = groupMeetingAttendee.groupMeetingID WHERE groupMeeting.groupMeetingID = $1", [req.params.meetingID]);
             for(let i = 0; i < results.rowCount; ++i){
