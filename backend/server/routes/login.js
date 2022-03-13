@@ -67,7 +67,7 @@ router.post("/login", async (req, res, next) => {
     } finally { next(); }
 });
 
-router.post("/logout", async (req, res, next) => {
+router.post("/logout", checkAuth, async (req, res, next) => {
     console.log("/logout\n" + req.body)
     try {
         const userID = req.userInfo.userID;
