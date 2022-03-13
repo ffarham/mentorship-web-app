@@ -18,6 +18,9 @@ background: conic-gradient(from 225deg at 90vw -16vh, #AF3148 0deg, #E06565 41.6
 background: #FFFFFF;
 box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
 }
+.h6{
+  font-family: 'Proxima-Nova-Black' !important;
+}
 
 .center {
     position: absolute;
@@ -25,6 +28,7 @@ box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
 
 .lgText {
     /* REGISTER AND LOGIN*/

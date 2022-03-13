@@ -5,8 +5,9 @@ import {
     Card
 } from 'reactstrap';
 
-function Meeting({ data, from }) {
+function Meeting({ data }) {
 
+    console.log("meeting");
     console.log(data);
 
     return(
