@@ -240,7 +240,6 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
         }
 
         const planResult = await pool.query(poaQuery, [req.userInfo.userID, req.params.otherID]);
-        console.log(planResult);
 
         //Format plan information and attach milestones
         var planRow;
@@ -261,7 +260,6 @@ router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, n
 
             //Pull all associated milestones from the database
             const milestoneResult = await pool.query('SELECT * FROM milestones WHERE planID = $1 ORDER BY ordering', [planRow.planid]);
-            console.log(milestoneResult);
 
             //Format milestones appropriately
             var milestoneRow;
