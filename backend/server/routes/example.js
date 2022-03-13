@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
-// ADD ROUTES HERE
-
+// This is how routes work:
 // e.g.
 // router.post("sendData...", async (req, res) => {
 //     try{

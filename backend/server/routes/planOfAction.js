@@ -3,6 +3,7 @@ const checkAuth = require('../auth/checkAuth');
 const pool = require('../db.js');
 const notifications = require('../interactions/notifications');
 
+//Create a plan of action for a given menteeID
 router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
     console.log("/createPOA/" + req.params.menteeID+ "\n" + req.body)
     try {
@@ -25,6 +26,7 @@ router.post('/createPOA/:menteeID', checkAuth, async (req, res, next) => {
     next();
 });
 
+//Create a milestone for a given planID
 router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
     console.log("/createMilestone/" + req.params.planID + "\n" + req.body)
     try {
@@ -45,6 +47,7 @@ router.post('/createMilestone/:planID', checkAuth, async (req, res, next) => {
     next();
 });
 
+//Get a users plans of action
 router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
     console.log("/plan-of-actions\n" + req.body)
     try {
@@ -102,6 +105,7 @@ router.get('/plan-of-actions', checkAuth, async (req, res, next) => {
     }
 });
 
+//Mark a plan of action as complete
 router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
     console.log("/markPOAcomplete/" + req.params.planID+ "\n" + req.body)
     try {
@@ -121,6 +125,7 @@ router.post('/markPOAcomplete/:planID', checkAuth, async (req, res, next) => {
 
 })
 
+//Mark a milestone as complete
 router.post('/markMilestoneComplete/:milestoneID', checkAuth, async (req, res, next) => {
     console.log("/markMilestoneComplete/" + req.params.milestoneID + "\n" + req.body)
     try {        

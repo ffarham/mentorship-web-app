@@ -2,6 +2,7 @@ const router = require("express").Router();
 const pool = require('../db');
 const checkAuth = require('../auth/checkAuth');
 
+//Pull all a users' mentees/mentors
 router.get('/mentorship', checkAuth, async (req, res, next) => {
     console.log("/mentorship\n" + req.body)
     try {
@@ -52,6 +53,7 @@ router.get('/mentorship', checkAuth, async (req, res, next) => {
     }
 });
 
+//Pull a mentor's own specialties
 router.get('/mentor/specialties', checkAuth, async (req, res, next) => {
     try {
         const result = await pool.query('SELECT interest FROM interest WHERE userID = $1 AND kind = \'mentor\'', [req.userInfo.userID]);
@@ -68,6 +70,7 @@ router.get('/mentor/specialties', checkAuth, async (req, res, next) => {
     }
 });
 
+//Get all the meetings that have been confirmed
 router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
     console.log("/meetings/meetings\n" + req.body);
     try {
@@ -148,6 +151,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
     }
 });
 
+//
 router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) => {
     try {
         console.log("/meetings/mentorship/" + req.params.otherID +"\n" + req.body);

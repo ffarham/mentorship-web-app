@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userInteractions = require('../interactions/users')
 const tokens = require('../auth/tokens');
 
+//Get the lists of allowed departments and topics
 router.get('/register', async (req, res, next) => {
     const vals = [
         'Research',
@@ -27,6 +28,7 @@ router.get('/register', async (req, res, next) => {
     });
 });
 
+//Register a new user
 router.post('/registeruser', async (req, res, next) => {
     console.log("/registeruser\n" + req.body)
     //Register the user and pull their userID

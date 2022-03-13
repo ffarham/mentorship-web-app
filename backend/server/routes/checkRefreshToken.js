@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const tokens = require('../auth/tokens');
 
-//Works
+//Check a refresh token and issue new access and refresh tokens
 router.post('/checkrefreshtoken', (req, res, next) => {
     console.log("/checkrefreshtoken\n" + req.body)
     //Pull the token from the request
