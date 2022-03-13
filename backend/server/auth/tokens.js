@@ -8,7 +8,7 @@ const TOKEN_SECRET = '4a6c48ca3d2730d1c77c2ff9fc89ebbd15b1943a13736f552921421820
 const refreshTTL = '672h';
 
 //Time to live for access tokens
-const accessTTL = '24h';
+const accessTTL = '24h'; //This should be 5m
 
 /**
  * Generate a new access token for a given user
