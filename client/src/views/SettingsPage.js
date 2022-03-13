@@ -32,7 +32,6 @@ function SettingsPage() {
         api.get(`/api/v1/settings`).then(
             (res) => {
                 if(res.data){
-                    console.log("in settings");
                     console.log(res.data);
                     setUserData(res.data);
                 }

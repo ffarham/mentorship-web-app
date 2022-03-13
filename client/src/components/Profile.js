@@ -16,7 +16,7 @@ import api from "../api/api";
 
 function Profile({data}) {
 
-    console.log(data);
+    const userType = JSON.parse(localStorage.getItem('authState')).userType;
 
     const editBio = () => {
 
@@ -48,11 +48,20 @@ function Profile({data}) {
             <br />
             <div>
                 <Row className="justify-content-center">
-                    <div className="text-center mt-5">
-                        <Col>
-                        <img src={require("assets/img/theme/team-4-800x800.jpg")} class="rounded-circle" onClick={e => e.preventDefault()} alt="..." style={{width: "25%"}}/>
-                        </Col>
-                    </div>
+                {userType === "mentee"
+                ?
+                <div className="text-center mt-5">
+                <Col>
+                <img src={require("assets/img/mentorship/mentee02.png")} class="rounded-circle" onClick={e => e.preventDefault()} alt="..." style={{width: "25%"}}/>
+                </Col>
+                </div>
+                :
+                <div className="text-center mt-5">
+                <Col>
+                <img src={require("assets/img/mentorship/mentor02.png")} class="rounded-circle" onClick={e => e.preventDefault()} alt="..." style={{width: "25%"}}/>
+                </Col>
+                </div>
+                }
                 </Row>
 
                 <div className="text-center mt-5">
