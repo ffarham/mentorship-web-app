@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userInteractions = require('../interactions/users');
 const tokens = require('../auth/tokens')
 const pool = require('../db');
+const checkAuth = require('../auth/checkAuth');
 
 
 const deleteTokensQuery = 'DELETE FROM authToken WHERE userID = $1';
@@ -69,7 +70,7 @@ router.post("/login", async (req, res, next) => {
 router.post("/logout", async (req, res, next) => {
     console.log("/logout\n" + req.body)
     try {
-        const userID = req.body.userID;
+        const userID = req.userInfo.userID;
         await pool.query(deleteTokensQuery, [userID]);
         res.send('Success!');
     } catch (err) {
