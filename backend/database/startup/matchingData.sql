@@ -30,9 +30,21 @@ INSERT INTO users VALUES (DEFAULT, 'mentor7@gmail.com', FALSE, 'Cerulea', '$2a$1
 INSERT INTO users VALUES (DEFAULT, 'mentor8@gmail.com', FALSE, 'Peter', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor9@gmail.com', FALSE, 'Mahito', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');
 INSERT INTO users VALUES (DEFAULT, 'mentor10@gmail.com', FALSE, 'Stein', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');
-INSERT INTO users VALUES (DEFAULT, 'mentor11@gmail.com', FALSE, 'Fullmetal', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');
+INSERT INTO users VALUES (DEFAULT, 'mentor11@gmail.com', FALSE, 'Jones', '$2a$10$.ZXZTav8jqD8HbjkNRPq1.pTfKJw7Skb0ysXpenvohAy.BYoV6Yu6', 'three', 'qwerty', TRUE, 'a');
 
 INSERT INTO  mentor SELECT userid FROM users WHERE email LIKE 'mentor%';
+
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Research', 'mentor', 1 from users where users.name = 'Alex';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentor', 1 from users where users.name = 'Anne';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Marketing', 'mentor', 1 from users where users.name = 'Astolfo';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Risk', 'mentor', 1 from users where users.name = 'Brian';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Bonds', 'mentor', 1 from users where users.name = 'James';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'MutualFund', 'mentor', 1 from users where users.name = 'Hajime';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentor', 1 from users where users.name = 'Cerulea';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentor', 1 from users where users.name = 'Peter';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentor', 1 from users where users.name = 'Mahito';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentor', 1 from users where users.name = 'Stein';
+INSERT INTO interest (userid, interest, kind, ordering) SELECT userid, 'Analysis', 'mentor', 1 from users where users.name = 'Jones';
 
 /*Alex can't have any more mentees*/
 INSERT INTO mentoring SELECT A.userID, b.userID from users A, users B

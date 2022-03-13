@@ -254,7 +254,6 @@ async function createMenteeObj(menteeID){
  */
 async function getAvailableMentors(){
     let mentors = [];
-
     let mentorResults = null
     try{
         mentorResults = await pool.query(mentorQuery);
