@@ -12,6 +12,7 @@ const getGroupMeetingFeedback =
         where mentorID = $2) B 
     ON A.groupMeetingID = B.groupMeetingID`;
 
+//Create a meeting
 router.post('/createMeeting', checkAuth, async (req, res, next) => {
     try {
         console.log("/createmeeting \n" + req.body);
@@ -33,6 +34,7 @@ router.post('/createMeeting', checkAuth, async (req, res, next) => {
     next();
 });
 
+//Create a group meeting / workshop
 router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     try {
 
@@ -89,7 +91,7 @@ router.post('/createGroupMeeting', checkAuth, async (req, res, next) => {
     next();
 });
 
-//
+//Get all the active meeting requests
 router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
     try {
         console.log("/getMeetingRequests\n" + req.body);
@@ -154,6 +156,7 @@ router.get('/getMeetingRequests', checkAuth, async (req, res, next) => {
 
 });
 
+//Request a given meeting be rescheduled
 router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/rescheduleMeeting\n" + req.body);
@@ -174,6 +177,7 @@ router.post('/rescheduleMeeting/:meetingID', checkAuth, async (req, res, next) =
     next();
 });
 
+//Update the time a meeting starts at
 router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/meetingUpdate\n" + req.body);
@@ -192,7 +196,7 @@ router.post('/meetingUpdate/:meetingID', checkAuth, async (req, res, next) => {
     next();
 });
 
-
+//Cancel a given meeting
 router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     try {
         console.log("/cancelMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
@@ -246,6 +250,7 @@ router.post('/cancelMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
+//Accept a given meeting
 router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     try {
         console.log("/acceptMeeting/" + req.params.meetingID + "/" + req.params.meetingType + "\n" + req.body);
@@ -271,6 +276,7 @@ router.post('/acceptMeeting/:meetingID/:meetingType', checkAuth, async (req, res
     next();
 });
 
+//Reject a given meeting
 router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     try {
         console.log("/rejectMeeting/" + req.params.meetingID + "\n" + req.body);
@@ -286,6 +292,7 @@ router.post('/rejectMeeting/:meetingID', checkAuth, async (req, res, next) => {
     next();
 });
 
+//Mark a given meeting as complete
 router.post('/markMeetingComplete/:meetingID/:meetingType', checkAuth, async (req, res, next) => {
     console.log('/markMeetingComplete\n' + req.params.meetingID + '/' + req.params.meetingType + '\n');
     try {

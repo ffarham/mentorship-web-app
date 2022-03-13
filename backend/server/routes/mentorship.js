@@ -151,7 +151,7 @@ router.get('/meetings/meetings', checkAuth, async (req, res, next) => {
     }
 });
 
-//
+//Pulls all the meetings that a user has with another user
 router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) => {
     try {
         console.log("/meetings/mentorship/" + req.params.otherID +"\n" + req.body);
@@ -228,6 +228,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
     }
 });
 
+//Pulls all the plans of action a user has with another user
 router.get('/mentorship/plan-of-actions/:otherID', checkAuth, async (req, res, next) => {
     console.log("/mentorship/plan-of-actions/" + req.params.otherID+ "\n" + req.body);
     try {
