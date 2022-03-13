@@ -16,7 +16,7 @@ import MeetingRequestsPanel from "../components/meetings/MeetingRequestsPanel.js
 function MeetingsPage(){
     return(
         <>
-            <MainNavbar />
+            <MainNavbar activeView="meetings"/>
             <Container fluid="xl" className="m-5">
                 <Row>
                     <Col sm="12" md="8">

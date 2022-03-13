@@ -1,5 +1,6 @@
 # cs261_GroupProject
 
+
 ## Prerequisites
 
 Install [Node.js v14](https://nodejs.org/download/release/v14.17.5/). Ensure you check the checkbox which lets the system install neccessary build tools. Check Node.js is installed by running `node -v` in terminal.  

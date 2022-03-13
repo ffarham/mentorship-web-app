@@ -19,7 +19,7 @@ function HomePage() {
 
     return(
         <>
-            <MainNavbar />
+            <MainNavbar activeView="home"/>
             <Container fluid="xl" className="m-5">
                 <Row>
                     <Col sm="12" md="8">
