@@ -199,7 +199,8 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
         for (var i = 0; i < meetingsResult.rowCount; i++) {
             meetingResult = meetingsResult.rows[i];
 
-            let meeting = {
+            //Add meeting to user info
+            responseObject.push({
                 meetingID : meetingResult.meetingID,
                 meetingType : meetingResult.meetingType,
                 meetingName : meetingResult.meetingName,
@@ -212,10 +213,7 @@ router.get('/meetings/mentorship/:otherID', checkAuth, async (req, res, next) =>
                 status: meetingResult.status,
                 complete : meetingResult.attended,
                 meetingDescription : meetingResult.description
-            }
-
-            //Add meeting to user info
-            responseObject.push(meeting);
+            });
         }
 
         //Send the response
