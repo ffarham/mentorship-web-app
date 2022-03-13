@@ -39,7 +39,7 @@ Run the `removed.ps1` script. This will remove the containers. Database changes 
 Docker containers can be removed seperately of one another using `docker rm CONTAINER_ID`. The container ID may be found by running `docker container ls`.
 
 #### Bash:
-The powershell scripts should work in bash, but we aren't making any promises. You may need to change their extensions from `.ps1` to `.sh`, or add `#!/usr/bin/bash` in the first line of each.
+The powershell scripts should work in bash, but we aren't making any promises. You may need to change their extensions from `.ps1` to `.sh`, or add `#!/usr/bin/bash` in the first line of each. The same goes for any other terminal.
 
 ### The hard way(s):
 #### Build:
