@@ -36,10 +36,9 @@ const register = (data) => {
 
 // logout call auth handler
 const logout = async (data) => {
-    return await api
-        .post("/api/v1/logout", data)
-        .then( 
+    await api.post("/api/v1/logout").then( 
             (res) => {
+                alert("i")
                 // remove tokens from local storage
                 TokenService.removeLocalAccessToken();
                 TokenService.removeLocalRefreshToken();

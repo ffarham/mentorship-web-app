@@ -4,8 +4,6 @@ const pool = require('../../db');
 const userInteractions = require('../../interactions/users');
 const checkAuth = require('../../auth/checkAuth');
 const notify = require('../../interactions/notifications');
-const { restart } = require("nodemon");
-const { route } = require("../homepage");
 
 
 //Recieves and stores a user's feedback on the app overall

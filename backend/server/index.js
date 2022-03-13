@@ -11,8 +11,6 @@ const httpsServer = https.createServer({key: privateKey, cert: certificate}, app
 
 const pool = require("./db");
 
-const home = require("./routes/homepage.js");
-
 const userInteractions = require('./interactions/users');
 const tokens = require('./auth/tokens');
 const mentorshipRequests = require('./routes/mentorshipRequests');
@@ -36,9 +34,6 @@ app.use(express.json());
 //String to prepend to all endpoints
 const apiString = "/api/v1"
 
-app.use("/", home);
-app.use(apiString, require("./routes/testing/jsonserver")); //Dummy data server TODO: Remove before submission
-app.use(apiString, require("./routes/homepage")); //TODO: Remove before submission
 app.use(apiString, require("./routes/checkRefreshToken")); //Endpoint to issue new access tokens
 app.use(apiString, require("./routes/login")); //Endpoint for logins
 app.use(apiString, require("./routes/registerNewUser")); //Endpoint for user registration
