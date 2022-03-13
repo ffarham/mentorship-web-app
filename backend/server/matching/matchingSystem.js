@@ -552,8 +552,6 @@ async createMatches(flagList){
     to can be sent back to the mentee
     */
     for(let i = 0; i < menteeArray.length; ++i){
-        console.log(menteeArray[i].first.name + ": ");
-        console.log(menteeArray[i].second[0].second.name);
         menteeArray[i].second.sort();
         
         try{await createMentorList(menteeFlags[i], menteeArray[i].second);}
