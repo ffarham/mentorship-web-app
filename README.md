@@ -1,4 +1,4 @@
-# cs261_GroupProject
+# Mentorship Web Application
 
 
 ## Prerequisites
